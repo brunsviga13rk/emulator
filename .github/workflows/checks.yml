@@ -1,0 +1,28 @@
+# Run Checks
+# =============================================================================
+# Runs several health checks on the repository. These include syntax, style
+# and format as well as testing project build.
+#
+
+name: Checks
+on:
+    push:
+    pull_request:
+        branches:
+            - main
+        types: [opened, synchronize, reopened]
+jobs:
+    checks:
+        name: Run Checks
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out repository code
+              uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: '.nvmrc'
+            - name: Run
+              run: make check
