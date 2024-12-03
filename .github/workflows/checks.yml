@@ -24,5 +24,7 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version-file: '.nvmrc'
+            - name: Clean Install
+              run: npm ci
             - name: Run
               run: make check
