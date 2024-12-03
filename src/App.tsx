@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Renderer from "./Renderer.tsx";
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    return (
+        <>
+            <header className="bg-gray-100 border-b-2">
+                <nav
+                    className="mx-auto flex max-w-7xl items-center justify-between p-3 lg:px-8"
+                    aria-label="Global"
+                >
+                    <div className="flex lg:flex-1">
+                        <a href="#" className="-m-1.5 p-1.5">
+                            <span className="sr-only">Your Company</span>
+                            <img
+                                className="h-12 w-auto"
+                                src="./brunsviga_icon.svg"
+                                alt=""
+                            />
+                        </a>
+                    </div>
+                    <div className="hidden lg:flex lg:gap-x-12">
+                        <a
+                            href="#"
+                            className="text-sm font-semibold leading-6 text-gray-900"
+                        >
+                            Brunsviga RK 13
+                        </a>
+                        <a
+                            href="#"
+                            className="text-sm font-semibold leading-6 text-gray-900"
+                        >
+                            Thesis
+                        </a>
+                        <a
+                            href="#"
+                            className="text-sm font-semibold leading-6 text-gray-900"
+                        >
+                            Source
+                        </a>
+                        <a
+                            href="#"
+                            className="text-sm font-semibold leading-6 text-gray-900"
+                        >
+                            Credits
+                        </a>
+                    </div>
+                    <div className="hidden lg:flex lg:flex-1 lg:justify-end" />
+                </nav>
+            </header>
+            <Renderer />
+        </>
+    );
 }
 
-export default App
+export default App;
