@@ -1,7 +1,9 @@
 
 <div align="center">
     <img alt="icon" src="./public/brunsviga_icon.svg" width="30%"/>
+</div>
 
+<div align="center">
     <h2>Brunsviga 13 RK emulator</h2>
     <p>
         Web based emulation of the Brunsviga 13 RK
