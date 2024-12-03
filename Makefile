@@ -9,8 +9,8 @@ clean:
 	rm -rf dist
 
 format:
-	prettier -w .
+	npx prettier -w .
 
 check:
-	prettier -c .
+	npx prettier -c .
 	npm run build
