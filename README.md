@@ -1,50 +1,47 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<div align="center">
+    <img alt="icon" src="./public/brunsviga_icon.svg" width="30%"/>
 
-Currently, two official plugins are available:
+    <h2>Brunsviga 13 RK emulator</h2>
+    <p>
+        Web based emulation of the Brunsviga 13 RK
+        mechanical calculator from the 1950s.
+    </p>
+</div>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Technology
 
-## Expanding the ESLint configuration
+For the purpose of simplicity and due to the small scale of this project the
+following list of frameworks and build systems was chosen:
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Vite (for building)
+- React (simple UI)
+- Three.js (WebGL abstraction)
+- Typescript (typesafe(r) Javascript)
+- Tailwind CSS (styling through classes)
 
-- Configure the top-level `parserOptions` property like this:
+# Quick Start
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+Make sure you have `npm` and `git` installed. Clone this repository and run the
+following commands:
+```sh
+npm install && npm run dev .
 ```
+This will install all required dependencies and start the emulation by
+running a web server on port `5173`. You can now visit:
+[http://localhost:5173](http://localhost:5173).
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+# Docker
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+Alternatively to compiling and running the emulation natively with node,
+a ready to use Dockerfile can be used to build and run the emulation.
+First, build the image:
+```sh
+docker build --tag brunsviga13rk/emulation:git .
 ```
+Then you can create a container from the image and bind it to a local port:
+```sh
+docker run -p 8080:80 brunsviga13rk/emulation:git
+```
+You can now visit:
+[http://localhost:8080](http://localhost:8080).
