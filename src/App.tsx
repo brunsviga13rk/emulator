@@ -1,4 +1,4 @@
-import Renderer from "./Renderer.tsx";
+import Renderer from './Renderer.tsx'
 
 function App() {
     return (
@@ -49,7 +49,7 @@ function App() {
             </header>
             <Renderer />
         </>
-    );
+    )
 }
 
-export default App;
+export default App

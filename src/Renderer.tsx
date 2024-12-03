@@ -1,29 +1,24 @@
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
-import {
-    Circle,
-    Clone,
-    ContactShadows,
-    OrbitControls,
-} from "@react-three/drei";
-import { Suspense, useRef } from "react";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { Canvas, useFrame, useLoader } from '@react-three/fiber'
+import { Circle, Clone, ContactShadows, OrbitControls } from '@react-three/drei'
+import { Suspense, useRef } from 'react'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 function Gear(props: any) {
-    const gltf = useLoader(GLTFLoader, "./gear.glb");
+    const gltf = useLoader(GLTFLoader, './gear.glb')
 
-    const gear1Ref = useRef<any>();
-    const gear2Ref = useRef<any>();
+    const gear1Ref = useRef<any>()
+    const gear2Ref = useRef<any>()
 
-    const speed = 2.5;
+    const speed = 2.5
 
     useFrame(({ clock }) => {
         gear1Ref.current.rotation.z =
             clock.getElapsedTime() * speed +
-            Math.sin(clock.getElapsedTime()) * speed;
+            Math.sin(clock.getElapsedTime()) * speed
         gear2Ref.current.rotation.z =
             -clock.getElapsedTime() * speed -
-            Math.sin(clock.getElapsedTime()) * speed;
-    });
+            Math.sin(clock.getElapsedTime()) * speed
+    })
 
     return (
         <>
@@ -35,7 +30,7 @@ function Gear(props: any) {
                 object={gltf.scene}
             />
         </>
-    );
+    )
 }
 
 function Renderer() {
@@ -68,7 +63,7 @@ function Renderer() {
                 </Suspense>
             </Canvas>
         </div>
-    );
+    )
 }
 
-export default Renderer;
+export default Renderer
