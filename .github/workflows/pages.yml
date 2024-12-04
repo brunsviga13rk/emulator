@@ -38,7 +38,7 @@ jobs:
               run: npm ci
             - name: Customize Build
               run: |
-                  sed -i "/homepage/c\"homepage\": \"/emulator\"," package.json
+                  sed -i "/base/cbase: '/emulator'," vite.config.ts
             - name: Build Project
               run: make build
             - name: Upload artifact
