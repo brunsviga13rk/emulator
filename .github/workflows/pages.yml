@@ -26,19 +26,25 @@ jobs:
             url: ${{ steps.deployment.outputs.page_url }}
         runs-on: ubuntu-latest
         steps:
-            - uses: robinraju/release-downloader@v1
+            - name: Check out repository code
+              uses: actions/checkout@v4
               with:
-                  latest: true
-                  fileName: dist.zip
-            - name: Prepare Content
+                  submodules: recursive
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: '.nvmrc'
+            - name: Clean Install
+              run: npm ci
+            - name: Customize Build
               run: |
-                  unzip dist.zip
-                  mv dist/* ./
-                  rm -rf dist
+                  sed -i "/homepage/c\"homepage\": \"/emulator\"," package.json
+            - name: Build Project
+              run: make build
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
               with:
-                  path: '.'
+                  path: './dist'
             - name: Setup Pages
               uses: actions/configure-pages@v5
             - name: Deploy to GitHub Pages
