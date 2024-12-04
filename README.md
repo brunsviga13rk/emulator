@@ -5,11 +5,17 @@
 
 <div align="center">
     <h2>Brunsviga 13 RK emulator</h2>
+    <img src="https://img.shields.io/github/check-runs/brunsviga13rk/emulator/main">
+    <img src="https://img.shields.io/github/deployments/brunsviga13rk/emulator/github-pages?label=deployment">
+    <img src="https://img.shields.io/github/package-json/v/brunsviga13rk/emulator">
+    <img src="https://img.shields.io/github/license/brunsviga13rk/emulator">
+    <img src="https://img.shields.io/github/languages/top/brunsviga13rk/emulator">
     <p>
         Web based emulation of the Brunsviga 13 RK
         mechanical calculator from the 1950s.
     </p>
 </div>
+<br>
 
 # Technology
 
