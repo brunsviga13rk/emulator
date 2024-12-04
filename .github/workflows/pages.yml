@@ -33,10 +33,12 @@ jobs:
             - name: Prepare Content
               run: |
                   unzip dist.zip
+                  mv dist/* ./
+                  rm -rf dist
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
               with:
-                  path: './dist'
+                  path: '.'
             - name: Setup Pages
               uses: actions/configure-pages@v5
             - name: Deploy to GitHub Pages
