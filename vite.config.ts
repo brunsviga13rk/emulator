@@ -10,5 +10,6 @@ export default defineConfig({
             plugins: [tailwindcss()],
         },
     },
+    base: '/',
     assetsInclude: ['**/*.glb'],
 })
