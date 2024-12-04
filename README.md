@@ -47,3 +47,37 @@ docker run -p 8080:80 brunsviga13rk/emulation:git
 ```
 You can now visit:
 [http://localhost:8080](http://localhost:8080).
+
+# Workflow
+
+The workflow for developer looks like the following:
+Features, bugfixes or other works are committed to in dedicated branches
+categorized by the work done in them. For example a feature "add XYZ" maybe
+developed in a branch "feat/add-xyz". When ready this branch is squash merged
+into main. An action will automatically add the changes to a release pull
+request and increment the version number if needed. When a new version shall
+be released the release pull request is merged and automatically, the container
+image is build and pushed to GHCR. Additionally the application is deployed to
+a GitHub page [here](https://brunsviga13rk.github.io/emulator/).
+
+```mermaid
+sequenceDiagram
+    actor Developer
+    participant Repository
+    participant Checks
+    participant Release-Please
+    participant Deploy
+    participant Docker
+
+    Developer ->> Repository: Push to development branch
+    Repository ->> Checks: Run mandatory checks
+    Checks ->> Developer: Allow merge into main
+    Developer ->> Repository: squash merge feature/bugfix, ...
+    Repository ->> Checks: Run checks on main
+    Repository ->> Release-Please: Track changes in PR
+    Developer ->> Repository: Merge release PR
+    Repository ->> Checks: Run checks on main
+    Repository ->> Release-Please: Create release and tag commit
+    Repository ->> Docker: Build & upload OCI container for release
+    Repository ->> Deploy: Deploy to pages
+```
