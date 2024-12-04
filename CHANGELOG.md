@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/brunsviga13rk/emulator/compare/v0.1.0...v0.1.1) (2024-12-04)
+
+
+### Bug Fixes
+
+* rename html page ([#18](https://github.com/brunsviga13rk/emulator/issues/18)) ([76acf10](https://github.com/brunsviga13rk/emulator/commit/76acf107016f367710c405420997d763f29601a8))
+
 ## [0.1.0](https://github.com/brunsviga13rk/emulator/compare/v0.1.0...v0.1.0) (2024-12-04)
 
 
