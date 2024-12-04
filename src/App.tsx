@@ -32,7 +32,7 @@ function App() {
                             Thesis
                         </a>
                         <a
-                            href="#"
+                            href="https://github.com/brunsviga13rk/emulator"
                             className="text-sm font-semibold leading-6 text-gray-900"
                         >
                             Source
