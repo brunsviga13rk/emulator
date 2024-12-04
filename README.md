@@ -15,6 +15,7 @@
         mechanical calculator from the 1950s.
     </p>
 </div>
+<br>
 
 # Technology
 
