@@ -33,9 +33,17 @@ function App() {
                         </a>
                         <a
                             href="https://github.com/brunsviga13rk/emulator"
-                            className="text-sm font-semibold leading-6 text-gray-900"
+                            className="text-sm font-semibold leading-6 text-gray-900 inline-flex items-center"
                         >
-                            Source
+                            <img
+                                className="h-6 w-auto pr-2"
+                                src="./github.svg"
+                                alt="GitHub icon"
+                            />
+
+                            <span>
+                                Source
+                            </span>
                         </a>
                         <a
                             href="#"
