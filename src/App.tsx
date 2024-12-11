@@ -28,9 +28,10 @@ function App() {
                         </a>
                         <a
                             href="#"
-                            className="text-sm font-semibold leading-6 text-gray-900"
+                            className="text-sm font-semibold leading-6 text-gray-900 inline-flex items-center"
                         >
-                            Thesis
+                            <Icon.FileEarmarkTextFill size={24} className="pr-2" />
+                            <span>Thesis</span>
                         </a>
                         <a
                             href="https://github.com/brunsviga13rk/emulator"
