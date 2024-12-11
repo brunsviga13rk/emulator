@@ -27,6 +27,7 @@ following list of frameworks and build systems was chosen:
 - Three.js (WebGL abstraction)
 - Typescript (typesafe(r) Javascript)
 - Tailwind CSS (styling through classes)
+- Bootstrap icons (scalable vector images)
 
 # Quick Start
 
