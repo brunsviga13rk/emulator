@@ -1,5 +1,5 @@
 import Renderer from './Renderer.tsx'
-import * as Icon from 'react-bootstrap-icons';
+import * as Icon from 'react-bootstrap-icons'
 
 function App() {
     return (
@@ -30,7 +30,10 @@ function App() {
                             href="#"
                             className="text-sm font-semibold leading-6 text-gray-900 inline-flex items-center"
                         >
-                            <Icon.FileEarmarkTextFill size={24} className="pr-2" />
+                            <Icon.FileEarmarkTextFill
+                                size={24}
+                                className="pr-2"
+                            />
                             <span>Thesis</span>
                         </a>
                         <a
@@ -38,9 +41,7 @@ function App() {
                             className="text-sm font-semibold leading-6 text-gray-900 inline-flex items-center"
                         >
                             <Icon.Github size={24} className="pr-2" />
-                            <span>
-                                Source
-                            </span>
+                            <span>Source</span>
                         </a>
                         <a
                             href="#"
