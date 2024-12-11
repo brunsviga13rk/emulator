@@ -22,11 +22,12 @@
 For the purpose of simplicity and due to the small scale of this project the
 following list of frameworks and build systems was chosen:
 
-- Vite (for building)
-- React (simple UI)
-- Three.js (WebGL abstraction)
-- Typescript (typesafe(r) Javascript)
-- Tailwind CSS (styling through classes)
+- ⚡ Vite (for building)
+- 🌐 React (simple UI)
+- 🎁 Three.js (WebGL abstraction)
+- 🧻 Typescript (typesafe(r) Javascript)
+- 🌪️ Tailwind CSS (styling through classes)
+- 🥾 Bootstrap icons (scalable vector images)
 
 # Quick Start
 

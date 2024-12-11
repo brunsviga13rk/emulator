@@ -1,4 +1,5 @@
 import Renderer from './Renderer.tsx'
+import * as Icon from 'react-bootstrap-icons'
 
 function App() {
     return (
@@ -27,20 +28,26 @@ function App() {
                         </a>
                         <a
                             href="#"
-                            className="text-sm font-semibold leading-6 text-gray-900"
+                            className="text-sm font-semibold leading-6 text-gray-900 inline-flex items-center"
                         >
-                            Thesis
+                            <Icon.FileEarmarkTextFill
+                                size={24}
+                                className="pr-2"
+                            />
+                            <span>Thesis</span>
                         </a>
                         <a
                             href="https://github.com/brunsviga13rk/emulator"
-                            className="text-sm font-semibold leading-6 text-gray-900"
+                            className="text-sm font-semibold leading-6 text-gray-900 inline-flex items-center"
                         >
-                            Source
+                            <Icon.Github size={24} className="pr-2" />
+                            <span>Source</span>
                         </a>
                         <a
                             href="#"
-                            className="text-sm font-semibold leading-6 text-gray-900"
+                            className="text-sm font-semibold leading-6 text-gray-900  inline-flex items-center"
                         >
+                            <Icon.PeopleFill size={24} className="pr-2" />
                             Credits
                         </a>
                     </div>

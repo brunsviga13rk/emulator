@@ -13,8 +13,10 @@
     "dependencies": {
         "@react-three/drei": "^9.119.0",
         "@react-three/fiber": "^8.17.10",
+        "bootstrap-icons": "^1.11.3",
         "prettier": "^3.4.1",
         "react": "^18.3.1",
+        "react-bootstrap-icons": "^1.11.5",
         "react-dom": "^18.3.1",
         "tailwindcss": "^3.4.15",
         "three": "^0.171.0"
