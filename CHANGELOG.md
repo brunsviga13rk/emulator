@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0](https://github.com/brunsviga13rk/emulator/compare/v0.1.1...v0.2.0) (2024-12-11)
+
+
+### Features
+
+* add GitHub icon to source link ([905aea6](https://github.com/brunsviga13rk/emulator/commit/905aea648765caec19908159bee0eef0541d6f01))
+* add link icons ([#23](https://github.com/brunsviga13rk/emulator/issues/23)) ([905aea6](https://github.com/brunsviga13rk/emulator/commit/905aea648765caec19908159bee0eef0541d6f01))
+* add people icon to credits ([905aea6](https://github.com/brunsviga13rk/emulator/commit/905aea648765caec19908159bee0eef0541d6f01))
+* add thesis link icon ([905aea6](https://github.com/brunsviga13rk/emulator/commit/905aea648765caec19908159bee0eef0541d6f01))
+
 ## [0.1.1](https://github.com/brunsviga13rk/emulator/compare/v0.1.0...v0.1.1) (2024-12-04)
 
 
