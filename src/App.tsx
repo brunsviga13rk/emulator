@@ -1,4 +1,5 @@
 import Renderer from './Renderer.tsx'
+import * as Icon from 'react-bootstrap-icons';
 
 function App() {
     return (
@@ -35,12 +36,7 @@ function App() {
                             href="https://github.com/brunsviga13rk/emulator"
                             className="text-sm font-semibold leading-6 text-gray-900 inline-flex items-center"
                         >
-                            <img
-                                className="h-6 w-auto pr-2"
-                                src="./github.svg"
-                                alt="GitHub icon"
-                            />
-
+                            <Icon.Github size={24} className="pr-2" />
                             <span>
                                 Source
                             </span>
