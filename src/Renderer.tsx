@@ -38,9 +38,8 @@ function Renderer() {
         <div className="flex flex-col h-screen gradient">
             <Canvas camera={{ position: [-8, 5, 8] }}>
                 <Suspense fallback={null}>
-                    <ambientLight />
-                    <directionalLight />
-                    <Gear />
+                    <Environment files="./studio_small_09_2k.hdr" />
+                    <Brunsviga />
                     <ContactShadows
                         scale={60}
                         position={[0, -2, 0]}
