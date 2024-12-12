@@ -1,41 +1,29 @@
 import { Canvas, useFrame, useLoader } from '@react-three/fiber'
-import { Circle, Clone, ContactShadows, OrbitControls } from '@react-three/drei'
+import {
+    Circle,
+    Clone,
+    ContactShadows,
+    Environment,
+    EnvironmentMap,
+    OrbitControls,
+    Stats,
+} from '@react-three/drei'
 import { Suspense, useRef } from 'react'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-function Gear(props: any) {
-    const gltf = useLoader(GLTFLoader, './gear.glb')
-
-    const gear1Ref = useRef<any>()
-    const gear2Ref = useRef<any>()
-
-    const speed = 2.5
-
-    useFrame(({ clock }) => {
-        gear1Ref.current.rotation.z =
-            clock.getElapsedTime() * speed +
-            Math.sin(clock.getElapsedTime()) * speed
-        gear2Ref.current.rotation.z =
-            -clock.getElapsedTime() * speed -
-            Math.sin(clock.getElapsedTime()) * speed
-    })
+function Brunsviga(props: any) {
+    const gltf = useLoader(GLTFLoader, './brunsviga.glb')
 
     return (
         <>
-            <Clone ref={gear1Ref} {...props} object={gltf.scene} />
-            <Clone
-                ref={gear2Ref}
-                position={[2.5, 0, 0]}
-                {...props}
-                object={gltf.scene}
-            />
+            <primitive object={gltf.scene} />
         </>
     )
 }
 
 function Renderer() {
     return (
-        <div className="flex flex-col h-screen gradient">
+        <div className="flex-grow flex-1 h-full m-0 gradient">
             <Canvas camera={{ position: [-8, 5, 8] }}>
                 <Suspense fallback={null}>
                     <Environment files="./studio_small_09_2k.hdr" />
@@ -43,7 +31,7 @@ function Renderer() {
                     <ContactShadows
                         scale={60}
                         position={[0, -2, 0]}
-                        opacity={2.0}
+                        opacity={1.0}
                         blur={2}
                         resolution={512}
                     />
@@ -60,6 +48,7 @@ function Renderer() {
                         maxPolarAngle={Math.PI / 2.0}
                     />
                 </Suspense>
+                <Stats />
             </Canvas>
         </div>
     )
