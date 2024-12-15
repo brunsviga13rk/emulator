@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useLoader } from '@react-three/fiber'
-import { Circle, Clone, ContactShadows, OrbitControls } from '@react-three/drei'
+import { Circle, Clone, ContactShadows, GizmoHelper, GizmoViewport, OrbitControls } from '@react-three/drei'
 import { Suspense, useRef } from 'react'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
@@ -60,6 +60,12 @@ function Renderer() {
                         target={[0, 0, 0]}
                         maxPolarAngle={Math.PI / 2.0}
                     />
+                    <GizmoHelper alignment="top-right" margin={[80, 80]}>
+                        <GizmoViewport
+                            axisColors={['red', 'green', 'blue']}
+                            labelColor="white"
+                        />
+                    </GizmoHelper>
                 </Suspense>
             </Canvas>
         </div>
