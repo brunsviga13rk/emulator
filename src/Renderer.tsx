@@ -30,14 +30,14 @@ function Renderer() {
                     <Brunsviga />
                     <ContactShadows
                         scale={60}
-                        position={[0, -2, 0]}
+                        position={[0, -1.0, 0]}
                         opacity={1.0}
                         blur={2}
                         resolution={512}
                     />
                     <Circle
                         args={[10]}
-                        position={[0, -2.001, 0]}
+                        position={[0, -1.001, 0]}
                         rotation-x={-Math.PI / 2}
                         receiveShadow
                     >
