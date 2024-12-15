@@ -1,16 +1,7 @@
-import { Circle, shaderMaterial } from '@react-three/drei'
-import { extend } from '@react-three/fiber'
+import { Circle } from '@react-three/drei'
 
 import vertexShader from './shader/concentricGradientAlpha/vertexShader.glsl?raw'
 import fragmentShader from './shader/concentricGradientAlpha/fragmentShader.glsl?raw'
-
-const ConcentricGradientAlphaMaterial = shaderMaterial(
-    {},
-    vertexShader,
-    fragmentShader
-)
-
-extend({ ConcentricGradientAlphaMaterial })
 
 function Baseplane() {
     return (
@@ -20,7 +11,10 @@ function Baseplane() {
             rotation-x={-Math.PI / 2}
             receiveShadow
         >
-            <concentricGradientAlphaMaterial />
+            <shaderMaterial
+                vertexShader={vertexShader}
+                fragmentShader={fragmentShader}
+            />
         </Circle>
     )
 }
