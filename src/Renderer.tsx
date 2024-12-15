@@ -1,5 +1,12 @@
 import { Canvas, useFrame, useLoader } from '@react-three/fiber'
-import { Circle, Clone, ContactShadows, GizmoHelper, GizmoViewport, OrbitControls } from '@react-three/drei'
+import {
+    Circle,
+    Clone,
+    ContactShadows,
+    GizmoHelper,
+    GizmoViewport,
+    OrbitControls,
+} from '@react-three/drei'
 import { Suspense, useRef } from 'react'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
