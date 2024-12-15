@@ -1,6 +1,5 @@
 import { Canvas, useFrame, useLoader } from '@react-three/fiber'
 import {
-    Circle,
     Clone,
     ContactShadows,
     GizmoHelper,
@@ -9,6 +8,7 @@ import {
 } from '@react-three/drei'
 import { Suspense, useRef } from 'react'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import Baseplane from './Baseplane.tsx'
 
 function Gear(props: any) {
     const gltf = useLoader(GLTFLoader, './gear.glb')
@@ -43,7 +43,10 @@ function Gear(props: any) {
 function Renderer() {
     return (
         <div className="flex flex-col h-screen gradient">
-            <Canvas camera={{ position: [-8, 5, 8] }}>
+            <Canvas
+                gl={{ alpha: true, premultipliedAlpha: false }}
+                camera={{ position: [-8, 5, 8] }}
+            >
                 <Suspense fallback={null}>
                     <ambientLight />
                     <directionalLight />
@@ -55,14 +58,7 @@ function Renderer() {
                         blur={2}
                         resolution={512}
                     />
-                    <Circle
-                        args={[10]}
-                        position={[0, -2.001, 0]}
-                        rotation-x={-Math.PI / 2}
-                        receiveShadow
-                    >
-                        <meshBasicMaterial color={[0.8, 0.8, 0.8]} />
-                    </Circle>
+                    <Baseplane />
                     <OrbitControls
                         target={[0, 0, 0]}
                         maxPolarAngle={Math.PI / 2.0}
