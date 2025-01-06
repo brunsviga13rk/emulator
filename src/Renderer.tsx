@@ -1,20 +1,17 @@
-import { Canvas, useFrame, useLoader } from '@react-three/fiber'
+import { Canvas, useLoader } from '@react-three/fiber'
 import {
-    Circle,
-    Clone,
     ContactShadows,
     Environment,
-    EnvironmentMap,
     OrbitControls,
     Stats,
     GizmoHelper,
     GizmoViewport,
 } from '@react-three/drei'
-import { Suspense, useRef } from 'react'
+import { Suspense } from 'react'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import Baseplane from './Baseplane.tsx'
 
-function Brunsviga(props: any) {
+function Brunsviga() {
     const gltf = useLoader(GLTFLoader, './brunsviga.glb')
 
     return (
