@@ -3,7 +3,7 @@ import * as Icon from 'react-bootstrap-icons'
 
 function App() {
     return (
-        <>
+        <div className="flex flex-col h-full">
             <header className="bg-gray-100 border-b-2">
                 <nav
                     className="mx-auto flex max-w-7xl items-center justify-between p-3 lg:px-8"
@@ -55,7 +55,7 @@ function App() {
                 </nav>
             </header>
             <Renderer />
-        </>
+        </div>
     )
 }
 
