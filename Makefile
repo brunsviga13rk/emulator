@@ -1,4 +1,6 @@
 
+.PHONY: build live clean format check
+
 build:
 	npm run build
 
