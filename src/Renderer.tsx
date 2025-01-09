@@ -42,6 +42,7 @@ function Renderer() {
                     <OrbitControls
                         target={[0, 0, 0]}
                         maxPolarAngle={Math.PI / 2.0}
+                        makeDefault
                     />
                     <GizmoHelper alignment="top-right" margin={[80, 80]}>
                         <GizmoViewport
