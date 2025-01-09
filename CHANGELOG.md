@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.0](https://github.com/brunsviga13rk/emulator/compare/v0.2.0...v0.3.0) (2025-01-09)
+
+
+### Features
+
+* rename sub meshes of brunsviga model ([c0a1c3d](https://github.com/brunsviga13rk/emulator/commit/c0a1c3df4dd7bdcdea5786017c924cb419adc9e4))
+* selectable handles ([#38](https://github.com/brunsviga13rk/emulator/issues/38)) ([c0a1c3d](https://github.com/brunsviga13rk/emulator/commit/c0a1c3df4dd7bdcdea5786017c924cb419adc9e4))
+
+
+### Bug Fixes
+
+* baseplane offset ([#36](https://github.com/brunsviga13rk/emulator/issues/36)) ([2098225](https://github.com/brunsviga13rk/emulator/commit/209822551bacd667e3b893cfd852f8216f87298a))
+* make orbit control the default ([#34](https://github.com/brunsviga13rk/emulator/issues/34)) ([261ab29](https://github.com/brunsviga13rk/emulator/commit/261ab2965aa2ac68465717c2d842a8058ca85406))
+
 ## [0.2.0](https://github.com/brunsviga13rk/emulator/compare/v0.1.1...v0.2.0) (2025-01-06)
 
 
