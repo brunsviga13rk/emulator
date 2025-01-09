@@ -7,7 +7,7 @@ function Baseplane() {
     return (
         <Circle
             args={[30]}
-            position={[0, -2.001, 0]}
+            position={[0, -1.01, 0]}
             rotation-x={-Math.PI / 2}
             receiveShadow
         >
