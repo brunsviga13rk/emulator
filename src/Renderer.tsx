@@ -1,9 +1,104 @@
 import { useEffect } from 'react'
 import * as THREE from 'three'
 import WebGL from 'three/addons/capabilities/WebGL.js'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 
+import vertexShader from './shader/gradient/vertexShader.glsl?raw'
+import fragmentShader from './shader/gradient/fragmentShader.glsl?raw'
+import { createBaseplane } from './baseplane'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { ViewportGizmo } from 'three-viewport-gizmo'
+import {
+    OrthographicCamera,
+    PerspectiveCamera,
+    Scene,
+    WebGLRenderer,
+} from 'three'
+
+/**
+ * Creates and initializes the default camera for the 3D scene.
+ *
+ * @returns The perspective camera.
+ */
+function createCamera(): PerspectiveCamera {
+    const camera = new PerspectiveCamera(
+        35,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+    )
+    // Set position.
+    camera.position.x = -6
+    camera.position.y = 3
+    camera.position.z = 3
+
+    return camera
+}
+
+/**
+ * Create an OrbitControl and a ViewportGizmo.
+ * Also sets limits for the oribit controls.
+ *
+ * @param camera The scenes camera.
+ * @param renderer Renderer used.
+ * @returns Both the OrbitControls and the Viewport gizmo.
+ */
+function createControlGizmo(
+    camera: PerspectiveCamera | OrthographicCamera,
+    renderer: WebGLRenderer
+): [OrbitControls, ViewportGizmo] {
+    const controls = new OrbitControls(camera, renderer.domElement)
+    controls.maxPolarAngle = Math.PI * 0.5
+    controls.maxDistance = 12.0
+    controls.minDistance = 4.0
+    controls.maxTargetRadius = 2.0
+    controls.enableDamping = true
+    controls.rotateSpeed = 0.75
+
+    const gizmo = new ViewportGizmo(camera, renderer, { offset: { top: 80 } })
+    gizmo.attachControls(controls)
+
+    return [controls, gizmo]
+}
+
+/**
+ * Setup the environment by: creating an environment lighmap for PBR rendering,
+ * add a static gradient background and add the base plane to the scene
+ *
+ * @param scene The scene to setup.
+ */
+function setupEnvironment(scene: Scene) {
+    // Load environment texture.
+    new RGBELoader().load('./studio_small_09_2k.hdr', (texture) => {
+        texture.mapping = THREE.EquirectangularReflectionMapping
+        scene.environment = texture
+    })
+
+    // Create quad spanning full canvas and fill with a simple gradient shader.
+    // This is used as background for the scene.
+    const myGradient = new THREE.Mesh(
+        new THREE.PlaneGeometry(4, 4, 1, 1),
+        new THREE.ShaderMaterial({
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+        })
+    )
+    // Make sure the quad is rendered first and overwirtten by everyting else.
+    myGradient.material.depthWrite = false
+    myGradient.renderOrder = -99999
+
+    scene.add(myGradient)
+    scene.add(createBaseplane())
+}
+
+/**
+ * Initialize thee.js and setup the scene complete with environment illumination
+ * and animation handler.
+ * @param parent The parent DOM element the canvas is a child of.
+ */
 function initThree(parent: HTMLElement) {
-    const renderer = new THREE.WebGLRenderer()
+    const renderer = new WebGLRenderer({ antialias: true })
 
     renderer.setSize(parent.clientWidth, parent.clientHeight)
     renderer.setAnimationLoop(animate)
@@ -17,26 +112,38 @@ function initThree(parent: HTMLElement) {
         parent.appendChild(renderer.domElement)
     }
 
-    const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
+    // Create core components.
+    const scene = new Scene()
+    const camera = createCamera()
+    const [controls, gizmo] = createControlGizmo(camera, renderer)
+
+    // Setup the environment lightmap, background and ground plate.
+    setupEnvironment(scene)
+
+    const loader = new GLTFLoader()
+    loader.load(
+        './brunsviga.glb',
+        function (gltf) {
+            scene.add(gltf.scene)
+        },
+        undefined,
+        function (error) {
+            console.error(error)
+        }
     )
 
-    const geometry = new THREE.BoxGeometry(1, 1, 1)
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-    const cube = new THREE.Mesh(geometry, material)
-    scene.add(cube)
-
-    camera.position.z = 5
-
     function animate() {
+        controls.update()
         renderer.render(scene, camera)
+        gizmo.render()
     }
 }
 
+/**
+ * Initialize the renderer component with the 3D scene.
+ * @remarks
+ * In case WebGL 2 is not supported only a warning banner is added to the renderer.
+ */
 function setupRenderer() {
     const rendererElement = document.getElementById('renderer')
 
