@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import * as THREE from 'three'
+import WebGL from 'three/addons/capabilities/WebGL.js'
 
 function initThree(parent: HTMLElement) {
     const renderer = new THREE.WebGLRenderer()
@@ -40,8 +41,13 @@ function setupRenderer() {
     const rendererElement = document.getElementById('renderer')
 
     if (rendererElement) {
-        // Initialize Three.js and setup scene.
-        initThree(rendererElement)
+        // Check if WebGL 2 is available.
+        if (WebGL.isWebGL2Available()) {
+            // Initialize Three.js and setup scene.
+            initThree(rendererElement)
+        } else {
+            rendererElement.appendChild(WebGL.getWebGL2ErrorMessage())
+        }
     }
 }
 
