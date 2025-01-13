@@ -13,54 +13,15 @@ import {
     OrthographicCamera,
     PerspectiveCamera,
     Scene,
+    Vector2,
     WebGLRenderer,
 } from 'three'
-
-/**
- * Creates and initializes the default camera for the 3D scene.
- *
- * @returns The perspective camera.
- */
-function createCamera(): PerspectiveCamera {
-    const camera = new PerspectiveCamera(
-        35,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
-    )
-    // Set position.
-    camera.position.x = -6
-    camera.position.y = 3
-    camera.position.z = 3
-
-    return camera
-}
-
-/**
- * Create an OrbitControl and a ViewportGizmo.
- * Also sets limits for the oribit controls.
- *
- * @param camera The scenes camera.
- * @param renderer Renderer used.
- * @returns Both the OrbitControls and the Viewport gizmo.
- */
-function createControlGizmo(
-    camera: PerspectiveCamera | OrthographicCamera,
-    renderer: WebGLRenderer
-): [OrbitControls, ViewportGizmo] {
-    const controls = new OrbitControls(camera, renderer.domElement)
-    controls.maxPolarAngle = Math.PI * 0.5
-    controls.maxDistance = 12.0
-    controls.minDistance = 4.0
-    controls.maxTargetRadius = 2.0
-    controls.enableDamping = true
-    controls.rotateSpeed = 0.75
-
-    const gizmo = new ViewportGizmo(camera, renderer, { offset: { top: 80 } })
-    gizmo.attachControls(controls)
-
-    return [controls, gizmo]
-}
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
+import { OutlinePass } from 'three/examples/jsm/Addons.js'
+import { Brunsviga13rk } from './model/brunsviga13rk'
+import { Engine } from './engine'
 
 /**
  * Setup the environment by: creating an environment lighmap for PBR rendering,
@@ -68,11 +29,11 @@ function createControlGizmo(
  *
  * @param scene The scene to setup.
  */
-function setupEnvironment(scene: Scene) {
+function setupEnvironment(engine: Engine) {
     // Load environment texture.
     new RGBELoader().load('./studio_small_09_2k.hdr', (texture) => {
         texture.mapping = THREE.EquirectangularReflectionMapping
-        scene.environment = texture
+        engine.scene.environment = texture
     })
 
     // Create quad spanning full canvas and fill with a simple gradient shader.
@@ -88,8 +49,8 @@ function setupEnvironment(scene: Scene) {
     myGradient.material.depthWrite = false
     myGradient.renderOrder = -99999
 
-    scene.add(myGradient)
-    scene.add(createBaseplane())
+    engine.scene.add(myGradient)
+    engine.scene.add(createBaseplane())
 }
 
 /**
@@ -98,45 +59,13 @@ function setupEnvironment(scene: Scene) {
  * @param parent The parent DOM element the canvas is a child of.
  */
 function initThree(parent: HTMLElement) {
-    const renderer = new WebGLRenderer({ antialias: true })
-
-    renderer.setSize(parent.clientWidth, parent.clientHeight)
-    renderer.setAnimationLoop(animate)
-
-    // Add canvas used by WebGL to renderer.
-    // Check if there is already a child. In case there is replace the first child
-    // with the new canvas, else append the canvas.
-    if (parent.hasChildNodes()) {
-        parent.replaceChild(renderer.domElement, parent.firstChild!)
-    } else {
-        parent.appendChild(renderer.domElement)
-    }
-
-    // Create core components.
-    const scene = new Scene()
-    const camera = createCamera()
-    const [controls, gizmo] = createControlGizmo(camera, renderer)
+    const engine = new Engine(parent)
 
     // Setup the environment lightmap, background and ground plate.
-    setupEnvironment(scene)
+    setupEnvironment(engine)
 
-    const loader = new GLTFLoader()
-    loader.load(
-        './brunsviga.glb',
-        function (gltf) {
-            scene.add(gltf.scene)
-        },
-        undefined,
-        function (error) {
-            console.error(error)
-        }
-    )
-
-    function animate() {
-        controls.update()
-        renderer.render(scene, camera)
-        gizmo.render()
-    }
+    const brunsviga = new Brunsviga13rk(engine)
+    engine.registerActionHandler(brunsviga)
 }
 
 /**
