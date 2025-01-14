@@ -1,27 +1,13 @@
 import { useEffect } from 'react'
 import * as THREE from 'three'
 import WebGL from 'three/addons/capabilities/WebGL.js'
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 
-import vertexShader from './shader/gradient/vertexShader.glsl?raw'
-import fragmentShader from './shader/gradient/fragmentShader.glsl?raw'
 import { createBaseplane } from './baseplane'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { ViewportGizmo } from 'three-viewport-gizmo'
-import {
-    OrthographicCamera,
-    PerspectiveCamera,
-    Scene,
-    Vector2,
-    WebGLRenderer,
-} from 'three'
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
-import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
-import { OutlinePass } from 'three/examples/jsm/Addons.js'
-import { Brunsviga13rk } from './model/brunsviga13rk'
 import { Engine } from './engine'
+import { Brunsviga13rk } from './model/brunsviga13rk'
+import fragmentShader from './shader/gradient/fragmentShader.glsl?raw'
+import vertexShader from './shader/gradient/vertexShader.glsl?raw'
 
 /**
  * Setup the environment by: creating an environment lighmap for PBR rendering,
