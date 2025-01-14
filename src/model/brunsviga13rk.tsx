@@ -61,9 +61,6 @@ export class Brunsviga13rk implements ActionHandler {
                 mesh.rotation.y += 0.1
             }
         }
-
-        const [, outlinePass] = this.engine.passes
-        outlinePass.selectedObjects = this.selected
     }
 
     onMouseMove(event: MouseEvent) {
@@ -82,6 +79,9 @@ export class Brunsviga13rk implements ActionHandler {
             if (intersection.length) {
                 this.selected.push(intersection[0].object)
             }
+
+            const [, outlinePass] = this.engine.passes
+            outlinePass.selectedObjects = this.selected
         }
     }
 }
