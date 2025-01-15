@@ -1,155 +1,84 @@
-import { Canvas, ThreeEvent, useLoader, useThree } from '@react-three/fiber'
-import {
-    ContactShadows,
-    Environment,
-    OrbitControls,
-    Stats,
-    GizmoHelper,
-    GizmoViewport,
-    useCursor,
-} from '@react-three/drei'
-import { Suspense, useState } from 'react'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import Baseplane from './Baseplane.tsx'
-import {
-    Selection,
-    Select,
-    EffectComposer,
-    Outline,
-} from '@react-three/postprocessing'
-import { BlendFunction } from 'postprocessing'
+import { useEffect } from 'react'
 import * as THREE from 'three'
+import WebGL from 'three/addons/capabilities/WebGL.js'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 
-function BrunsvigaSelectable({ name = '' }) {
-    const { scene } = useLoader(GLTFLoader, './brunsviga.glb')
-    const object = scene.getObjectByName(name)!
+import { createBaseplane } from './baseplane'
+import { Engine } from './engine'
+import { Brunsviga13rk } from './model/brunsviga13rk'
+import fragmentShader from './shader/gradient/fragmentShader.glsl?raw'
+import vertexShader from './shader/gradient/vertexShader.glsl?raw'
 
-    const [hovered, setHover] = useState(false)
-    useCursor(hovered)
+/**
+ * Setup the environment by: creating an environment lighmap for PBR rendering,
+ * add a static gradient background and add the base plane to the scene
+ *
+ * @param scene The scene to setup.
+ */
+function setupEnvironment(engine: Engine) {
+    // Load environment texture.
+    new RGBELoader().load('./studio_small_09_2k.hdr', (texture) => {
+        texture.mapping = THREE.EquirectangularReflectionMapping
+        engine.scene.environment = texture
+    })
 
-    const { camera } = useThree()
-    const three_scene = useThree().scene
-    const raycaster = new THREE.Raycaster()
-
-    const selectionHandler = (event: ThreeEvent<PointerEvent>) => {
-        const canvas = document.getElementById('canvas')
-
-        if (canvas) {
-            const rect = canvas.getBoundingClientRect()
-            const x = ((event.clientX - rect.left) / rect.width) * 2.0 - 1.0
-            const y = ((event.clientY - rect.top) / rect.height) * -2.0 + 1.0
-
-            raycaster.setFromCamera(new THREE.Vector2(x, y), camera)
-
-            const intersections = raycaster.intersectObjects(
-                three_scene.children
-            )
-
-            if (intersections.length) {
-                const firstHit = intersections[0].object
-                setHover(firstHit.name == name || firstHit.parent?.name == name)
-            } else {
-                setHover(false)
-            }
-        }
-    }
-
-    return (
-        <Select enabled={hovered}>
-            <primitive
-                onPointerMove={selectionHandler}
-                onPointerOut={() => setHover(false)}
-                object={object}
-            ></primitive>
-        </Select>
+    // Create quad spanning full canvas and fill with a simple gradient shader.
+    // This is used as background for the scene.
+    const myGradient = new THREE.Mesh(
+        new THREE.PlaneGeometry(4, 4, 1, 1),
+        new THREE.ShaderMaterial({
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+        })
     )
+    // Make sure the quad is rendered first and overwirtten by everyting else.
+    myGradient.material.depthWrite = false
+    myGradient.renderOrder = -99999
+
+    engine.scene.add(myGradient)
+    engine.scene.add(createBaseplane())
 }
 
-function Brunsviga() {
-    const staticAssets = ['body', 'rubber', 'gear']
-    const { scene } = useLoader(GLTFLoader, './brunsviga.glb')
+/**
+ * Initialize thee.js and setup the scene complete with environment illumination
+ * and animation handler.
+ * @param parent The parent DOM element the canvas is a child of.
+ */
+function initThree(parent: HTMLElement) {
+    const engine = new Engine(parent)
 
-    return (
-        <mesh>
-            <Selection>
-                <EffectComposer autoClear={false}>
-                    <Outline
-                        blur
-                        visibleEdgeColor={0xffffff}
-                        hiddenEdgeColor={0x000000}
-                        edgeStrength={50}
-                        width={2000}
-                        blendFunction={BlendFunction.SCREEN}
-                    />
-                </EffectComposer>
-                <BrunsvigaSelectable name="sled" />
-                <BrunsvigaSelectable name="crank" />
-                <BrunsvigaSelectable name="crank_handle" />
-                <BrunsvigaSelectable name="sledge_handle" />
-                <BrunsvigaSelectable name="deletion" />
-                <BrunsvigaSelectable name="input_block_slider" />
-                <BrunsvigaSelectable name="result_deletionn_lever" />
-                <BrunsvigaSelectable name="singlehand_control" />
-                <BrunsvigaSelectable name="count_sign_plate" />
-                <BrunsvigaSelectable name="total_deletion_lever" />
-                <BrunsvigaSelectable name="count_deletion_lever" />
-                <BrunsvigaSelectable name="result_commata_1" />
-                <BrunsvigaSelectable name="result_commata_2" />
-                <BrunsvigaSelectable name="result_commata_3" />
-                <BrunsvigaSelectable name="input_commata_1" />
-                <BrunsvigaSelectable name="input_commata_2" />
-                <BrunsvigaSelectable name="count_commata_1" />
-                <BrunsvigaSelectable name="count_commata_2" />
-            </Selection>
-            {staticAssets.map((name, index) => (
-                <primitive
-                    key={index}
-                    object={scene.getObjectByName(name)!}
-                ></primitive>
-            ))}
-        </mesh>
-    )
+    // Setup the environment lightmap, background and ground plate.
+    setupEnvironment(engine)
+
+    const brunsviga = new Brunsviga13rk(engine)
+    engine.registerActionHandler(brunsviga)
+}
+
+/**
+ * Initialize the renderer component with the 3D scene.
+ * @remarks
+ * In case WebGL 2 is not supported only a warning banner is added to the renderer.
+ */
+function setupRenderer() {
+    const rendererElement = document.getElementById('renderer')
+
+    if (rendererElement) {
+        // Check if WebGL 2 is available.
+        if (WebGL.isWebGL2Available()) {
+            // Initialize Three.js and setup scene.
+            initThree(rendererElement)
+        } else {
+            rendererElement.appendChild(WebGL.getWebGL2ErrorMessage())
+        }
+    }
 }
 
 function Renderer() {
-    return (
-        <div className="flex flex-col h-screen gradient">
-            <Canvas
-                id="canvas"
-                gl={{ alpha: true, premultipliedAlpha: false }}
-                camera={{ position: [-8, 5, 8], zoom: 3.5 }}
-            >
-                <Suspense fallback={null}>
-                    <Environment files="./studio_small_09_2k.hdr" />
-                    <ContactShadows
-                        scale={60}
-                        position={[0, -1.0, 0]}
-                        opacity={1.0}
-                        blur={2}
-                        resolution={512}
-                    />
-                    <Baseplane />
-                    <OrbitControls
-                        target={[0, 0, 0]}
-                        maxPolarAngle={Math.PI / 2.0}
-                        makeDefault
-                    />
-                    <GizmoHelper
-                        alignment="top-right"
-                        margin={[80, 80]}
-                        renderPriority={100}
-                    >
-                        <GizmoViewport
-                            axisColors={['red', 'green', 'blue']}
-                            labelColor="white"
-                        />
-                    </GizmoHelper>
-                    <Brunsviga />
-                </Suspense>
-                <Stats />
-            </Canvas>
-        </div>
-    )
+    useEffect(() => {
+        // call api or anything
+        setupRenderer()
+    })
+    return <div className="h-full" id="renderer"></div>
 }
 
 export default Renderer
