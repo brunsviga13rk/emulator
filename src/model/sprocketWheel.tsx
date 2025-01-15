@@ -1,5 +1,7 @@
-import { Group, Object3D, Object3DEventMap } from 'three'
+import { Group, MathUtils, Object3D, Object3DEventMap } from 'three'
 import { ActionHandler } from '../actionHandler'
+
+const ANGULAR_VELOCITY = 1e-2
 
 export class SprocketWheel implements ActionHandler {
     /**
@@ -11,41 +13,86 @@ export class SprocketWheel implements ActionHandler {
      */
     digits: number
     /**
+     * Base of each digit.
+     * @default 10
+     */
+    base: number
+    /**
      * Target euler rotation angles for each wheel.
      */
     targetRotation: number[]
     currentRotation: number[]
+    angleLimits: [minAngle: number, maxAngle: number]
+    /**
+     * Decimal digits currently displayed by the sprocket wheel.
+     */
+    decimalDigits: number[]
 
-    private constructor(wheels: Object3D<Object3DEventMap>[], digits: number) {
+    private constructor(
+        wheels: Object3D<Object3DEventMap>[],
+        digits: number,
+        minAngle: number,
+        maxAngle: number,
+        base: number
+    ) {
         this.digits = digits
         this.wheels = wheels
         this.targetRotation = new Array(digits)
         this.currentRotation = new Array(digits)
+        this.decimalDigits = new Array(digits).fill(0)
         for (let i = 0; i < this.digits; i++) {
-            this.targetRotation[i] = this.wheels[i].rotation.y
-            this.currentRotation[i] = this.wheels[i].rotation.y
+            this.targetRotation[i] = this.wheels[i].rotation.y + minAngle
+            this.currentRotation[i] = this.wheels[i].rotation.y + minAngle
         }
+        this.angleLimits = [minAngle, maxAngle]
+        this.base = base
     }
 
     perform(delta: number): void {
         for (let i = 0; i < this.digits; i++) {
             // Time scale factor derived from frame time.
-            const factor = Math.min(1, 1e-2 * delta)
+            const factor = Math.min(1, ANGULAR_VELOCITY * delta)
             const angle =
                 (this.targetRotation[i] - this.currentRotation[i]) * factor
+
             this.wheels[i].rotation.y += angle
             this.currentRotation[i] += angle
         }
     }
 
     rotate(digit: number, increment: number) {
-        this.targetRotation[digit - 1] -= (Math.PI / 5.0) * increment
+        let digitValue = this.decimalDigits[digit - 1] + increment
+        const [minAngle, maxAngle] = this.angleLimits
+
+        if (digitValue > this.base - 1) {
+            this.targetRotation[digit - 1] -=
+                Math.PI * 2.0 -
+                maxAngle +
+                minAngle +
+                (maxAngle - minAngle) / this.base
+        } else if (digitValue < 0) {
+            this.targetRotation[digit - 1] +=
+                Math.PI * 2.0 -
+                maxAngle +
+                (maxAngle - minAngle) / this.base +
+                minAngle
+        } else {
+            // Increment digit rotation.
+            this.targetRotation[digit - 1] -=
+                ((maxAngle - minAngle) / this.base) * increment
+        }
+
+        digitValue = MathUtils.euclideanModulo(digitValue, this.base)
+
+        this.decimalDigits[digit - 1] = digitValue
     }
 
     static fromScene(
         scene: Group<Object3DEventMap>,
         name: string,
-        digits: number
+        digits: number,
+        minAngle: number = 0.0,
+        maxAngle: number = Math.PI * 2.0
     ): SprocketWheel {
         const wheels = []
 
@@ -55,6 +102,6 @@ export class SprocketWheel implements ActionHandler {
             wheels.push(scene.getObjectByName(wheelName)!)
         }
 
-        return new SprocketWheel(wheels, digits)
+        return new SprocketWheel(wheels, digits, minAngle, maxAngle, 10)
     }
 }

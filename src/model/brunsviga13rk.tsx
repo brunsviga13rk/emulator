@@ -48,7 +48,9 @@ export class Brunsviga13rk implements ActionHandler {
                 this.input_sprocket = SprocketWheel.fromScene(
                     this.scene,
                     'input_sprocket_wheel',
-                    11
+                    11,
+                    0,
+                    5.125
                 )
                 this.counter_sprocket = SprocketWheel.fromScene(
                     this.scene,
@@ -76,7 +78,7 @@ export class Brunsviga13rk implements ActionHandler {
     }
 
     onClick(event: MouseEvent) {
-        this.result_sprocket.rotate(1, 1)
+        this.counter_sprocket.rotate(1, 1)
     }
 
     perform(delta: number): void {
