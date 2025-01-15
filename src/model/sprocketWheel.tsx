@@ -27,12 +27,14 @@ export class SprocketWheel implements ActionHandler {
         }
     }
 
-    perform(): void {
+    perform(delta: number): void {
         for (let i = 0; i < this.digits; i++) {
-            const delta =
-                (this.targetRotation[i] - this.currentRotation[i]) * 0.5
-            this.wheels[i].rotation.y += delta
-            this.currentRotation[i] += delta
+            // Time scale factor derived from frame time.
+            const factor = Math.min(1, 1e-2 * delta)
+            const angle =
+                (this.targetRotation[i] - this.currentRotation[i]) * factor
+            this.wheels[i].rotation.y += angle
+            this.currentRotation[i] += angle
         }
     }
 

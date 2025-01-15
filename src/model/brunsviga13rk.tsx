@@ -45,11 +45,6 @@ export class Brunsviga13rk implements ActionHandler {
                 this.scene = gltf.scene
                 engine.scene.add(gltf.scene)
 
-                this.selectables.push(this.scene.getObjectByName('sled')!)
-                this.selectables.push(
-                    this.scene.getObjectByName('sledge_handle')!
-                )
-
                 this.input_sprocket = SprocketWheel.fromScene(
                     this.scene,
                     'input_sprocket_wheel',
@@ -84,11 +79,11 @@ export class Brunsviga13rk implements ActionHandler {
         this.result_sprocket.rotate(1, 1)
     }
 
-    perform(): void {
+    perform(delta: number): void {
         if (this.scene) {
-            this.input_sprocket.perform()
-            this.counter_sprocket.perform()
-            this.result_sprocket.perform()
+            this.input_sprocket.perform(delta)
+            this.counter_sprocket.perform(delta)
+            this.result_sprocket.perform(delta)
         }
     }
 

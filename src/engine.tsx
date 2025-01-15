@@ -1,4 +1,5 @@
 import {
+    Clock,
     OrthographicCamera,
     PerspectiveCamera,
     Scene,
@@ -61,11 +62,15 @@ export class Engine {
         const gizmo = this.gizmo
         const handler = this.handler
 
+        const clock = new Clock()
+
         function animate() {
-            handler.forEach((handler) => handler.perform())
+            // Delta time in milliseconds.
+            const delta = clock.getDelta() * 1e3
+            handler.forEach((handler) => handler.perform(delta))
 
             controls.update()
-            composer.render(0.0)
+            composer.render(delta)
             gizmo.render()
         }
         this.renderer.setAnimationLoop(animate)

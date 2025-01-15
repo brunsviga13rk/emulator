@@ -1,3 +1,3 @@
 export interface ActionHandler {
-    perform(): void
+    perform(delta: number): void
 }
