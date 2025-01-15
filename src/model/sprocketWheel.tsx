@@ -60,6 +60,18 @@ export class SprocketWheel implements ActionHandler {
         }
     }
 
+    getDisplayValue(): number {
+        let sum = 0
+        let base = 1
+
+        for (let i = 0; i < this.digits; i++) {
+            sum += this.decimalDigits[i] * base
+            base *= 10
+        }
+
+        return sum
+    }
+
     rotate(digit: number, increment: number) {
         let digitValue = this.decimalDigits[digit - 1] + increment
         const [minAngle, maxAngle] = this.angleLimits
