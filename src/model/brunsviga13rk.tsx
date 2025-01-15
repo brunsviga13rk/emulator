@@ -2,6 +2,7 @@ import { Group, Object3D, Object3DEventMap, Raycaster, Vector2 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { Engine } from '../engine'
 import { ActionHandler } from '../actionHandler'
+import { SprocketWheel } from './sprocketWheel'
 
 export class Brunsviga13rk implements ActionHandler {
     /**
@@ -26,6 +27,10 @@ export class Brunsviga13rk implements ActionHandler {
     pointer: Vector2
     engine: Engine
 
+    input_sprocket!: SprocketWheel
+    counter_sprocket!: SprocketWheel
+    result_sprocket!: SprocketWheel
+
     constructor(engine: Engine) {
         this.engine = engine
         this.raycaster = new Raycaster()
@@ -41,6 +46,25 @@ export class Brunsviga13rk implements ActionHandler {
                 engine.scene.add(gltf.scene)
 
                 this.selectables.push(this.scene.getObjectByName('sled')!)
+                this.selectables.push(
+                    this.scene.getObjectByName('sledge_handle')!
+                )
+
+                this.input_sprocket = SprocketWheel.fromScene(
+                    this.scene,
+                    'input_sprocket_wheel',
+                    11
+                )
+                this.counter_sprocket = SprocketWheel.fromScene(
+                    this.scene,
+                    'counter_sprocket_wheel',
+                    8
+                )
+                this.result_sprocket = SprocketWheel.fromScene(
+                    this.scene,
+                    'result_sprocket_wheel',
+                    13
+                )
             },
             undefined,
             function (error) {
@@ -51,15 +75,20 @@ export class Brunsviga13rk implements ActionHandler {
         this.engine.renderer.domElement.onmousemove = (event) => {
             this.onMouseMove(event)
         }
+        this.engine.renderer.domElement.onclick = (event) => {
+            this.onClick(event)
+        }
+    }
+
+    onClick(event: MouseEvent) {
+        this.result_sprocket.rotate(1, 1)
     }
 
     perform(): void {
         if (this.scene) {
-            const mesh = this.scene.getObjectByName('input_sprocket_wheel002')
-
-            if (mesh) {
-                mesh.rotation.y += 0.1
-            }
+            this.input_sprocket.perform()
+            this.counter_sprocket.perform()
+            this.result_sprocket.perform()
         }
     }
 
