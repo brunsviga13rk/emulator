@@ -12,6 +12,7 @@ import { ActionHandler } from '../actionHandler'
 import { SprocketWheel } from './sprocketWheel'
 import { InputWheel } from './inputWheel'
 import { Selectable } from './selectable'
+import { InputSprocket } from './sprockets/inputSprocket'
 
 export class Brunsviga13rk implements ActionHandler {
     /**
@@ -38,12 +39,29 @@ export class Brunsviga13rk implements ActionHandler {
     pointer: Vector2
     engine: Engine
 
-    input_sprocket!: SprocketWheel
+    input_sprocket!: InputSprocket
     counter_sprocket!: SprocketWheel
     result_sprocket!: SprocketWheel
     selector_sprocket!: InputWheel
 
-    constructor(engine: Engine) {
+    private static instance: Brunsviga13rk | undefined = undefined
+
+    public static createInstance(engine: Engine): Brunsviga13rk {
+        if (!Brunsviga13rk.instance) {
+            Brunsviga13rk.instance = new Brunsviga13rk(engine)
+        }
+
+        return Brunsviga13rk.instance
+    }
+
+    public static getInstance(): Brunsviga13rk {
+        if (!Brunsviga13rk.instance) {
+            throw new Error('No instance created yet')
+        }
+        return Brunsviga13rk.instance
+    }
+
+    private constructor(engine: Engine) {
         this.engine = engine
         this.raycaster = new Raycaster()
         this.pointer = new Vector2()
@@ -57,13 +75,7 @@ export class Brunsviga13rk implements ActionHandler {
                 this.scene = gltf.scene
                 engine.scene.add(gltf.scene)
 
-                this.input_sprocket = SprocketWheel.fromScene(
-                    this.scene,
-                    'input_sprocket_wheel',
-                    11,
-                    0,
-                    5.125
-                )
+                this.input_sprocket = new InputSprocket(this.scene)
                 this.counter_sprocket = SprocketWheel.fromScene(
                     this.scene,
                     'counter_sprocket_wheel',
@@ -79,6 +91,8 @@ export class Brunsviga13rk implements ActionHandler {
 
                 this.selectables = []
                 this.selectables.push(this.selector_sprocket)
+
+                this.input_sprocket.registerActionEvents()
             },
             undefined,
             function (error) {

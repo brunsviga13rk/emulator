@@ -1,41 +1,87 @@
 import { Group, Object3D, Object3DEventMap } from 'three'
 import { Selectable } from './selectable'
 import { SprocketWheel } from './sprocketWheel'
+import { EventBroker, EventEmitter } from './events'
+import { ActionHandler } from '../actionHandler'
 
 const INPUT_WHEEL_DIGITS = 10
 const INPUT_WHEEL_MESH_NAME = 'selctor_sprocket_wheel'
 
-export class InputWheel extends SprocketWheel implements Selectable {
+export enum InputWheelEventType {
+    Increment,
+    Decrement,
+}
+
+export type InputWheelIncrementEvent = { digit: number }
+export type InputWheelDecrementEvent = { digit: number }
+
+export type InputWheelEvent =
+    | InputWheelIncrementEvent
+    | InputWheelDecrementEvent
+
+export class InputWheel
+    implements
+        ActionHandler,
+        Selectable,
+        EventBroker<InputWheelEventType, InputWheelEvent, InputWheel>
+{
+    private wheel: SprocketWheel
+    private emitter: EventEmitter<
+        InputWheelEventType,
+        InputWheelEvent,
+        InputWheel
+    >
+
     public constructor(scene: Group<Object3DEventMap>) {
-        const wheels = []
-
-        const formatNumber = (num: number) => num.toString().padStart(3, '0')
-        for (let i = 1; i <= INPUT_WHEEL_DIGITS; i++) {
-            const wheelName = INPUT_WHEEL_MESH_NAME + formatNumber(i)
-            wheels.push(scene.getObjectByName(wheelName)!)
-        }
-
-        super(wheels, INPUT_WHEEL_DIGITS, Math.PI * 0.41, Math.PI * 0.9, 10)
+        this.wheel = new SprocketWheel(
+            scene,
+            INPUT_WHEEL_MESH_NAME,
+            INPUT_WHEEL_DIGITS,
+            Math.PI * 0.41,
+            Math.PI * 0.9,
+            10
+        )
 
         // Initialize rotation of wheels.
         // A full rotation around the "dead-zone" is required as these wheels
         // operate in reverse direction as the display sprocket wheels.
         for (let i = 1; i <= INPUT_WHEEL_DIGITS; i++) {
-            this.rotate(i, -1)
+            this.wheel.rotate(i, -1)
         }
+
+        this.emitter = new EventEmitter()
+        this.emitter.setActor(this)
+    }
+
+    perform(delta: number): void {
+        this.wheel.perform(delta)
+    }
+
+    getEmitter(): EventEmitter<
+        InputWheelEventType,
+        InputWheelEvent,
+        InputWheel
+    > {
+        return this.emitter
     }
 
     onClick(_event: MouseEvent, object: Object3D<Object3DEventMap>): void {
-        for (let i = 0; i < this.digits; i++) {
-            if (this.wheels[i].id == object.id) {
+        for (let i = 0; i < this.wheel.getDigits(); i++) {
+            if (this.wheel.getWheels()[i].id == object.id) {
                 switch (_event.button) {
                     // Primary button has been pressed.
                     case 0:
-                        this.rotate(i + 1, -1)
+                        this.wheel.rotate(i + 1, -1)
+                        this.emitter.emit(InputWheelEventType.Increment, {
+                            digit: i + 1,
+                        })
                         break
                     // Secondary button has been pressed.
                     case 2:
-                        this.rotate(i + 1, 1)
+                        this.wheel.rotate(i + 1, 1)
+                        this.emitter.emit(InputWheelEventType.Decrement, {
+                            digit: i + 1,
+                        })
                         break
                 }
 
@@ -45,6 +91,6 @@ export class InputWheel extends SprocketWheel implements Selectable {
     }
 
     getObjects(): Object3D<Object3DEventMap>[] {
-        return this.wheels
+        return this.wheel.getWheels()
     }
 }
