@@ -1,7 +1,10 @@
 import { Group, MathUtils, Object3D, Object3DEventMap } from 'three'
 import { ActionHandler } from '../actionHandler'
 
-const ANGULAR_VELOCITY = 1e-2
+/**
+ * Angular velocity multiplier.
+ */
+const ANGULAR_VELOCITY = 2e-2
 
 export class SprocketWheel implements ActionHandler {
     /**
@@ -21,7 +24,14 @@ export class SprocketWheel implements ActionHandler {
      * Target euler rotation angles for each wheel.
      */
     protected targetRotation: number[]
+    /**
+     * Tracks the rotation of each wheel during animation.
+     */
     protected currentRotation: number[]
+    /**
+     * Range in which fixed angle increments occur on the sprocket wheel.
+     * Note that the minimum must be smaller than the maximum angle.
+     */
     protected angleLimits: [minAngle: number, maxAngle: number]
     /**
      * Decimal digits currently displayed by the sprocket wheel.
@@ -37,16 +47,18 @@ export class SprocketWheel implements ActionHandler {
     ) {
         this.digits = digits
         this.wheels = wheels
+        this.base = base
+        this.angleLimits = [minAngle, maxAngle]
         this.targetRotation = new Array(digits)
         this.currentRotation = new Array(digits)
         this.decimalDigits = new Array(digits).fill(0)
+
+        // Initialize rotaton states.
         for (let i = 0; i < this.digits; i++) {
             this.wheels[i].rotation.y += minAngle
             this.targetRotation[i] = this.wheels[i].rotation.y + minAngle
             this.currentRotation[i] = this.wheels[i].rotation.y + minAngle
         }
-        this.angleLimits = [minAngle, maxAngle]
-        this.base = base
     }
 
     public perform(delta: number): void {
@@ -61,22 +73,33 @@ export class SprocketWheel implements ActionHandler {
         }
     }
 
+    /**
+     *
+     * @returns The total value of the sprocket as displayed by all wheels.
+     */
     public getDisplayValue(): number {
         let sum = 0
         let base = 1
 
         for (let i = 0; i < this.digits; i++) {
             sum += this.decimalDigits[i] * base
-            base *= 10
+            base *= this.base
         }
 
         return sum
     }
 
+    /**
+     * Rotate a specific wheel of the sprocket by one increment.
+     *
+     * @param digit The sprocket wheel identified by the digit it represents.
+     * @param increment How many digits to rotate around.
+     */
     public rotate(digit: number, increment: number) {
         let digitValue = this.decimalDigits[digit - 1] + increment
         const [minAngle, maxAngle] = this.angleLimits
 
+        // Rotate around "dead-zone"
         if (digitValue > this.base - 1) {
             this.targetRotation[digit - 1] -=
                 Math.PI * 2.0 -
@@ -100,6 +123,16 @@ export class SprocketWheel implements ActionHandler {
         this.decimalDigits[digit - 1] = digitValue
     }
 
+    /**
+     * Create a new generic sprocket wheel.
+     *
+     * @param scene Contains the meshes of the sprocket wheels.
+     * @param name Base name of the meshes.
+     * @param digits Number of wheels.
+     * @param minAngle
+     * @param maxAngle
+     * @returns
+     */
     public static fromScene(
         scene: Group<Object3DEventMap>,
         name: string,
