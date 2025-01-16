@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.0.0](https://github.com/brunsviga13rk/emulator/compare/v0.2.0...v1.0.0) (2025-01-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* port from react-three to three.js
+* react three to three js ([#43](https://github.com/brunsviga13rk/emulator/issues/43))
+
+### Features
+
+* add selectable interface ([6410801](https://github.com/brunsviga13rk/emulator/commit/6410801904f175e6c5fc3277d970e20dc8493634))
+* add sprocket wheel class ([6410801](https://github.com/brunsviga13rk/emulator/commit/6410801904f175e6c5fc3277d970e20dc8493634))
+* add warning in case of  missing WebGL 2 support ([6410801](https://github.com/brunsviga13rk/emulator/commit/6410801904f175e6c5fc3277d970e20dc8493634))
+* rename sub meshes of brunsviga model ([c0a1c3d](https://github.com/brunsviga13rk/emulator/commit/c0a1c3df4dd7bdcdea5786017c924cb419adc9e4))
+* selectable handles ([#38](https://github.com/brunsviga13rk/emulator/issues/38)) ([c0a1c3d](https://github.com/brunsviga13rk/emulator/commit/c0a1c3df4dd7bdcdea5786017c924cb419adc9e4))
+
+
+### Bug Fixes
+
+* baseplane offset ([#36](https://github.com/brunsviga13rk/emulator/issues/36)) ([2098225](https://github.com/brunsviga13rk/emulator/commit/209822551bacd667e3b893cfd852f8216f87298a))
+* make orbit control the default ([#34](https://github.com/brunsviga13rk/emulator/issues/34)) ([261ab29](https://github.com/brunsviga13rk/emulator/commit/261ab2965aa2ac68465717c2d842a8058ca85406))
+
+
+### Code Refactoring
+
+* port from react-three to three.js ([6410801](https://github.com/brunsviga13rk/emulator/commit/6410801904f175e6c5fc3277d970e20dc8493634))
+* react three to three js ([#43](https://github.com/brunsviga13rk/emulator/issues/43)) ([6410801](https://github.com/brunsviga13rk/emulator/commit/6410801904f175e6c5fc3277d970e20dc8493634))
+
 ## [0.2.0](https://github.com/brunsviga13rk/emulator/compare/v0.1.1...v0.2.0) (2025-01-06)
 
 
