@@ -1,8 +1,17 @@
-import { Group, Object3D, Object3DEventMap, Raycaster, Vector2 } from 'three'
+import {
+    Group,
+    Intersection,
+    Object3D,
+    Object3DEventMap,
+    Raycaster,
+    Vector2,
+} from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { Engine } from '../engine'
 import { ActionHandler } from '../actionHandler'
 import { SprocketWheel } from './sprocketWheel'
+import { InputWheel } from './inputWheel'
+import { Selectable } from './selectable'
 
 export class Brunsviga13rk implements ActionHandler {
     /**
@@ -14,15 +23,17 @@ export class Brunsviga13rk implements ActionHandler {
     /**
      * Currently selected objects.
      * @default
-     * []
+     * undefined
      */
-    selected: Object3D<Object3DEventMap>[] = []
+    selected:
+        | [Selectable, Intersection<Object3D<Object3DEventMap>>]
+        | undefined = undefined
     /**
      * All objects that can be selected.
      * @default
      * []
      */
-    selectables: Object3D[] = []
+    selectables: Selectable[] = []
     raycaster: Raycaster
     pointer: Vector2
     engine: Engine
@@ -30,6 +41,7 @@ export class Brunsviga13rk implements ActionHandler {
     input_sprocket!: SprocketWheel
     counter_sprocket!: SprocketWheel
     result_sprocket!: SprocketWheel
+    selector_sprocket!: InputWheel
 
     constructor(engine: Engine) {
         this.engine = engine
@@ -62,6 +74,11 @@ export class Brunsviga13rk implements ActionHandler {
                     'result_sprocket_wheel',
                     13
                 )
+
+                this.selector_sprocket = new InputWheel(this.scene)
+
+                this.selectables = []
+                this.selectables.push(this.selector_sprocket)
             },
             undefined,
             function (error) {
@@ -72,13 +89,16 @@ export class Brunsviga13rk implements ActionHandler {
         this.engine.renderer.domElement.onmousemove = (event) => {
             this.onMouseMove(event)
         }
-        this.engine.renderer.domElement.onclick = (event) => {
+
+        this.engine.renderer.domElement.onmouseup = (event) => {
             this.onClick(event)
         }
     }
 
     onClick(event: MouseEvent) {
-        this.counter_sprocket.rotate(1, 1)
+        if (this.selected) {
+            this.selected[0].onClick(event, this.selected[1].object)
+        }
     }
 
     perform(delta: number): void {
@@ -86,6 +106,7 @@ export class Brunsviga13rk implements ActionHandler {
             this.input_sprocket.perform(delta)
             this.counter_sprocket.perform(delta)
             this.result_sprocket.perform(delta)
+            this.selector_sprocket.perform(delta)
         }
     }
 
@@ -96,18 +117,33 @@ export class Brunsviga13rk implements ActionHandler {
         this.raycaster.setFromCamera(this.pointer, this.engine.camera)
 
         if (this.scene) {
-            const intersection = this.raycaster.intersectObjects(
-                this.selectables
-            )
+            this.selected = undefined
 
-            this.selected = []
+            for (const selectable of this.selectables) {
+                const intersection = this.raycaster.intersectObjects(
+                    selectable.getObjects()
+                )
 
-            if (intersection.length) {
-                this.selected.push(intersection[0].object)
+                if (intersection.length) {
+                    const closest = intersection[0]
+                    if (
+                        this.selected &&
+                        this.selected[1].distance > closest.distance
+                    ) {
+                        this.selected = [selectable, closest]
+                    } else {
+                        this.selected = [selectable, closest]
+                    }
+                }
+            }
+
+            const selection = []
+            if (this.selected) {
+                selection.push(this.selected[1].object)
             }
 
             const [, outlinePass] = this.engine.passes
-            outlinePass.selectedObjects = this.selected
+            outlinePass.selectedObjects = selection
         }
     }
 }
