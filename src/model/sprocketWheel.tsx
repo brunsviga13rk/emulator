@@ -166,6 +166,16 @@ export class SprocketWheel
         }
     }
 
+    public setDigit(digit: number, value: number) {
+        this.rotate(digit, value - this.decimalDigits[digit - 1])
+    }
+
+    public reset() {
+        for (let i = 0; i < this.digits; i++) {
+            this.rotate(i + 1, -this.decimalDigits[i])
+        }
+    }
+
     public getWheels(): Object3D<Object3DEventMap>[] {
         return this.wheels
     }

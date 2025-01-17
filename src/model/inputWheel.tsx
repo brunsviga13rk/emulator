@@ -1,8 +1,10 @@
 import { Group, Object3D, Object3DEventMap } from 'three'
 import { Selectable } from './selectable'
 import { SprocketWheel } from './sprocketWheel'
-import { EventBroker, EventEmitter } from './events'
+import { EventBroker, EventEmitter, EventHandler } from './events'
 import { ActionHandler } from '../actionHandler'
+import { Brunsviga13rk } from './brunsviga13rk'
+import { HandleEventType } from './handles/handle'
 
 const INPUT_WHEEL_DIGITS = 10
 const INPUT_WHEEL_MESH_NAME = 'selctor_sprocket_wheel'
@@ -51,6 +53,23 @@ export class InputWheel
 
         this.emitter = new EventEmitter()
         this.emitter.setActor(this)
+    }
+
+    public registerActionEvents() {
+        this.registerDeleteHandleEvents()
+    }
+
+    private registerDeleteHandleEvents() {
+        const emitter = Brunsviga13rk.getInstance().delete_handle.getEmitter()
+
+        emitter.subscribe(
+            HandleEventType.PullDown,
+            new EventHandler(() => {
+                for (let i = 1; i <= this.wheel.getDigits(); i++) {
+                    this.wheel.setDigit(i, 9)
+                }
+            })
+        )
     }
 
     perform(delta: number): void {

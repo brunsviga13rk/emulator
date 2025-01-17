@@ -13,6 +13,7 @@ import { SprocketWheel } from './sprocketWheel'
 import { InputWheel } from './inputWheel'
 import { Selectable } from './selectable'
 import { InputSprocket } from './sprockets/inputSprocket'
+import { Handle } from './handles/handle'
 
 export class Brunsviga13rk implements ActionHandler {
     /**
@@ -43,6 +44,7 @@ export class Brunsviga13rk implements ActionHandler {
     counter_sprocket!: SprocketWheel
     result_sprocket!: SprocketWheel
     selector_sprocket!: InputWheel
+    delete_handle!: Handle
 
     private static instance: Brunsviga13rk | undefined = undefined
 
@@ -88,11 +90,14 @@ export class Brunsviga13rk implements ActionHandler {
                 )
 
                 this.selector_sprocket = new InputWheel(this.scene)
+                this.delete_handle = new Handle(this.scene, 'deletion', 0, 2)
 
                 this.selectables = []
                 this.selectables.push(this.selector_sprocket)
+                this.selectables.push(this.delete_handle)
 
                 this.input_sprocket.registerActionEvents()
+                this.selector_sprocket.registerActionEvents()
             },
             undefined,
             function (error) {
@@ -121,6 +126,7 @@ export class Brunsviga13rk implements ActionHandler {
             this.counter_sprocket.perform(delta)
             this.result_sprocket.perform(delta)
             this.selector_sprocket.perform(delta)
+            this.delete_handle.perform(delta)
         }
     }
 
