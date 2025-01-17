@@ -50,7 +50,7 @@ function initThree(parent: HTMLElement) {
     // Setup the environment lightmap, background and ground plate.
     setupEnvironment(engine)
 
-    const brunsviga = new Brunsviga13rk(engine)
+    const brunsviga = Brunsviga13rk.createInstance(engine)
     engine.registerActionHandler(brunsviga)
 }
 
