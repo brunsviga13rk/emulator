@@ -4,10 +4,7 @@ import { SprocketWheel } from '../sprocketWheel'
 import { Brunsviga13rk } from '../brunsviga13rk'
 
 import { HandleEventType } from '../handles/handle'
-import {
-    OperationHandleEvent,
-    OperationHandleEventType,
-} from '../handles/operationHandle'
+import { OperationHandleEventType } from '../handles/operationHandle'
 
 export class ResultSprocket extends SprocketWheel {
     public constructor(scene: Group<Object3DEventMap>) {
@@ -37,14 +34,14 @@ export class ResultSprocket extends SprocketWheel {
 
         emitter.subscribe(
             OperationHandleEventType.Add,
-            new EventHandler((event: OperationHandleEvent) => {
+            new EventHandler(() => {
                 this.add(operand)
             })
         )
 
         emitter.subscribe(
             OperationHandleEventType.Subtract,
-            new EventHandler((event: OperationHandleEvent) => {})
+            new EventHandler(() => {})
         )
     }
 }

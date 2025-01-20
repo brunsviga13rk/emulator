@@ -78,8 +78,8 @@ export class Brunsviga13rk implements ActionHandler {
             './brunsviga.glb',
             (gltf) => {
                 // Store scene in object and assign to engine for rendering.
-                this.scene = gltf.scene
                 engine.scene.add(gltf.scene)
+                this.scene = gltf.scene
 
                 this.input_sprocket = new InputSprocket(this.scene)
                 this.counter_sprocket = SprocketWheel.fromScene(

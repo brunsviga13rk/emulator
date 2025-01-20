@@ -79,12 +79,18 @@ export class OperationHandle
     }
 
     public add() {
+        // Prevent crank from bein continouuisly accelerating.
+        if (this.currentOperation != undefined) return
+
         this.currentRotation += Math.PI * 2
         this.emitter.emit(OperationHandleEventType.Add, undefined)
         this.currentOperation = OperationHandleEventType.Add
     }
 
     public subtract() {
+        // Prevent crank from bein continouuisly accelerating.
+        if (this.currentOperation != undefined) return
+
         this.currentRotation -= Math.PI * 2
         this.emitter.emit(OperationHandleEventType.Subtract, undefined)
         this.currentOperation = OperationHandleEventType.Subtract
@@ -98,7 +104,7 @@ export class OperationHandle
         this.mesh.rotation.y += angle
         this.currentRotation += angle
 
-        if (Math.abs(this.currentRotation - this.targetRotation) < 1e-3) {
+        if (Math.abs(this.currentRotation - this.targetRotation) < 1e-2) {
             if (this.currentOperation == OperationHandleEventType.Add) {
                 this.emitter.emit(OperationHandleEventType.AddEnded, undefined)
                 this.currentOperation = undefined
