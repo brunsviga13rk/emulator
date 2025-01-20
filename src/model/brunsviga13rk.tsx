@@ -14,6 +14,8 @@ import { InputWheel } from './inputWheel'
 import { Selectable } from './selectable'
 import { InputSprocket } from './sprockets/inputSprocket'
 import { Handle } from './handles/handle'
+import { OperationHandle } from './handles/operationHandle'
+import { ResultSprocket } from './sprockets/resultSprocket'
 
 export class Brunsviga13rk implements ActionHandler {
     /**
@@ -42,10 +44,11 @@ export class Brunsviga13rk implements ActionHandler {
 
     input_sprocket!: InputSprocket
     counter_sprocket!: SprocketWheel
-    result_sprocket!: SprocketWheel
+    result_sprocket!: ResultSprocket
     selector_sprocket!: InputWheel
     delete_handle!: Handle
     delete_input_handle!: Handle
+    operation_crank!: OperationHandle
 
     private static instance: Brunsviga13rk | undefined = undefined
 
@@ -84,11 +87,7 @@ export class Brunsviga13rk implements ActionHandler {
                     'counter_sprocket_wheel',
                     8
                 )
-                this.result_sprocket = SprocketWheel.fromScene(
-                    this.scene,
-                    'result_sprocket_wheel',
-                    13
-                )
+                this.result_sprocket = new ResultSprocket(this.scene)
 
                 this.selector_sprocket = new InputWheel(this.scene)
                 this.delete_handle = new Handle(this.scene, 'deletion', 0, 2)
@@ -99,13 +98,17 @@ export class Brunsviga13rk implements ActionHandler {
                     2
                 )
 
+                this.operation_crank = new OperationHandle(this.scene)
+
                 this.selectables = []
                 this.selectables.push(this.selector_sprocket)
                 this.selectables.push(this.delete_handle)
                 this.selectables.push(this.delete_input_handle)
+                this.selectables.push(this.operation_crank)
 
                 this.input_sprocket.registerActionEvents()
                 this.selector_sprocket.registerActionEvents()
+                this.result_sprocket.registerActionEvents()
             },
             undefined,
             function (error) {
@@ -136,6 +139,7 @@ export class Brunsviga13rk implements ActionHandler {
             this.selector_sprocket.perform(delta)
             this.delete_handle.perform(delta)
             this.delete_input_handle.perform(delta)
+            this.operation_crank.perform(delta)
         }
     }
 
