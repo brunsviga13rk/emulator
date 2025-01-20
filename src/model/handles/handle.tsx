@@ -83,7 +83,10 @@ export class Handle
     }
 
     public pullDown() {
-        const [, maxAngle] = this.angleLimits
+        const [minAngle, maxAngle] = this.angleLimits
+        // Prevent handle from being spammed.
+        if (Math.abs(this.currentRotation - minAngle) > 1e-3) return
+
         this.targetRotation = maxAngle
         this.limitReached = false
 
@@ -91,7 +94,10 @@ export class Handle
     }
 
     public pushUp() {
-        const [minAngle] = this.angleLimits
+        const [minAngle, maxAngle] = this.angleLimits
+        // Prevent handle from being spammed.
+        if (Math.abs(this.currentRotation - maxAngle) > 1e-3) return
+
         this.targetRotation = minAngle
         this.limitReached = true
 
