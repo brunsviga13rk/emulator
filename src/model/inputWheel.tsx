@@ -98,20 +98,26 @@ export class InputWheel
     onClick(_event: MouseEvent, object: Object3D<Object3DEventMap>): void {
         for (let i = 0; i < this.wheel.getDigits(); i++) {
             if (this.wheel.getWheels()[i].id == object.id) {
+                const current_digit = this.wheel.getDecimalDigits()[i]
+
                 switch (_event.button) {
                     // Primary button has been pressed.
                     case 0:
-                        this.wheel.rotate(i + 1, -1)
-                        this.emitter.emit(InputWheelEventType.Increment, {
-                            digit: i + 1,
-                        })
+                        if (current_digit > 0) {
+                            this.wheel.rotate(i + 1, -1)
+                            this.emitter.emit(InputWheelEventType.Increment, {
+                                digit: i + 1,
+                            })
+                        }
                         break
                     // Secondary button has been pressed.
                     case 2:
-                        this.wheel.rotate(i + 1, 1)
-                        this.emitter.emit(InputWheelEventType.Decrement, {
-                            digit: i + 1,
-                        })
+                        if (current_digit < 9) {
+                            this.wheel.rotate(i + 1, 1)
+                            this.emitter.emit(InputWheelEventType.Decrement, {
+                                digit: i + 1,
+                            })
+                        }
                         break
                 }
 
