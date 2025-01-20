@@ -27,6 +27,15 @@ export class InputSprocket extends SprocketWheel {
                 this.reset()
             })
         )
+
+        Brunsviga13rk.getInstance()
+            .delete_input_handle.getEmitter()
+            .subscribe(
+                HandleEventType.PullDown,
+                new EventHandler(() => {
+                    this.reset()
+                })
+            )
     }
 
     private registerInputSelectorEvents() {

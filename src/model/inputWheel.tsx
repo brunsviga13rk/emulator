@@ -70,6 +70,17 @@ export class InputWheel
                 }
             })
         )
+
+        Brunsviga13rk.getInstance()
+            .delete_input_handle.getEmitter()
+            .subscribe(
+                HandleEventType.PullDown,
+                new EventHandler(() => {
+                    for (let i = 1; i <= this.wheel.getDigits(); i++) {
+                        this.wheel.setDigit(i, 9)
+                    }
+                })
+            )
     }
 
     perform(delta: number): void {

@@ -45,6 +45,7 @@ export class Brunsviga13rk implements ActionHandler {
     result_sprocket!: SprocketWheel
     selector_sprocket!: InputWheel
     delete_handle!: Handle
+    delete_input_handle!: Handle
 
     private static instance: Brunsviga13rk | undefined = undefined
 
@@ -91,10 +92,17 @@ export class Brunsviga13rk implements ActionHandler {
 
                 this.selector_sprocket = new InputWheel(this.scene)
                 this.delete_handle = new Handle(this.scene, 'deletion', 0, 2)
+                this.delete_input_handle = new Handle(
+                    this.scene,
+                    'total_deletion_lever',
+                    0,
+                    2
+                )
 
                 this.selectables = []
                 this.selectables.push(this.selector_sprocket)
                 this.selectables.push(this.delete_handle)
+                this.selectables.push(this.delete_input_handle)
 
                 this.input_sprocket.registerActionEvents()
                 this.selector_sprocket.registerActionEvents()
@@ -127,6 +135,7 @@ export class Brunsviga13rk implements ActionHandler {
             this.result_sprocket.perform(delta)
             this.selector_sprocket.perform(delta)
             this.delete_handle.perform(delta)
+            this.delete_input_handle.perform(delta)
         }
     }
 
