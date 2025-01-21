@@ -178,6 +178,18 @@ export class SprocketWheel
         }
     }
 
+    public subtract(values: number[]) {
+        let overflow = 0
+        for (let i = 0; i < this.digits; i++) {
+            const current = this.decimalDigits[i]
+            const decrement = overflow + (values.length > i ? values[i] : 0)
+
+            this.rotate(i + 1, -decrement)
+
+            overflow = -Math.floor((current - decrement) / this.base)
+        }
+    }
+
     public setDigit(digit: number, value: number) {
         this.rotate(digit, value - this.decimalDigits[digit - 1])
     }

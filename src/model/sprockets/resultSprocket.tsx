@@ -41,7 +41,9 @@ export class ResultSprocket extends SprocketWheel {
 
         emitter.subscribe(
             OperationHandleEventType.Subtract,
-            new EventHandler(() => {})
+            new EventHandler(() => {
+                this.subtract(operand)
+            })
         )
     }
 }

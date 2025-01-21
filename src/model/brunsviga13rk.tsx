@@ -9,13 +9,13 @@ import {
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { Engine } from '../engine'
 import { ActionHandler } from '../actionHandler'
-import { SprocketWheel } from './sprocketWheel'
 import { InputWheel } from './inputWheel'
 import { Selectable } from './selectable'
 import { InputSprocket } from './sprockets/inputSprocket'
 import { Handle } from './handles/handle'
 import { OperationHandle } from './handles/operationHandle'
 import { ResultSprocket } from './sprockets/resultSprocket'
+import { CounterSprocket } from './sprockets/CounterSprocket'
 
 export class Brunsviga13rk implements ActionHandler {
     /**
@@ -43,7 +43,7 @@ export class Brunsviga13rk implements ActionHandler {
     engine: Engine
 
     input_sprocket!: InputSprocket
-    counter_sprocket!: SprocketWheel
+    counter_sprocket!: CounterSprocket
     result_sprocket!: ResultSprocket
     selector_sprocket!: InputWheel
     delete_handle!: Handle
@@ -82,11 +82,7 @@ export class Brunsviga13rk implements ActionHandler {
                 this.scene = gltf.scene
 
                 this.input_sprocket = new InputSprocket(this.scene)
-                this.counter_sprocket = SprocketWheel.fromScene(
-                    this.scene,
-                    'counter_sprocket_wheel',
-                    8
-                )
+                this.counter_sprocket = new CounterSprocket(this.scene)
                 this.result_sprocket = new ResultSprocket(this.scene)
 
                 this.selector_sprocket = new InputWheel(this.scene)
@@ -109,6 +105,7 @@ export class Brunsviga13rk implements ActionHandler {
                 this.input_sprocket.registerActionEvents()
                 this.selector_sprocket.registerActionEvents()
                 this.result_sprocket.registerActionEvents()
+                this.counter_sprocket.registerActionEvents()
             },
             undefined,
             function (error) {
