@@ -61,7 +61,7 @@ export class OperationHandle
         this.emitter.setActor(this)
     }
 
-    onClick(event: MouseEvent, object: Object3D<Object3DEventMap>): void {
+    onClick(event: MouseEvent): void {
         switch (event.button) {
             // Primary button has been pressed.
             case 0:
