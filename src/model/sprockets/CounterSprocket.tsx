@@ -22,5 +22,12 @@ export class CounterSprocket extends SprocketWheel {
                 this.add([1])
             })
         )
+
+        emitter.subscribe(
+            OperationHandleEventType.Subtract,
+            new EventHandler(() => {
+                this.subtract([1])
+            })
+        )
     }
 }
