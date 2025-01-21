@@ -166,12 +166,50 @@ export class SprocketWheel
         }
     }
 
+    public add(values: number[]) {
+        let overflow = 0
+        for (let i = 0; i < this.digits; i++) {
+            const current = this.decimalDigits[i]
+            const increment = overflow + (values.length > i ? values[i] : 0)
+
+            this.rotate(i + 1, increment)
+
+            overflow = Math.floor((current + increment) / this.base)
+        }
+    }
+
+    public subtract(values: number[]) {
+        let overflow = 0
+        for (let i = 0; i < this.digits; i++) {
+            const current = this.decimalDigits[i]
+            const decrement = overflow + (values.length > i ? values[i] : 0)
+
+            this.rotate(i + 1, -decrement)
+
+            overflow = -Math.floor((current - decrement) / this.base)
+        }
+    }
+
+    public setDigit(digit: number, value: number) {
+        this.rotate(digit, value - this.decimalDigits[digit - 1])
+    }
+
+    public reset() {
+        for (let i = 0; i < this.digits; i++) {
+            this.rotate(i + 1, -this.decimalDigits[i])
+        }
+    }
+
     public getWheels(): Object3D<Object3DEventMap>[] {
         return this.wheels
     }
 
     public getDigits(): number {
         return this.digits
+    }
+
+    public getDecimalDigits(): number[] {
+        return this.decimalDigits
     }
 
     /**
