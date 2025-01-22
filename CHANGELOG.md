@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.0](https://github.com/brunsviga13rk/emulator/compare/v1.0.0...v1.1.0) (2025-01-22)
+
+
+### Features
+
+* add counter sprocket ([2c51427](https://github.com/brunsviga13rk/emulator/commit/2c514271cdb39defb67bed93c597b3ea8d993912))
+* add deletion handle ([#49](https://github.com/brunsviga13rk/emulator/issues/49)) ([2c51427](https://github.com/brunsviga13rk/emulator/commit/2c514271cdb39defb67bed93c597b3ea8d993912))
+* add event system ([#47](https://github.com/brunsviga13rk/emulator/issues/47)) ([0f75a30](https://github.com/brunsviga13rk/emulator/commit/0f75a30f25850ac8ce220af8af9540da96e7dc1f))
+
+
+### Bug Fixes
+
+* prevent handles from being spammed ([2c51427](https://github.com/brunsviga13rk/emulator/commit/2c514271cdb39defb67bed93c597b3ea8d993912))
+* rename sprocket wheels with wrong numbers in name ([0f75a30](https://github.com/brunsviga13rk/emulator/commit/0f75a30f25850ac8ce220af8af9540da96e7dc1f))
+
 ## [1.0.0](https://github.com/brunsviga13rk/emulator/compare/v0.2.0...v1.0.0) (2025-01-16)
 
 
