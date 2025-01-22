@@ -16,6 +16,7 @@ import { Handle } from './handles/handle'
 import { OperationHandle } from './handles/operationHandle'
 import { ResultSprocket } from './sprockets/resultSprocket'
 import { CounterSprocket } from './sprockets/CounterSprocket'
+import { CommataBar } from './commata'
 
 export class Brunsviga13rk implements ActionHandler {
     /**
@@ -49,6 +50,7 @@ export class Brunsviga13rk implements ActionHandler {
     delete_handle!: Handle
     delete_input_handle!: Handle
     operation_crank!: OperationHandle
+    input_commata!: CommataBar
 
     private static instance: Brunsviga13rk | undefined = undefined
 
@@ -95,12 +97,18 @@ export class Brunsviga13rk implements ActionHandler {
                 )
 
                 this.operation_crank = new OperationHandle(this.scene)
+                this.input_commata = new CommataBar(
+                    this.scene,
+                    'input_commata_',
+                    2
+                )
 
                 this.selectables = []
                 this.selectables.push(this.selector_sprocket)
                 this.selectables.push(this.delete_handle)
                 this.selectables.push(this.delete_input_handle)
                 this.selectables.push(this.operation_crank)
+                this.selectables.push(this.input_commata)
 
                 this.input_sprocket.registerActionEvents()
                 this.selector_sprocket.registerActionEvents()
@@ -138,12 +146,16 @@ export class Brunsviga13rk implements ActionHandler {
             this.delete_handle.perform(delta)
             this.delete_input_handle.perform(delta)
             this.operation_crank.perform(delta)
+            this.input_commata.perform(delta)
         }
     }
 
     onMouseMove(event: MouseEvent) {
-        this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1
-        this.pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
+        const boundingRect = this.engine.parent.getBoundingClientRect()
+        this.pointer.x =
+            ((event.clientX - boundingRect.left) / boundingRect.width) * 2 - 1
+        this.pointer.y =
+            -((event.clientY - boundingRect.top) / boundingRect.height) * 2 + 1
 
         this.raycaster.setFromCamera(this.pointer, this.engine.camera)
 
