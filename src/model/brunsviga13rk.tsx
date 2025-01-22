@@ -106,6 +106,7 @@ export class Brunsviga13rk implements ActionHandler {
                 this.selector_sprocket.registerActionEvents()
                 this.result_sprocket.registerActionEvents()
                 this.counter_sprocket.registerActionEvents()
+                this.operation_crank.registerEventSubscribtions()
             },
             undefined,
             function (error) {

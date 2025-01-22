@@ -1,8 +1,9 @@
 import { Group, Object3D, Object3DEventMap } from 'three'
 import { ActionHandler } from '../../actionHandler'
-import { EventBroker, EventEmitter } from '../events'
+import { EventBroker, EventEmitter, EventHandler } from '../events'
 import { Selectable } from '../selectable'
 import { AnimationScalarState, CubicEaseInOutInterpolation } from '../animation'
+import { Knob, KnobEventType } from './knob'
 
 export enum OperationHandleEventType {
     Add,
@@ -32,6 +33,7 @@ export class OperationHandle
             OperationHandle
         >
 {
+    protected knob: Knob
     protected mesh: Object3D<Object3DEventMap>
     protected animationState: AnimationScalarState
     protected currentOperation: OperationHandleEventType | undefined = undefined
@@ -45,11 +47,44 @@ export class OperationHandle
         this.animationState = new AnimationScalarState(
             0,
             CubicEaseInOutInterpolation,
-            0.25
+            0.35
         )
+        this.knob = new Knob(scene)
         this.mesh = scene.getObjectByName('crank')!
         this.emitter = new EventEmitter()
         this.emitter.setActor(this)
+    }
+
+    public registerEventSubscribtions() {
+        this.knob.getEmitter().subscribe(
+            KnobEventType.Extruded,
+            new EventHandler(() => {
+                this.animationState.targetState =
+                    this.animationState.getLatestTarget() + Math.PI * 2
+            })
+        )
+
+        this.knob.getEmitter().subscribe(
+            KnobEventType.AtRest,
+            new EventHandler(() => {
+                switch (this.currentOperation) {
+                    case OperationHandleEventType.Add:
+                        this.emitter.emit(
+                            OperationHandleEventType.AddEnded,
+                            undefined
+                        )
+                        break
+                    case OperationHandleEventType.Subtract:
+                        this.emitter.emit(
+                            OperationHandleEventType.SubtractEnded,
+                            undefined
+                        )
+                        break
+                }
+
+                this.currentOperation = undefined
+            })
+        )
     }
 
     onClick(event: MouseEvent): void {
@@ -70,11 +105,12 @@ export class OperationHandle
     }
 
     public add() {
+        // add -> knob extrude -> rotate -> knob intrude -> done
+
         // Prevent crank from bein continouuisly accelerating.
         if (this.currentOperation != undefined) return
 
-        this.animationState.targetState =
-            this.animationState.getLatestTarget() + Math.PI * 2
+        this.knob.extrude()
 
         this.emitter.emit(OperationHandleEventType.Add, undefined)
         this.currentOperation = OperationHandleEventType.Add
@@ -84,8 +120,8 @@ export class OperationHandle
         // Prevent crank from bein continouuisly accelerating.
         if (this.currentOperation != undefined) return
 
-        this.animationState.targetState =
-            this.animationState.getLatestTarget() - Math.PI * 2
+        this.knob.extrude()
+
         this.emitter.emit(OperationHandleEventType.Subtract, undefined)
         this.currentOperation = OperationHandleEventType.Subtract
     }
@@ -94,21 +130,12 @@ export class OperationHandle
         this.animationState.advance(delta)
         this.mesh.rotation.y = this.animationState.currentState
 
-        if (!this.animationState.isAnimationDone()) return
+        this.knob.perform(delta)
+        this.knob.rotate(this.animationState.currentState)
 
-        switch (this.currentOperation) {
-            case OperationHandleEventType.Add:
-                this.emitter.emit(OperationHandleEventType.AddEnded, undefined)
-                break
-            case OperationHandleEventType.Subtract:
-                this.emitter.emit(
-                    OperationHandleEventType.SubtractEnded,
-                    undefined
-                )
-                break
+        if (this.knob.isExtruded() && this.animationState.isAnimationDone()) {
+            this.knob.reset()
         }
-
-        this.currentOperation = undefined
     }
 
     getEmitter(): EventEmitter<
