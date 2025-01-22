@@ -2,11 +2,7 @@ import { Group, Object3D, Object3DEventMap } from 'three'
 import { ActionHandler } from '../../actionHandler'
 import { Selectable } from '../selectable'
 import { EventBroker, EventEmitter, EventHandler } from '../events'
-
-/**
- * Angular velocity multiplier.
- */
-const ANGULAR_VELOCITY = 1e-2
+import { AnimationScalarState, CubicEaseInOutInterpolation } from '../animation'
 
 export enum HandleEventType {
     PushUp,
@@ -33,14 +29,7 @@ export class Handle
         EventBroker<HandleEventType, HandleEvent, Handle>
 {
     protected mesh: Object3D<Object3DEventMap>
-    /**
-     * Target euler rotation angles for each wheel.
-     */
-    protected targetRotation: number
-    /**
-     * Tracks the rotation of each wheel during animation.
-     */
-    protected currentRotation: number
+    protected animationState: AnimationScalarState
     /**
      * Range in which fixed angle increments occur on the sprocket wheel.
      * Note that the minimum must be smaller than the maximum angle.
@@ -58,10 +47,13 @@ export class Handle
         this.limitReached = false
         this.emitter = new EventEmitter()
         this.angleLimits = [minAngle, maxAngle]
-        this.targetRotation = minAngle
-        this.currentRotation = minAngle
         this.mesh = scene.getObjectByName(name)!
         this.mesh.rotation.y += minAngle
+        this.animationState = new AnimationScalarState(
+            minAngle,
+            CubicEaseInOutInterpolation,
+            0.5
+        )
 
         this.emitter.setActor(this)
         this.emitter.subscribe(
@@ -85,9 +77,9 @@ export class Handle
     public pullDown() {
         const [minAngle, maxAngle] = this.angleLimits
         // Prevent handle from being spammed.
-        if (Math.abs(this.currentRotation - minAngle) > 1e-3) return
+        if (Math.abs(this.animationState.currentState - minAngle) > 1e-3) return
 
-        this.targetRotation = maxAngle
+        this.animationState.targetState = maxAngle
         this.limitReached = false
 
         this.emitter.emit(HandleEventType.PullDown, undefined)
@@ -96,9 +88,9 @@ export class Handle
     public pushUp() {
         const [minAngle, maxAngle] = this.angleLimits
         // Prevent handle from being spammed.
-        if (Math.abs(this.currentRotation - maxAngle) > 1e-3) return
+        if (Math.abs(this.animationState.currentState - maxAngle) > 1e-3) return
 
-        this.targetRotation = minAngle
+        this.animationState.targetState = minAngle
         this.limitReached = true
 
         this.emitter.emit(HandleEventType.PushUp, undefined)
@@ -109,23 +101,19 @@ export class Handle
     }
 
     perform(delta: number): void {
-        // Time scale factor derived from frame time.
-        const factor = Math.min(1, ANGULAR_VELOCITY * delta)
-        const angle = (this.targetRotation - this.currentRotation) * factor
-
-        this.mesh.rotation.y += angle
-        this.currentRotation += angle
+        this.animationState.advance(delta)
+        this.mesh.rotation.y = this.animationState.currentState
 
         const [minAngle, maxAngle] = this.angleLimits
         if (
-            Math.abs(this.currentRotation - minAngle) < 1e-3 &&
+            Math.abs(this.animationState.currentState - minAngle) < 1e-3 &&
             this.limitReached
         ) {
             this.emitter.emit(HandleEventType.PushUpDone, undefined)
             this.limitReached = false
         }
         if (
-            Math.abs(this.currentRotation - maxAngle) < 1e-3 &&
+            Math.abs(this.animationState.currentState - maxAngle) < 1e-3 &&
             !this.limitReached
         ) {
             this.emitter.emit(HandleEventType.PullDownDone, undefined)
