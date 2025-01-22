@@ -51,6 +51,8 @@ export class Brunsviga13rk implements ActionHandler {
     delete_input_handle!: Handle
     operation_crank!: OperationHandle
     input_commata!: CommataBar
+    count_commata!: CommataBar
+    result_commata!: CommataBar
 
     private static instance: Brunsviga13rk | undefined = undefined
 
@@ -100,7 +102,26 @@ export class Brunsviga13rk implements ActionHandler {
                 this.input_commata = new CommataBar(
                     this.scene,
                     'input_commata_',
-                    2
+                    2,
+                    -0.69,
+                    0.57,
+                    12
+                )
+                this.count_commata = new CommataBar(
+                    this.scene,
+                    'count_commata_',
+                    2,
+                    -0.75,
+                    0.57,
+                    9
+                )
+                this.result_commata = new CommataBar(
+                    this.scene,
+                    'result_commata_',
+                    3,
+                    -0.835,
+                    0.52,
+                    13
                 )
 
                 this.selectables = []
@@ -109,6 +130,8 @@ export class Brunsviga13rk implements ActionHandler {
                 this.selectables.push(this.delete_input_handle)
                 this.selectables.push(this.operation_crank)
                 this.selectables.push(this.input_commata)
+                this.selectables.push(this.count_commata)
+                this.selectables.push(this.result_commata)
 
                 this.input_sprocket.registerActionEvents()
                 this.selector_sprocket.registerActionEvents()
@@ -147,6 +170,8 @@ export class Brunsviga13rk implements ActionHandler {
             this.delete_input_handle.perform(delta)
             this.operation_crank.perform(delta)
             this.input_commata.perform(delta)
+            this.count_commata.perform(delta)
+            this.result_commata.perform(delta)
         }
     }
 

@@ -6,10 +6,17 @@ import { Selectable } from './selectable'
 class Commata implements ActionHandler {
     protected animationState: AnimationScalarState
     protected mesh: Object3D<Object3DEventMap>
+    protected _digit: number
 
-    public constructor(scene: Group<Object3DEventMap>, name: string) {
+    public constructor(
+        scene: Group<Object3DEventMap>,
+        name: string,
+        initialTranslation: number,
+        digit: number
+    ) {
+        this._digit = digit
         this.animationState = new AnimationScalarState(
-            0.0,
+            initialTranslation,
             CubicEaseInOutInterpolation,
             0.1
         )
@@ -24,29 +31,83 @@ class Commata implements ActionHandler {
     public move(translation: number) {
         this.animationState.targetState =
             this.animationState.getLatestTarget() + translation
+
+        this._digit += Math.sign(translation)
     }
 
     public getMesh(): Object3D<Object3DEventMap> {
         return this.mesh
     }
+
+    public getTranslation(): number {
+        return this.animationState.currentState
+    }
+
+    public get digit(): number {
+        return this._digit
+    }
 }
 
 export class CommataBar implements ActionHandler, Selectable {
     protected commata: Commata[]
+    protected bounds: [maxTranslation: number, minTranslation: number]
+    protected resolution: number
 
     public constructor(
         scene: Group<Object3DEventMap>,
         name: string,
-        amount: number
+        amount: number,
+        minTranslation: number,
+        maxTranslation: number,
+        resolution: number
     ) {
+        this.resolution = resolution
         this.commata = []
+        this.bounds = [minTranslation, maxTranslation]
 
         for (let i = 1; i <= amount; i++) {
-            this.commata.push(new Commata(scene, name + amount.toString()))
+            const startPosition =
+                ((maxTranslation - minTranslation) / resolution) * (i - 1) +
+                minTranslation
+            this.commata.push(
+                new Commata(scene, name + i.toString(), startPosition, i)
+            )
         }
     }
 
-    onClick(event: MouseEvent, object: Object3D<Object3DEventMap>): void {}
+    onClick(event: MouseEvent, object: Object3D<Object3DEventMap>): void {
+        let sign = 1.0
+        switch (event.button) {
+            // Primary button has been pressed.
+            case 0:
+                sign = 1.0
+                break
+            // Secondary button has been pressed.
+            case 2:
+                sign = -1.0
+                break
+        }
+
+        for (let i = 0; i < this.commata.length; i++) {
+            if (this.commata[i].getMesh().id == object.id) {
+                const [minTranslation, maxTranslation] = this.bounds
+                const position = this.commata[i].getTranslation()
+                const translation =
+                    ((maxTranslation - minTranslation) / this.resolution) * sign
+                const offset = position + translation
+
+                if (this.isDigitObstructed(this.commata[i].digit + sign)) break
+
+                if (offset <= maxTranslation && offset >= minTranslation) {
+                    this.commata[i].move(translation)
+                }
+            }
+        }
+    }
+
+    private isDigitObstructed(digit: number) {
+        return this.commata.find((commata) => commata.digit == digit)
+    }
 
     getObjects(): Object3D<Object3DEventMap>[] {
         return this.commata.map((commata) => commata.getMesh())
