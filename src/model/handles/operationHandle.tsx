@@ -2,11 +2,7 @@ import { Group, Object3D, Object3DEventMap } from 'three'
 import { ActionHandler } from '../../actionHandler'
 import { EventBroker, EventEmitter } from '../events'
 import { Selectable } from '../selectable'
-
-/**
- * Angular velocity multiplier.
- */
-const ANGULAR_VELOCITY = 5e-3
+import { AnimationScalarState, CubicEaseInOutInterpolation } from '../animation'
 
 export enum OperationHandleEventType {
     Add,
@@ -37,14 +33,7 @@ export class OperationHandle
         >
 {
     protected mesh: Object3D<Object3DEventMap>
-    /**
-     * Target euler rotation angles for each wheel.
-     */
-    protected targetRotation: number
-    /**
-     * Tracks the rotation of each wheel during animation.
-     */
-    protected currentRotation: number
+    protected animationState: AnimationScalarState
     protected currentOperation: OperationHandleEventType | undefined = undefined
     private emitter: EventEmitter<
         OperationHandleEventType,
@@ -53,10 +42,12 @@ export class OperationHandle
     >
 
     public constructor(scene: Group<Object3DEventMap>) {
-        this.targetRotation = 0
-        this.currentRotation = 0
+        this.animationState = new AnimationScalarState(
+            0,
+            CubicEaseInOutInterpolation,
+            0.25
+        )
         this.mesh = scene.getObjectByName('crank')!
-        this.mesh.rotation.y += 0
         this.emitter = new EventEmitter()
         this.emitter.setActor(this)
     }
@@ -82,7 +73,9 @@ export class OperationHandle
         // Prevent crank from bein continouuisly accelerating.
         if (this.currentOperation != undefined) return
 
-        this.currentRotation += Math.PI * 2
+        this.animationState.targetState =
+            this.animationState.getLatestTarget() + Math.PI * 2
+
         this.emitter.emit(OperationHandleEventType.Add, undefined)
         this.currentOperation = OperationHandleEventType.Add
     }
@@ -91,33 +84,31 @@ export class OperationHandle
         // Prevent crank from bein continouuisly accelerating.
         if (this.currentOperation != undefined) return
 
-        this.currentRotation -= Math.PI * 2
+        this.animationState.targetState =
+            this.animationState.getLatestTarget() - Math.PI * 2
         this.emitter.emit(OperationHandleEventType.Subtract, undefined)
         this.currentOperation = OperationHandleEventType.Subtract
     }
 
     perform(delta: number): void {
-        // Time scale factor derived from frame time.
-        const factor = Math.min(1, ANGULAR_VELOCITY * delta)
-        const angle = (this.targetRotation - this.currentRotation) * factor
+        this.animationState.advance(delta)
+        this.mesh.rotation.y = this.animationState.currentState
 
-        this.mesh.rotation.y += angle
-        this.currentRotation += angle
+        if (!this.animationState.isAnimationDone()) return
 
-        if (Math.abs(this.currentRotation - this.targetRotation) < 1e-2) {
-            if (this.currentOperation == OperationHandleEventType.Add) {
+        switch (this.currentOperation) {
+            case OperationHandleEventType.Add:
                 this.emitter.emit(OperationHandleEventType.AddEnded, undefined)
-                this.currentOperation = undefined
-            }
-
-            if (this.currentOperation == OperationHandleEventType.Subtract) {
+                break
+            case OperationHandleEventType.Subtract:
                 this.emitter.emit(
                     OperationHandleEventType.SubtractEnded,
                     undefined
                 )
-                this.currentOperation = undefined
-            }
+                break
         }
+
+        this.currentOperation = undefined
     }
 
     getEmitter(): EventEmitter<

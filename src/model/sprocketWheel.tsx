@@ -1,6 +1,7 @@
 import { Group, MathUtils, Object3D, Object3DEventMap } from 'three'
 import { ActionHandler } from '../actionHandler'
 import { EventBroker, EventEmitter } from './events'
+import { AnimationScalarState, CubicEaseInOutInterpolation } from './animation'
 
 export enum SprocketWheelEventType {
     Increment,
@@ -13,11 +14,6 @@ export type SprocketWheelDecrementEvent = { digit: number }
 export type InputWheelEvent =
     | SprocketWheelIncrementEvent
     | SprocketWheelDecrementEvent
-
-/**
- * Angular velocity multiplier.
- */
-const ANGULAR_VELOCITY = 2e-2
 
 export class SprocketWheel
     implements
@@ -40,11 +36,7 @@ export class SprocketWheel
     /**
      * Target euler rotation angles for each wheel.
      */
-    protected targetRotation: number[]
-    /**
-     * Tracks the rotation of each wheel during animation.
-     */
-    protected currentRotation: number[]
+    protected rotationAnimations: AnimationScalarState[]
     /**
      * Range in which fixed angle increments occur on the sprocket wheel.
      * Note that the minimum must be smaller than the maximum angle.
@@ -72,8 +64,7 @@ export class SprocketWheel
         this.digits = digits
         this.base = base
         this.angleLimits = [minAngle, maxAngle]
-        this.targetRotation = new Array(digits)
-        this.currentRotation = new Array(digits)
+        this.rotationAnimations = []
         this.decimalDigits = new Array(digits).fill(0)
         this.emitter = new EventEmitter()
         this.emitter.setActor(this)
@@ -86,9 +77,14 @@ export class SprocketWheel
 
         // Initialize rotaton states.
         for (let i = 0; i < this.digits; i++) {
+            this.rotationAnimations.push(
+                new AnimationScalarState(
+                    this.wheels[i].rotation.y + minAngle,
+                    CubicEaseInOutInterpolation,
+                    0.25
+                )
+            )
             this.wheels[i].rotation.y += minAngle
-            this.targetRotation[i] = this.wheels[i].rotation.y + minAngle
-            this.currentRotation[i] = this.wheels[i].rotation.y + minAngle
         }
     }
 
@@ -102,13 +98,8 @@ export class SprocketWheel
 
     public perform(delta: number): void {
         for (let i = 0; i < this.digits; i++) {
-            // Time scale factor derived from frame time.
-            const factor = Math.min(1, ANGULAR_VELOCITY * delta)
-            const angle =
-                (this.targetRotation[i] - this.currentRotation[i]) * factor
-
-            this.wheels[i].rotation.y += angle
-            this.currentRotation[i] += angle
+            this.rotationAnimations[i].advance(delta)
+            this.wheels[i].rotation.y = this.rotationAnimations[i].currentState
         }
     }
 
@@ -138,18 +129,19 @@ export class SprocketWheel
         const idx = digit - 1
         let digitValue = this.decimalDigits[idx] + increment
         const [minAngle, maxAngle] = this.angleLimits
+        let nextAngle = this.rotationAnimations[idx].getLatestTarget()
 
         // Rotate around "dead-zone"
         if (digitValue > this.base - 1) {
-            this.targetRotation[idx] -= Math.PI * 2.0 - maxAngle + minAngle
+            nextAngle -= Math.PI * 2.0 - maxAngle + minAngle
         } else if (digitValue < 0) {
-            this.targetRotation[idx] += Math.PI * 2.0 - maxAngle + minAngle
+            nextAngle += Math.PI * 2.0 - maxAngle + minAngle
         }
 
         // Increment digit rotation.
-        this.targetRotation[idx] -=
-            ((maxAngle - minAngle) / this.base) * increment
+        nextAngle -= ((maxAngle - minAngle) / this.base) * increment
 
+        this.rotationAnimations[idx].targetState = nextAngle
         digitValue = MathUtils.euclideanModulo(digitValue, this.base)
 
         this.decimalDigits[idx] = digitValue
