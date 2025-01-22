@@ -59,8 +59,13 @@ export class OperationHandle
         this.knob.getEmitter().subscribe(
             KnobEventType.Extruded,
             new EventHandler(() => {
+                const sign =
+                    this.currentOperation == OperationHandleEventType.Add
+                        ? -1.0
+                        : 1.0
+
                 this.animationState.targetState =
-                    this.animationState.getLatestTarget() + Math.PI * 2
+                    this.animationState.getLatestTarget() + Math.PI * 2 * sign
             })
         )
 
