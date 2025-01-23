@@ -94,7 +94,7 @@ export class Brunsviga13rk implements ActionHandler {
                 this.counter_reset_handle = new Handle(
                     this.scene,
                     'count_deletion_lever',
-                    0,
+                    -0.5,
                     -2
                 )
                 this.delete_handle = new Handle(this.scene, 'deletion', 0, 2)
