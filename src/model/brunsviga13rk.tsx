@@ -17,6 +17,7 @@ import { OperationHandle } from './handles/operationHandle'
 import { ResultSprocket } from './sprockets/resultSprocket'
 import { CounterSprocket } from './sprockets/CounterSprocket'
 import { CommataBar } from './commata'
+import { ResultResetHandle } from './handles/resultResetHandle'
 
 export class Brunsviga13rk implements ActionHandler {
     /**
@@ -54,6 +55,7 @@ export class Brunsviga13rk implements ActionHandler {
     count_commata!: CommataBar
     result_commata!: CommataBar
     counter_reset_handle!: Handle
+    result_reset_handle!: ResultResetHandle
 
     private static instance: Brunsviga13rk | undefined = undefined
 
@@ -91,6 +93,7 @@ export class Brunsviga13rk implements ActionHandler {
                 this.result_sprocket = new ResultSprocket(this.scene)
 
                 this.selector_sprocket = new InputWheel(this.scene)
+                this.result_reset_handle = new ResultResetHandle(this.scene)
                 this.counter_reset_handle = new Handle(
                     this.scene,
                     'count_deletion_lever',
@@ -140,12 +143,14 @@ export class Brunsviga13rk implements ActionHandler {
                 this.selectables.push(this.input_commata)
                 this.selectables.push(this.count_commata)
                 this.selectables.push(this.result_commata)
+                this.selectables.push(this.result_reset_handle)
 
                 this.input_sprocket.registerActionEvents()
                 this.selector_sprocket.registerActionEvents()
                 this.result_sprocket.registerActionEvents()
                 this.counter_sprocket.registerActionEvents()
                 this.operation_crank.registerEventSubscribtions()
+                this.result_reset_handle.registerEventSubscribtions()
             },
             undefined,
             function (error) {
@@ -181,6 +186,7 @@ export class Brunsviga13rk implements ActionHandler {
             this.count_commata.perform(delta)
             this.result_commata.perform(delta)
             this.counter_reset_handle.perform(delta)
+            this.result_reset_handle.perform(delta)
         }
     }
 

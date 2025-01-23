@@ -45,5 +45,14 @@ export class ResultSprocket extends SprocketWheel {
                 this.subtract(operand)
             })
         )
+
+        Brunsviga13rk.getInstance()
+            .result_reset_handle.getEmitter()
+            .subscribe(
+                HandleEventType.PullDown,
+                new EventHandler(() => {
+                    this.reset()
+                })
+            )
     }
 }
