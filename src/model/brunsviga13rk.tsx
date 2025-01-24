@@ -18,6 +18,7 @@ import { ResultSprocket } from './sprockets/resultSprocket'
 import { CounterSprocket } from './sprockets/CounterSprocket'
 import { CommataBar } from './commata'
 import { ResultResetHandle } from './handles/resultResetHandle'
+import { CounterResetHandle } from './handles/counterResetHandle'
 
 export class Brunsviga13rk implements ActionHandler {
     /**
@@ -54,7 +55,7 @@ export class Brunsviga13rk implements ActionHandler {
     input_commata!: CommataBar
     count_commata!: CommataBar
     result_commata!: CommataBar
-    counter_reset_handle!: Handle
+    counter_reset_handle!: CounterResetHandle
     result_reset_handle!: ResultResetHandle
 
     private static instance: Brunsviga13rk | undefined = undefined
@@ -94,12 +95,7 @@ export class Brunsviga13rk implements ActionHandler {
 
                 this.selector_sprocket = new InputWheel(this.scene)
                 this.result_reset_handle = new ResultResetHandle(this.scene)
-                this.counter_reset_handle = new Handle(
-                    this.scene,
-                    'count_deletion_lever',
-                    -0.5,
-                    -2
-                )
+                this.counter_reset_handle = new CounterResetHandle(this.scene)
                 this.delete_handle = new Handle(this.scene, 'deletion', 0, 2)
                 this.delete_input_handle = new Handle(
                     this.scene,
@@ -151,6 +147,7 @@ export class Brunsviga13rk implements ActionHandler {
                 this.counter_sprocket.registerActionEvents()
                 this.operation_crank.registerEventSubscribtions()
                 this.result_reset_handle.registerEventSubscribtions()
+                this.counter_reset_handle.registerEventSubscribtions()
             },
             undefined,
             function (error) {

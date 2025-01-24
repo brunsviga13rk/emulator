@@ -37,6 +37,12 @@ export class EventEmitter<K, E, T, C extends Conditional = Tautology> {
         this.eventHandler[event as number].push(handler)
     }
 
+    public unsubscribe(event: K, handler: EventHandler<E, T, C>) {
+        this.eventHandler[event as number] = this.eventHandler[
+            event as number
+        ].filter((h) => h != handler)
+    }
+
     public getEventsByHandler(event: K): EventHandler<E, T, C>[] {
         if (this.eventHandler[event as number] == undefined) return []
 

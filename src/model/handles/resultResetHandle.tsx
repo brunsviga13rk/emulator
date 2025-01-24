@@ -1,9 +1,10 @@
 import { Group, Object3DEventMap } from 'three'
-import { Handle } from './handle'
+import { Handle, HandleEventType } from './handle'
 import { Brunsviga13rk } from '../brunsviga13rk'
 import {
-    AnimationScalarStateCondition,
+    AnimationScalarConditon,
     AnimationScalarStateEventType,
+    AnimationScalarStatePassedCondition,
 } from '../animation'
 import { EventHandler } from '../events'
 
@@ -13,14 +14,39 @@ export class ResultResetHandle extends Handle {
     }
 
     public registerEventSubscribtions() {
+        const delte_handle_animation =
+            Brunsviga13rk.getInstance().delete_handle.animationState
+
+        delte_handle_animation.getEmitter().subscribe(
+            AnimationScalarStateEventType.StatePassed,
+            new EventHandler(
+                () => {
+                    if (super.animationState.isHalted()) {
+                        super.animationState.desync(
+                            Brunsviga13rk.getInstance().delete_handle
+                                .animationState
+                        )
+                        this.pushUp()
+                    } else {
+                        super.animationState.sync(
+                            Brunsviga13rk.getInstance().delete_handle
+                                .animationState
+                        )
+                    }
+                },
+                new AnimationScalarStatePassedCondition(
+                    0.7
+                ) as AnimationScalarConditon
+            )
+        )
+
         Brunsviga13rk.getInstance()
-            .delete_handle.animationState.getEmitter()
+            .delete_handle.getEmitter()
             .subscribe(
-                AnimationScalarStateEventType.StatePassed,
-                new EventHandler(
-                    () => this.pullDown(),
-                    new AnimationScalarStateCondition(1)
-                )
+                HandleEventType.PushUpDone,
+                new EventHandler(() => {
+                    // this.pushUp()
+                })
             )
     }
 }

@@ -1,4 +1,4 @@
-import { Conditional, EventBroker, EventEmitter } from './events'
+import { Conditional, EventBroker, EventEmitter, EventHandler } from './events'
 
 /**
  * Interpolation function type.
@@ -51,8 +51,10 @@ export function CubicEaseInOutInterpolation(a: number, b: number, k: number) {
 /**
  * Type of events a scalar animation can create.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export enum AnimationScalarStateEventType {
     StatePassed,
+    StateChanged,
 }
 
 /**
@@ -60,12 +62,27 @@ export enum AnimationScalarStateEventType {
  */
 export type AnimationScalarStatePassedEvent = number
 
-export type AnimationScalarStateEvent = AnimationScalarStatePassedEvent
+/**
+ * Event triggered every time the animation advanced.
+ * Requires no state at which to trigger.
+ */
+export type AnimationScalarStateChangedEvent = undefined
+
+export type AnimationScalarStateEvent =
+    | AnimationScalarStatePassedEvent
+    | AnimationScalarStateChangedEvent
+
+export class AnimationScalarStateChangedCondition implements Conditional {
+    compare(this: Conditional): boolean {
+        // No reason to return false when the animation changed.
+        return true
+    }
+}
 
 /**
  * Condition verfifying that the passed value is the correct one for a certain event.
  */
-export class AnimationScalarStateCondition implements Conditional {
+export class AnimationScalarStatePassedCondition implements Conditional {
     /**
      * Previous state before advancing animation.
      * Only to be set by cause event.
@@ -94,8 +111,8 @@ export class AnimationScalarStateCondition implements Conditional {
     }
 
     compare(
-        this: AnimationScalarStateCondition,
-        other: AnimationScalarStateCondition
+        this: AnimationScalarStatePassedCondition,
+        other: AnimationScalarStatePassedCondition
     ): boolean {
         if (other.lastState == undefined || other.nextState == undefined)
             throw new Error('cause condition must specify animation state')
@@ -129,6 +146,10 @@ export class AnimationScalarStateCondition implements Conditional {
     }
 }
 
+export type AnimationScalarConditon =
+    | AnimationScalarStatePassedCondition
+    | AnimationScalarStateChangedCondition
+
 /**
  * Manages the state of a continouus scalar animation state that can reach "target" values
  * in a fixed amount of time. Additionally provides the possibility to modify
@@ -140,7 +161,7 @@ export class AnimationScalarState
             AnimationScalarStateEventType,
             AnimationScalarStateEvent,
             AnimationScalarState,
-            AnimationScalarStateCondition
+            AnimationScalarConditon
         >
 {
     /**
@@ -182,7 +203,15 @@ export class AnimationScalarState
         AnimationScalarStateEventType,
         AnimationScalarStateEvent,
         AnimationScalarState,
-        AnimationScalarStateCondition
+        AnimationScalarConditon
+    >
+    /**
+     * Used to synchronize this animation to another one.
+     */
+    private synchronizeHandler: EventHandler<
+        AnimationScalarStateEvent,
+        AnimationScalarState,
+        AnimationScalarConditon
     >
 
     public constructor(
@@ -199,13 +228,16 @@ export class AnimationScalarState
         this.advanceFactor = 0.0
         this.emitter = new EventEmitter()
         this.emitter.setActor(this)
+        this.synchronizeHandler = new EventHandler((event) => {
+            this._currentState += event as number
+        })
     }
 
     getEmitter(): EventEmitter<
         AnimationScalarStateEventType,
-        number,
+        AnimationScalarStateEvent,
         AnimationScalarState,
-        AnimationScalarStateCondition
+        AnimationScalarConditon
     > {
         return this.emitter
     }
@@ -243,8 +275,44 @@ export class AnimationScalarState
         this.emitter.emit(
             AnimationScalarStateEventType.StatePassed,
             this._currentState,
-            new AnimationScalarStateCondition(0, lastState, this._currentState)
+            new AnimationScalarStatePassedCondition(
+                0,
+                lastState,
+                this._currentState
+            )
         )
+        this.emitter.emit(
+            AnimationScalarStateEventType.StateChanged,
+            this._currentState - lastState,
+            new AnimationScalarStateChangedCondition()
+        )
+    }
+
+    public sync(animation: AnimationScalarState) {
+        this.halt()
+        animation
+            .getEmitter()
+            .subscribe(
+                AnimationScalarStateEventType.StateChanged,
+                this.synchronizeHandler
+            )
+    }
+
+    public desync(animation: AnimationScalarState) {
+        animation
+            .getEmitter()
+            .unsubscribe(
+                AnimationScalarStateEventType.StateChanged,
+                this.synchronizeHandler
+            )
+        this._targetState = []
+        this.advanceFactor = 0
+        this.zeroState = this._currentState
+        this.continue()
+    }
+
+    public isHalted(): boolean {
+        return this.halted
     }
 
     public get interpolation(): InterpolationMethod {
