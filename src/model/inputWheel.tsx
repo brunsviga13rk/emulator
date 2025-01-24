@@ -1,5 +1,5 @@
 import { Group, Object3D, Object3DEventMap } from 'three'
-import { Selectable } from './selectable'
+import { InputAction, Selectable, UserAction } from './selectable'
 import { SprocketWheel } from './sprocketWheel'
 import { EventBroker, EventEmitter, EventHandler } from './events'
 import { ActionHandler } from '../actionHandler'
@@ -53,6 +53,13 @@ export class InputWheel
 
         this.emitter = new EventEmitter()
         this.emitter.setActor(this)
+    }
+
+    getAvailableUserActions(): UserAction[] {
+        return [
+            [InputAction.LeftClick, 'Increment input sprocket wheel'],
+            [InputAction.RightClick, 'Decrement input sprocket wheel'],
+        ]
     }
 
     public registerActionEvents() {

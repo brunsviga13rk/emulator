@@ -1,6 +1,6 @@
 import { Group, Object3D, Object3DEventMap } from 'three'
 import { ActionHandler } from '../../actionHandler'
-import { Selectable } from '../selectable'
+import { InputAction, Selectable, UserAction } from '../selectable'
 import { EventBroker, EventEmitter, EventHandler } from '../events'
 import { AnimationScalarState, CubicEaseInOutInterpolation } from '../animation'
 
@@ -62,6 +62,10 @@ export class Handle
                 this.pushUp()
             })
         )
+    }
+
+    getAvailableUserActions(): UserAction[] {
+        return [[InputAction.LeftClick, 'Pull handle']]
     }
 
     public get animationState(): AnimationScalarState {

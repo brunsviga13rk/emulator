@@ -1,7 +1,7 @@
 import { Group, Object3D, Object3DEventMap } from 'three'
 import { ActionHandler } from '../../actionHandler'
 import { EventBroker, EventEmitter, EventHandler } from '../events'
-import { Selectable } from '../selectable'
+import { InputAction, Selectable, UserAction } from '../selectable'
 import { AnimationScalarState, CubicEaseInOutInterpolation } from '../animation'
 import { Knob, KnobEventType } from './knob'
 
@@ -53,6 +53,13 @@ export class OperationHandle
         this.mesh = scene.getObjectByName('crank')!
         this.emitter = new EventEmitter()
         this.emitter.setActor(this)
+    }
+
+    getAvailableUserActions(): UserAction[] {
+        return [
+            [InputAction.LeftClick, 'Add'],
+            [InputAction.RightClick, 'Subtract'],
+        ]
     }
 
     public registerEventSubscribtions() {

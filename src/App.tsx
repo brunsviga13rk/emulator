@@ -1,5 +1,6 @@
 import Renderer from './Renderer.tsx'
 import * as Icon from 'react-bootstrap-icons'
+import { StatusPanel } from './StatusPanel.tsx'
 
 function App() {
     return (
@@ -55,6 +56,7 @@ function App() {
                 </nav>
             </header>
             <Renderer />
+            <StatusPanel />
         </div>
     )
 }
