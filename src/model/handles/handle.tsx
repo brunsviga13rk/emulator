@@ -29,7 +29,7 @@ export class Handle
         EventBroker<HandleEventType, HandleEvent, Handle>
 {
     protected mesh: Object3D<Object3DEventMap>
-    protected animationState: AnimationScalarState
+    protected _animationState: AnimationScalarState
     /**
      * Range in which fixed angle increments occur on the sprocket wheel.
      * Note that the minimum must be smaller than the maximum angle.
@@ -49,7 +49,7 @@ export class Handle
         this.angleLimits = [minAngle, maxAngle]
         this.mesh = scene.getObjectByName(name)!
         this.mesh.rotation.y += minAngle
-        this.animationState = new AnimationScalarState(
+        this._animationState = new AnimationScalarState(
             minAngle,
             CubicEaseInOutInterpolation,
             0.5
@@ -62,6 +62,10 @@ export class Handle
                 this.pushUp()
             })
         )
+    }
+
+    public get animationState(): AnimationScalarState {
+        return this._animationState
     }
 
     getEmitter(): EventEmitter<HandleEventType, undefined, Handle> {
