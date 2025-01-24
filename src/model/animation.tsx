@@ -101,11 +101,21 @@ export class AnimationScalarStateCondition implements Conditional {
             throw new Error('cause condition must specify animation state')
 
         // The value triggering this event must reside numerically between
-        // the previous and next state of the cause event:
+        // the previous and next state of the cause event.
+        //
+        // This will trigger the event:
         //
         // ```      state
         //           |
         //    |------+-------|
+        //  previous        next
+        // ```
+        //
+        // This won't trigger the event:
+        //
+        // ```                     state
+        //                          |
+        //    |--------------|      +
         //  previous        next
         // ```
         return (
