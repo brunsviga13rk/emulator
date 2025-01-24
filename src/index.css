@@ -15,3 +15,18 @@
     height: 100vh;
     margin: 0;
 }
+
+#status-panel {
+    height: 2rem;
+}
+
+.user-action {
+    margin-left: 1rem;
+    font-size: 1rem;
+}
+
+.user-action > .ph {
+    position: relative;
+    top: 0.25rem;
+    font-size: 1.5rem;
+}

@@ -5,6 +5,10 @@ import tailwindcss from 'tailwindcss'
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [react()],
+    // Based on: https://stackoverflow.com/a/70524430
+    define: {
+        __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    },
     css: {
         postcss: {
             plugins: [tailwindcss()],

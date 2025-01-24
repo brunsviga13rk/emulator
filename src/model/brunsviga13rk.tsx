@@ -224,6 +224,27 @@ export class Brunsviga13rk implements ActionHandler {
 
             const [, outlinePass] = this.engine.passes
             outlinePass.selectedObjects = selection
+
+            updateInputRecommendations(
+                this.selected == undefined ? undefined : this.selected[0]
+            )
         }
+    }
+}
+
+function updateInputRecommendations(selected: Selectable | undefined) {
+    const htmlElement = document.getElementById('input-action-recommendations')
+
+    if (!htmlElement) throw new Error('no input recommendaton element')
+
+    htmlElement.setHTMLUnsafe('')
+
+    if (selected != undefined) {
+        selected.getAvailableUserActions().forEach(([action, description]) => {
+            const span = document.createElement('span')
+            const icon = action as string
+            span.innerHTML = `<span class="user-action"><i class="ph ${icon}"></i>${description}</span>`
+            htmlElement.append(span)
+        })
     }
 }

@@ -1,7 +1,7 @@
 import { Group, Object3D, Object3DEventMap } from 'three'
 import { AnimationScalarState, CubicEaseInOutInterpolation } from './animation'
 import { ActionHandler } from '../actionHandler'
-import { Selectable } from './selectable'
+import { InputAction, Selectable, UserAction } from './selectable'
 
 class Commata implements ActionHandler {
     protected animationState: AnimationScalarState
@@ -73,6 +73,13 @@ export class CommataBar implements ActionHandler, Selectable {
                 new Commata(scene, name + i.toString(), startPosition, i)
             )
         }
+    }
+
+    getAvailableUserActions(): UserAction[] {
+        return [
+            [InputAction.LeftClick, 'Shift to the right'],
+            [InputAction.RightClick, 'Shift to the left'],
+        ]
     }
 
     onClick(event: MouseEvent, object: Object3D<Object3DEventMap>): void {
