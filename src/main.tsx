@@ -1,8 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import '@phosphor-icons/web/regular'
-import '@phosphor-icons/web/bold'
+import '@phosphor-icons/web/regular/style.css'
+import '@phosphor-icons/web/bold/style.css'
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
