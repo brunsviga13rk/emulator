@@ -3,6 +3,7 @@ import { EventHandler } from '../events'
 import { SprocketWheel } from '../sprocketWheel'
 import { Brunsviga13rk } from '../brunsviga13rk'
 import { OperationHandleEventType } from '../handles/operationHandle'
+import { HandleEventType } from '../handles/handle'
 
 export class CounterSprocket extends SprocketWheel {
     public constructor(scene: Group<Object3DEventMap>) {
@@ -29,5 +30,14 @@ export class CounterSprocket extends SprocketWheel {
                 this.subtract([1])
             })
         )
+
+        Brunsviga13rk.getInstance()
+            .counter_reset_handle.getEmitter()
+            .subscribe(
+                HandleEventType.PullDown,
+                new EventHandler(() => {
+                    this.reset()
+                })
+            )
     }
 }

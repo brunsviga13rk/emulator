@@ -29,12 +29,12 @@ export class Handle
         EventBroker<HandleEventType, HandleEvent, Handle>
 {
     protected mesh: Object3D<Object3DEventMap>
-    protected animationState: AnimationScalarState
+    protected _animationState: AnimationScalarState
     /**
      * Range in which fixed angle increments occur on the sprocket wheel.
      * Note that the minimum must be smaller than the maximum angle.
      */
-    protected angleLimits: [minAngle: number, maxAngle: number]
+    private _angleLimits: [minAngle: number, maxAngle: number]
     protected limitReached: boolean
     protected emitter: EventEmitter<HandleEventType, HandleEvent, Handle>
 
@@ -46,10 +46,10 @@ export class Handle
     ) {
         this.limitReached = false
         this.emitter = new EventEmitter()
-        this.angleLimits = [minAngle, maxAngle]
+        this._angleLimits = [minAngle, maxAngle]
         this.mesh = scene.getObjectByName(name)!
         this.mesh.rotation.y += minAngle
-        this.animationState = new AnimationScalarState(
+        this._animationState = new AnimationScalarState(
             minAngle,
             CubicEaseInOutInterpolation,
             0.5
@@ -64,6 +64,10 @@ export class Handle
         )
     }
 
+    public get animationState(): AnimationScalarState {
+        return this._animationState
+    }
+
     getEmitter(): EventEmitter<HandleEventType, undefined, Handle> {
         return this.emitter
     }
@@ -75,9 +79,7 @@ export class Handle
     }
 
     public pullDown() {
-        const [minAngle, maxAngle] = this.angleLimits
-        // Prevent handle from being spammed.
-        if (Math.abs(this.animationState.currentState - minAngle) > 1e-3) return
+        const [, maxAngle] = this._angleLimits
 
         this.animationState.targetState = maxAngle
         this.limitReached = false
@@ -86,9 +88,7 @@ export class Handle
     }
 
     public pushUp() {
-        const [minAngle, maxAngle] = this.angleLimits
-        // Prevent handle from being spammed.
-        if (Math.abs(this.animationState.currentState - maxAngle) > 1e-3) return
+        const [minAngle] = this._angleLimits
 
         this.animationState.targetState = minAngle
         this.limitReached = true
@@ -104,7 +104,7 @@ export class Handle
         this.animationState.advance(delta)
         this.mesh.rotation.y = this.animationState.currentState
 
-        const [minAngle, maxAngle] = this.angleLimits
+        const [minAngle, maxAngle] = this._angleLimits
         if (
             Math.abs(this.animationState.currentState - minAngle) < 1e-3 &&
             this.limitReached
@@ -119,5 +119,9 @@ export class Handle
             this.emitter.emit(HandleEventType.PullDownDone, undefined)
             this.limitReached = true
         }
+    }
+
+    public get angleLimits(): [minAngle: number, maxAngle: number] {
+        return this._angleLimits
     }
 }
