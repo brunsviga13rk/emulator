@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.0](https://github.com/brunsviga13rk/emulator/compare/v1.1.0...v1.2.0) (2025-01-24)
+
+
+### Features
+
+* add conditions for event handling ([e858702](https://github.com/brunsviga13rk/emulator/commit/e85870254f84146636c8078cdf4e59d1d1968ab3))
+* implement commata slider ([e858702](https://github.com/brunsviga13rk/emulator/commit/e85870254f84146636c8078cdf4e59d1d1968ab3))
+* make project version as variable available ([17934d3](https://github.com/brunsviga13rk/emulator/commit/17934d3e6a4474ca13f90c452ed3cf042ed01660))
+* user input recommendation at bottom panel ([#60](https://github.com/brunsviga13rk/emulator/issues/60)) ([17934d3](https://github.com/brunsviga13rk/emulator/commit/17934d3e6a4474ca13f90c452ed3cf042ed01660))
+
+
+### Bug Fixes
+
+* counter sprocket mixed up names ([e858702](https://github.com/brunsviga13rk/emulator/commit/e85870254f84146636c8078cdf4e59d1d1968ab3))
+* incorrect bounding calculation for mouse events ([e858702](https://github.com/brunsviga13rk/emulator/commit/e85870254f84146636c8078cdf4e59d1d1968ab3))
+
 ## [1.1.0](https://github.com/brunsviga13rk/emulator/compare/v1.0.0...v1.1.0) (2025-01-22)
 
 
