@@ -11,7 +11,6 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@phosphor-icons/react": "^2.1.7",
         "@phosphor-icons/web": "^2.1.1",
         "@react-three/drei": "^9.119.0",
         "@react-three/fiber": "^8.17.10",
