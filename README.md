@@ -28,6 +28,7 @@ following list of frameworks and build systems was chosen:
 - 🧻 Typescript (typesafe(r) Javascript)
 - 🌪️ Tailwind CSS (styling through classes)
 - 🥾 Bootstrap icons (scalable vector images)
+- 🔥 Phosphor Icons
 
 # Quick Start
 
