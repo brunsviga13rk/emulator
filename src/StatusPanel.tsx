@@ -5,10 +5,6 @@ export function StatusPanel() {
                 id="input-action-recommendations"
                 className="absolute left-0 bottom-0 m-1"
             ></span>
-            <span className="absolute right-0 bottom-0 m-1 mr-4 text-zinc-600">
-                {'v'}
-                {__APP_VERSION__}
-            </span>
         </div>
     )
 }

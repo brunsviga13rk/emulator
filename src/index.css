@@ -16,6 +16,41 @@
     margin: 0;
 }
 
+/* Center all children of the header bar. */
+header > header-inline-start {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+header > #header-inline-start > * {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+header > #header-inline-start > #label-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+header > #header-inline-start > #label-version {
+    font-size: 0.85rem;
+    border-radius: 1rem;
+    padding-inline-start: 8pt;
+    padding-inline-end: 8pt;
+    padding-block-start: 2pt;
+    padding-block-end: 2pt;
+    background-color: #efefef;
+}
+
+header > #header-inline-end > * {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+header > #header-inline-end > a {
+    margin-right: 16pt;
+}
+
 #status-panel {
     height: 2rem;
 }
