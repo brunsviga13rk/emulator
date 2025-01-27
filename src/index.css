@@ -16,6 +16,45 @@
     margin: 0;
 }
 
+/* Center all children of the header bar. */
+header > header-inline-start {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+header > #header-inline-start > * {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+header > #header-inline-start > #div-title > #label-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+header > #header-inline-start > #div-title > #label-subtitle {
+    font-size: 0.75rem;
+}
+
+header > #header-inline-end > * {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+header > #header-inline-end > a {
+    margin-right: 16pt;
+}
+
+#renderer {
+    border-radius: 1rem;
+    /*
+       Required for border-radius to take effect.
+       See: https://stackoverflow.com/a/15090794
+    */
+    overflow: hidden;
+    margin: 0.5rem;
+}
+
 #status-panel {
     height: 2rem;
 }
