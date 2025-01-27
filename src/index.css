@@ -69,3 +69,24 @@ header > #header-inline-end > a {
     top: 0.25rem;
     font-size: 1.5rem;
 }
+
+#div-loading-indicator {
+    background: white;
+}
+
+@keyframes fade-out {
+    from {
+        opacity: 100%;
+    }
+
+    to {
+        opacity: 0%;
+    }
+}
+
+.fade-out {
+    animation-duration: 1s;
+    animation-name: fade-out;
+    animation-delay: 2s;
+    animation-timing-function: ease-out;
+}

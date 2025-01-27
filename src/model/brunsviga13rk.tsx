@@ -60,9 +60,17 @@ export class Brunsviga13rk implements ActionHandler {
 
     private static instance: Brunsviga13rk | undefined = undefined
 
-    public static createInstance(engine: Engine): Brunsviga13rk {
+    public static createInstance(
+        engine: Engine,
+        onModelLoaded: () => void,
+        onLoadingError: (error: unknown) => void
+    ): Brunsviga13rk {
         if (!Brunsviga13rk.instance) {
-            Brunsviga13rk.instance = new Brunsviga13rk(engine)
+            Brunsviga13rk.instance = new Brunsviga13rk(
+                engine,
+                onModelLoaded,
+                onLoadingError
+            )
         }
 
         return Brunsviga13rk.instance
@@ -75,7 +83,11 @@ export class Brunsviga13rk implements ActionHandler {
         return Brunsviga13rk.instance
     }
 
-    private constructor(engine: Engine) {
+    private constructor(
+        engine: Engine,
+        onModelLoaded: () => void,
+        onLoadingError: (error: unknown) => void
+    ) {
         this.engine = engine
         this.raycaster = new Raycaster()
         this.pointer = new Vector2()
@@ -148,11 +160,14 @@ export class Brunsviga13rk implements ActionHandler {
                 this.operation_crank.registerEventSubscribtions()
                 this.result_reset_handle.registerEventSubscribtions()
                 this.counter_reset_handle.registerEventSubscribtions()
+
+                onModelLoaded()
+
+                // Handle events.
+                engine.registerActionHandler(this)
             },
             undefined,
-            function (error) {
-                console.error(error)
-            }
+            onLoadingError
         )
 
         this.engine.renderer.domElement.onmousemove = (event) => {
