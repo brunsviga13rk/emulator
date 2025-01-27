@@ -12,7 +12,7 @@
     },
     "dependencies": {
         "@phosphor-icons/web": "^2.1.1",
-        "@react-three/drei": "^9.119.0",
+        "@react-three/drei": "^9.121.3",
         "@react-three/fiber": "^8.17.10",
         "@react-three/postprocessing": "^2.16.6",
         "bootstrap-icons": "^1.11.3",
