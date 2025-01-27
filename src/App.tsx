@@ -1,56 +1,33 @@
 import Renderer from './Renderer.tsx'
-import * as Icon from 'react-bootstrap-icons'
 import { StatusPanel } from './StatusPanel.tsx'
+import { TailSpin } from 'react-loader-spinner'
+import { Header } from './Header.tsx'
 
 function App() {
     return (
         <div className="flex flex-col h-full">
-            <header className="flex flex-row w-full justify-around">
-                <div
-                    className="flex flex-row justify-start"
-                    id="header-inline-start"
-                >
-                    <a href="https://github.com/brunsviga13rk">
-                        <img
-                            className="h-16 w-auto p-2 pl-4"
-                            src="./brains_of_steel.svg"
-                            alt=""
-                        />
-                    </a>
-                    <div className="flex flex-col" id="div-title">
-                        <span className="pl-2 pr-6" id="label-title">
-                            Brunsviga 13 RK
-                        </span>
-                        <span className="pl-2 pr-6" id="label-subtitle">
-                            Brains of steel
-                        </span>
-                    </div>
-                </div>
-                <div className="flex-grow"></div>
-                <div
-                    className="flex flex-row-reverse justify-end"
-                    id="header-inline-end"
-                >
-                    <a
-                        id="a-github"
-                        href="https://github.com/brunsviga13rk/emulator"
-                    >
-                        <Icon.Github size={32} />
-                    </a>
-                    <a href="#">About</a>
-                    <a href="#">Docs</a>
-                    <a href="https://github.com/brunsviga13rk/thesis">Paper</a>
-                    <a
-                        href={`https://github.com/brunsviga13rk/emulator/releases/tag/v${__APP_VERSION__}`}
-                        id="a-version"
-                    >
-                        {'v'}
-                        {__APP_VERSION__}
-                    </a>
-                </div>
-            </header>
+            <Header />
             <Renderer />
             <StatusPanel />
+            <div
+                id="div-loading-indicator"
+                className="flex h-full w-full absolute bg-opacity-100"
+            >
+                <div className="m-auto flex-col justify-center">
+                    <TailSpin
+                        visible={true}
+                        height="80"
+                        width="80"
+                        color="#7f7f7f"
+                        ariaLabel="tail-spin-loading"
+                        radius="1"
+                        wrapperStyle={{
+                            justifyContent: 'center',
+                        }}
+                    />
+                    <p className="mt-8">Loading...</p>
+                </div>
+            </div>
         </div>
     )
 }

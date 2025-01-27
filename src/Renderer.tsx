@@ -40,6 +40,37 @@ function setupEnvironment(engine: Engine) {
 }
 
 /**
+ * Perform final setup tasks after the model has been loaded successfully.
+ *
+ * @param engine
+ */
+function postLoadSetup(engine: Engine) {
+    // Loading of models successfull, finish setting up renderer.
+    engine.attachCanvas()
+    engine.startAnimationLoop()
+
+    // Remote loading indicator.
+    const loadingIndicator = document.getElementById('div-loading-indicator')
+
+    if (!loadingIndicator) throw new Error('missing loading indicator')
+
+    // Start fade animation by appending animation CSS class.
+    loadingIndicator.className += ' fade-out'
+    // When the animation finishes remove the indicator overlay.
+    loadingIndicator.addEventListener(
+        'animationend',
+        () => {
+            loadingIndicator.remove()
+        },
+        false
+    )
+}
+
+function onLoadingError(error: unknown) {
+    console.log(error)
+}
+
+/**
  * Initialize thee.js and setup the scene complete with environment illumination
  * and animation handler.
  * @param parent The parent DOM element the canvas is a child of.
@@ -50,8 +81,11 @@ function initThree(parent: HTMLElement) {
     // Setup the environment lightmap, background and ground plate.
     setupEnvironment(engine)
 
-    const brunsviga = Brunsviga13rk.createInstance(engine)
-    engine.registerActionHandler(brunsviga)
+    Brunsviga13rk.createInstance(
+        engine,
+        () => postLoadSetup(engine),
+        onLoadingError
+    )
 }
 
 /**

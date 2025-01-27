@@ -37,16 +37,6 @@ export class Engine {
         this.handler = []
         this.renderer = new WebGLRenderer()
         this.renderer.setSize(parent.clientWidth, parent.clientHeight)
-
-        // Add canvas used by WebGL to renderer.
-        // Check if there is already a child. In case there is replace the first child
-        // with the new canvas, else append the canvas.
-        if (parent.hasChildNodes()) {
-            parent.replaceChild(this.renderer.domElement, parent.firstChild!)
-        } else {
-            parent.appendChild(this.renderer.domElement)
-        }
-
         // Create core components.
         this.scene = new Scene()
         this.camera = this.createCamera()
@@ -56,7 +46,23 @@ export class Engine {
         this.passes = this.createRenderPasses()
         // Attach passes to composer
         this.passes.forEach((pass) => this.composer.addPass(pass))
+    }
 
+    public attachCanvas() {
+        // Add canvas used by WebGL to renderer.
+        // Check if there is already a child. In case there is replace the first child
+        // with the new canvas, else append the canvas.
+        if (this.parent.hasChildNodes()) {
+            this.parent.replaceChild(
+                this.renderer.domElement,
+                this.parent.firstChild!
+            )
+        } else {
+            this.parent.appendChild(this.renderer.domElement)
+        }
+    }
+
+    public startAnimationLoop() {
         const controls = this.controls
         const composer = this.composer
         const gizmo = this.gizmo
