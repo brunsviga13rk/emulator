@@ -1,11 +1,4 @@
-import {
-    Clock,
-    OrthographicCamera,
-    PerspectiveCamera,
-    Scene,
-    Vector2,
-    WebGLRenderer,
-} from 'three'
+import { Clock, PerspectiveCamera, Scene, Vector2, WebGLRenderer } from 'three'
 import { ViewportGizmo } from 'three-viewport-gizmo'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
@@ -21,7 +14,7 @@ export class Engine {
     parent: HTMLElement
     renderer: WebGLRenderer
     scene: Scene
-    camera: PerspectiveCamera | OrthographicCamera
+    camera: PerspectiveCamera
     composer: EffectComposer
     passes: [
         renderPass: RenderPass,
@@ -31,6 +24,7 @@ export class Engine {
     controls: OrbitControls
     gizmo: ViewportGizmo
     handler: ActionHandler[]
+    clock: Clock
 
     constructor(parent: HTMLElement) {
         this.parent = parent
@@ -46,6 +40,7 @@ export class Engine {
         this.passes = this.createRenderPasses()
         // Attach passes to composer
         this.passes.forEach((pass) => this.composer.addPass(pass))
+        this.clock = new Clock()
     }
 
     public attachCanvas() {
@@ -62,24 +57,37 @@ export class Engine {
         }
     }
 
-    public startAnimationLoop() {
-        const controls = this.controls
-        const composer = this.composer
-        const gizmo = this.gizmo
-        const handler = this.handler
+    private resizeCanvas() {
+        const parentWidth = this.parent.clientWidth
+        const parentHeight = this.parent.clientHeight
 
-        const clock = new Clock()
+        const needsResize =
+            parentWidth != this.renderer.domElement.width ||
+            parentHeight != this.renderer.domElement.height
 
-        function animate() {
-            // Delta time in milliseconds.
-            const delta = clock.getDelta() * 1e3
-            handler.forEach((handler) => handler.perform(delta))
+        if (needsResize) {
+            this.renderer.setSize(parentWidth, parentHeight)
+            this.composer.setSize(parentWidth, parentHeight)
 
-            controls.update()
-            composer.render(delta)
-            gizmo.render()
+            this.camera.aspect = parentWidth / parentHeight
+            this.camera.updateProjectionMatrix()
         }
-        this.renderer.setAnimationLoop(animate)
+    }
+
+    private animate() {
+        // Delta time in milliseconds.
+        const delta = this.clock.getDelta() * 1e3
+        this.handler.forEach((handler) => handler.perform(delta))
+
+        this.resizeCanvas()
+
+        this.controls.update()
+        this.composer.render(delta)
+        this.gizmo.render()
+    }
+
+    public startAnimationLoop() {
+        this.renderer.setAnimationLoop(() => this.animate())
     }
 
     /**
@@ -94,7 +102,7 @@ export class Engine {
      * Creates and initializes the default camera for the 3D scene.
      * @returns The camera created for this engine.
      */
-    private createCamera(): PerspectiveCamera | OrthographicCamera {
+    private createCamera(): PerspectiveCamera {
         const camera = new PerspectiveCamera(
             35,
             this.parent.clientWidth / this.parent.clientHeight,
