@@ -11,8 +11,6 @@ import { EventHandler } from './events'
 export class Sled implements ActionHandler, Selectable {
     protected handle: Object3D<Object3DEventMap>
     protected appendages: Object3D<Object3DEventMap>[]
-    protected wheels: Object3D<Object3DEventMap>[]
-    protected commata: Object3D<Object3DEventMap>[]
     protected animationState: AnimationScalarState
 
     public constructor(scene: Group<Object3DEventMap>) {
