@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.0](https://github.com/brunsviga13rk/emulator/compare/v1.2.0...v1.3.0) (2025-01-29)
+
+
+### Features
+
+* add loading indicator ([#71](https://github.com/brunsviga13rk/emulator/issues/71)) ([51e676a](https://github.com/brunsviga13rk/emulator/commit/51e676a431e0f6a1ce4b936d6de10b391b2e8835))
+* add sprocket offset ([a558d5b](https://github.com/brunsviga13rk/emulator/commit/a558d5b0d295fd2a05729d9044df06177ce38d77))
+* redesign user interface ([#61](https://github.com/brunsviga13rk/emulator/issues/61)) ([d5763d7](https://github.com/brunsviga13rk/emulator/commit/d5763d7fd27c4d6a5b1d901c7de421499519a4d7))
+* sled events ([#72](https://github.com/brunsviga13rk/emulator/issues/72)) ([a558d5b](https://github.com/brunsviga13rk/emulator/commit/a558d5b0d295fd2a05729d9044df06177ce38d77))
+
 ## [1.2.0](https://github.com/brunsviga13rk/emulator/compare/v1.1.0...v1.2.0) (2025-01-24)
 
 
