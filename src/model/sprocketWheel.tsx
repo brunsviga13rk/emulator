@@ -51,6 +51,10 @@ export class SprocketWheel
         InputWheelEvent,
         SprocketWheel
     >
+    /**
+     * Offset applied when adding or subtracing a value.
+     */
+    protected _offset: number
 
     public constructor(
         scene: Group<Object3DEventMap>,
@@ -60,6 +64,7 @@ export class SprocketWheel
         maxAngle: number,
         base: number
     ) {
+        this._offset = 0
         this.wheels = []
         this.digits = digits
         this.base = base
@@ -160,11 +165,11 @@ export class SprocketWheel
 
     public add(values: number[]) {
         let overflow = 0
-        for (let i = 0; i < this.digits; i++) {
+        for (let i = 0; i + this._offset < this.digits; i++) {
             const current = this.decimalDigits[i]
             const increment = overflow + (values.length > i ? values[i] : 0)
 
-            this.rotate(i + 1, increment)
+            this.rotate(i + this._offset + 1, increment)
 
             overflow = Math.floor((current + increment) / this.base)
         }
@@ -172,11 +177,11 @@ export class SprocketWheel
 
     public subtract(values: number[]) {
         let overflow = 0
-        for (let i = 0; i < this.digits; i++) {
+        for (let i = this._offset; i + this._offset < this.digits; i++) {
             const current = this.decimalDigits[i]
             const decrement = overflow + (values.length > i ? values[i] : 0)
 
-            this.rotate(i + 1, -decrement)
+            this.rotate(i + this._offset + 1, -decrement)
 
             overflow = -Math.floor((current - decrement) / this.base)
         }
@@ -202,6 +207,14 @@ export class SprocketWheel
 
     public getDecimalDigits(): number[] {
         return this.decimalDigits
+    }
+
+    public get offset(): number {
+        return this._offset
+    }
+
+    public set offset(offset: number) {
+        this._offset = offset
     }
 
     /**

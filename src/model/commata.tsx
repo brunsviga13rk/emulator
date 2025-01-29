@@ -1,7 +1,12 @@
 import { Group, Object3D, Object3DEventMap } from 'three'
-import { AnimationScalarState, CubicEaseInOutInterpolation } from './animation'
+import {
+    AnimationScalarState,
+    AnimationScalarStateEventType,
+    CubicEaseInOutInterpolation,
+} from './animation'
 import { ActionHandler } from '../actionHandler'
 import { InputAction, Selectable, UserAction } from './selectable'
+import { EventHandler } from './events'
 
 class Commata implements ActionHandler {
     protected animationState: AnimationScalarState
@@ -21,11 +26,16 @@ class Commata implements ActionHandler {
             0.1
         )
         this.mesh = scene.getObjectByName(name)!
+        this.animationState.getEmitter().subscribe(
+            AnimationScalarStateEventType.StateChanged,
+            new EventHandler((delta) => {
+                this.mesh.position.z += delta as number
+            })
+        )
     }
 
     perform(delta: number): void {
         this.animationState.advance(delta)
-        this.mesh.position.z = this.animationState.currentState
     }
 
     public move(translation: number) {
