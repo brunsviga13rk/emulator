@@ -11,7 +11,10 @@ import { Engine } from '../engine'
 import { ActionHandler } from '../actionHandler'
 import { InputWheel } from './inputWheel'
 import { Selectable } from './selectable'
-import { InputSprocket } from './sprockets/inputSprocket'
+import {
+    InputSprocket,
+    MAX_INPUT_SPROCKET_VALUE,
+} from './sprockets/inputSprocket'
 import { Handle } from './handles/handle'
 import { OperationHandle } from './handles/operationHandle'
 import { ResultSprocket } from './sprockets/resultSprocket'
@@ -245,6 +248,62 @@ export class Brunsviga13rk implements ActionHandler {
             )
         }
     }
+
+    // Brunsviga 13 RK programmatic API
+    // ========================================================================
+    // Application interface for interacting with the Brunsviga how a human
+    // would do so when describing a process.
+    //
+    // set
+    // add
+    // sub
+
+    /**
+     * Slides the nput slider to represent the given value.
+     * The input value is saturated to the maximum and minimum value
+     * the input sprocket can represent.
+     *
+     * @since 1.3.0
+     * @param value
+     */
+    public async setInput(value: number): Promise<void> {
+        // Saturate value.
+        if (value < 0) value = 0
+        if (value > MAX_INPUT_SPROCKET_VALUE) value = MAX_INPUT_SPROCKET_VALUE
+
+        let digit = 1
+
+        // Set digits covered by value.
+        for (; digit <= 10 && value >= 1; digit++) {
+            const digitValue = value % 10
+
+            this.selector_sprocket.setDigit(digit, digitValue)
+            this.input_sprocket.setDigit(digit, digitValue)
+
+            // Remove next digit from our value.
+            value = Math.floor(value / 10)
+        }
+
+        // Reset left over slider to resting position.
+        for (; digit <= 10; digit++) {
+            this.selector_sprocket.setDigit(digit, 0)
+            this.input_sprocket.setDigit(digit, 0)
+        }
+
+        return sleep(500)
+    }
+
+    public async add(): Promise<void> {
+        this.operation_crank.add()
+
+        return sleep(500)
+    }
+
+    public async subtract(): Promise<void> {
+        this.operation_crank.subtract()
+
+        return sleep(500)
+    }
 }
 
 function updateInputRecommendations(selected: Selectable | undefined) {
@@ -262,4 +321,10 @@ function updateInputRecommendations(selected: Selectable | undefined) {
             htmlElement.append(span)
         })
     }
+}
+
+async function sleep(milliseconds: number): Promise<void> {
+    return new Promise((resolve) => {
+        setTimeout(resolve, milliseconds)
+    })
 }

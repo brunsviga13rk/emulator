@@ -2,12 +2,16 @@ import Renderer from './Renderer.tsx'
 import { StatusPanel } from './StatusPanel.tsx'
 import { TailSpin } from 'react-loader-spinner'
 import { Header } from './Header.tsx'
+import { Editor } from './solver/Editor.tsx'
 
 function App() {
     return (
         <div className="flex flex-col h-full">
             <Header />
-            <Renderer />
+            <div id="div-center" className="h-full flex flex-row">
+                <Renderer />
+                <Editor />
+            </div>
             <StatusPanel />
             <div
                 id="div-loading-indicator"

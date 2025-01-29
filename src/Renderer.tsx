@@ -112,7 +112,7 @@ function Renderer() {
         // call api or anything
         setupRenderer()
     })
-    return <div className="h-full" id="renderer"></div>
+    return <div id="renderer"></div>
 }
 
 export default Renderer

@@ -53,6 +53,13 @@ header > #header-inline-end > a {
     */
     overflow: hidden;
     margin: 0.5rem;
+    display: flex;
+    flex-grow: 1;
+}
+
+#div-editor-root {
+    border-radius: 1rem;
+    margin: 0.5rem;
 }
 
 #status-panel {
@@ -89,4 +96,9 @@ header > #header-inline-end > a {
     animation-name: fade-out;
     animation-delay: 2s;
     animation-timing-function: ease-out;
+}
+
+canvas {
+    display: flex;
+    flex-grow: 1;
 }
