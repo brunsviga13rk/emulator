@@ -11,6 +11,8 @@ import { EventHandler } from './events'
 export class Sled implements ActionHandler, Selectable {
     protected handle: Object3D<Object3DEventMap>
     protected appendages: Object3D<Object3DEventMap>[]
+    protected wheels: Object3D<Object3DEventMap>[]
+    protected commata: Object3D<Object3DEventMap>[]
     protected animationState: AnimationScalarState
 
     public constructor(scene: Group<Object3DEventMap>) {
@@ -22,11 +24,9 @@ export class Sled implements ActionHandler, Selectable {
             scene.getObjectByName('result_deletionn_lever')!,
         ]
         this.appendages = this.appendages.concat(
-            this.appendages,
             getCommataMeshes(scene, 'result_commata_', 3)
         )
         this.appendages = this.appendages.concat(
-            this.appendages,
             getSprocketWheelMeshes(scene, 'result_sprocket_wheel', 13)
         )
 
