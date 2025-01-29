@@ -7,6 +7,7 @@ import {
     CubicEaseInOutInterpolation,
 } from './animation'
 import { EventHandler } from './events'
+import { Brunsviga13rk } from './brunsviga13rk'
 
 export class Sled implements ActionHandler, Selectable {
     protected handle: Object3D<Object3DEventMap>
@@ -58,6 +59,8 @@ export class Sled implements ActionHandler, Selectable {
 
         if (this.offset + sign > -1e-3 && this.offset + sign < 6.0 + 1e-3) {
             this.offset += sign
+
+            Brunsviga13rk.getInstance().result_sprocket.offset = this.offset
 
             this.animationState.targetState =
                 this.animationState.getLatestTarget() + 0.1 * sign
