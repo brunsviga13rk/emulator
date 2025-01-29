@@ -12,6 +12,7 @@ export class Sled implements ActionHandler, Selectable {
     protected handle: Object3D<Object3DEventMap>
     protected appendages: Object3D<Object3DEventMap>[]
     protected animationState: AnimationScalarState
+    protected offset: number
 
     public constructor(scene: Group<Object3DEventMap>) {
         this.handle = scene.getObjectByName('sledge_handle')!
@@ -41,6 +42,7 @@ export class Sled implements ActionHandler, Selectable {
                 })
             })
         )
+        this.offset = 0
     }
 
     onClick(event: MouseEvent): void {
@@ -54,8 +56,12 @@ export class Sled implements ActionHandler, Selectable {
                 break
         }
 
-        this.animationState.targetState =
-            this.animationState.getLatestTarget() + 0.02 * sign
+        if (this.offset + sign > -1e-3 && this.offset + sign < 6.0 + 1e-3) {
+            this.offset += sign
+
+            this.animationState.targetState =
+                this.animationState.getLatestTarget() + 0.1 * sign
+        }
     }
 
     getAvailableUserActions(): UserAction[] {
