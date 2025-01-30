@@ -130,6 +130,8 @@ export enum Opcode {
     Subtract, // Subtract input register onto output register.
     Load, // Load value into input register.
     Reset, // Reset all registers to zero.
+    ShiftLeft, // Shift sled to the left
+    ShiftRight, // Shift sled to the right
 }
 
 export class Instruction {
@@ -146,16 +148,17 @@ export class Instruction {
             case Opcode.Zero:
                 return 'Clear input register by pulling the handle on the left side.'
             case Opcode.Add:
-                return 'Add by rotating the crank clockwise.'
+                return `Add by rotating the crank clockwise ${this.value} times.`
             case Opcode.Subtract:
-                return 'Subtract by rotating the crank counter-clockwise.'
+                return `Subtract by rotating the crank clockwise ${this.value} times.`
             case Opcode.Load:
-                return (
-                    'Set input register to a value of: ' +
-                    this.value?.toString()
-                )
+                return `Set input register to a value of ${this.value}`
             case Opcode.Reset:
                 return 'Reset all registers by pulling the central lever on the right side.'
+            case Opcode.ShiftLeft:
+                return `Shift sled to the left by ${this.value} steps.`
+            case Opcode.ShiftRight:
+                return `Shift sled to the right by ${this.value} steps.`
         }
 
         return 'unknown opcode'
@@ -166,13 +169,17 @@ export class Instruction {
             case Opcode.Zero:
                 return 'Clear input'
             case Opcode.Add:
-                return 'Add'
+                return `Add ${this.value} times`
             case Opcode.Subtract:
-                return 'Subtract'
+                return `Subtract ${this.value} times`
             case Opcode.Load:
-                return 'Load ' + this.value?.toString()
+                return `Load ${this.value}`
             case Opcode.Reset:
                 return 'Reset all'
+            case Opcode.ShiftLeft:
+                return `Shift left ${this.value} steps`
+            case Opcode.ShiftRight:
+                return `Shift right ${this.value} steps`
         }
 
         return 'unknown opcode'
@@ -183,33 +190,74 @@ function compile(tokens: Token[]): Instruction[] {
     const stack: number[] = []
     const prog: Instruction[] = []
 
+    let intermediateResult = 0
+
     tokens.forEach((token) => {
         if (token.isNumber()) {
             stack.push(token.value as number)
         } else if (token.isOperator()) {
-            const op1 = stack.pop()
+            const op1 = stack.pop()!
 
-            if (prog.length) {
-                prog.push(new Instruction(Opcode.Load, op1))
+            if (token.value == '*') {
+                // Long multiplication
+
+                let op0 = intermediateResult
+
+                if (stack.at(-1)! != undefined) {
+                    op0 = stack.pop()!
+                }
+
+                let m0 = op0 // Larger of the two op0 and op1
+                let m1 = op1 // Smaller of the two op0 and op1
+
+                if (op0 < op1) {
+                    m0 = op1
+                    m1 = op0
+                }
+
+                let shifts = Math.floor(Math.log10(m1))
+
+                prog.push(new Instruction(Opcode.Load, m0))
+                prog.push(new Instruction(Opcode.ShiftRight, shifts))
+
+                const decimalDigits = []
+                for (; m1 > 0; m1 /= 10) {
+                    decimalDigits.push(Math.floor(m1 % 10))
+                }
+
+                for (; shifts >= 0; shifts--) {
+                    prog.push(
+                        new Instruction(Opcode.Add, decimalDigits[shifts])
+                    )
+                    prog.push(new Instruction(Opcode.ShiftLeft, 1))
+                }
             } else {
-                // First instruction ever.
-                // Take first two operands from stack.
-                const op0 = stack.pop()
+                intermediateResult += op1
 
-                // Do push.
-                prog.push(new Instruction(Opcode.Reset))
-                prog.push(new Instruction(Opcode.Load, op0))
-                prog.push(new Instruction(Opcode.Add))
-                prog.push(new Instruction(Opcode.Load, op1))
-            }
+                if (prog.length) {
+                    prog.push(new Instruction(Opcode.Load, op1))
+                } else {
+                    // First instruction ever.
+                    // Take first two operands from stack.
+                    const op0 = stack.pop()!
 
-            switch (token.value) {
-                case '+':
+                    intermediateResult += op0
+
+                    // Do push.
+                    prog.push(new Instruction(Opcode.Reset))
+                    prog.push(new Instruction(Opcode.Load, op0))
                     prog.push(new Instruction(Opcode.Add))
-                    break
-                case '-':
-                    prog.push(new Instruction(Opcode.Subtract))
-                    break
+                    prog.push(new Instruction(Opcode.Load, op1))
+                }
+
+                switch (token.value) {
+                    case '+':
+                        prog.push(new Instruction(Opcode.Add))
+                        break
+                    case '-':
+                        prog.push(new Instruction(Opcode.Subtract))
+                        break
+                }
             }
         }
     })
