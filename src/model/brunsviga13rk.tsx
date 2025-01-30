@@ -320,6 +320,61 @@ export class Brunsviga13rk implements ActionHandler {
 
         return sleep(100)
     }
+
+    public async clearOutputRegister(): Promise<void> {
+        this.result_reset_handle.pullDown()
+
+        return sleep(500)
+    }
+
+    public async clearRegisters(): Promise<void> {
+        this.delete_handle.pullDown()
+
+        return sleep(500)
+    }
+
+    // Convinience wrapper function around single action variants.
+    // .......................................................................
+
+    public async repeatedAdd(
+        amount: number | undefined = undefined
+    ): Promise<void> {
+        if (amount)
+            for (let i = 0; i < amount; i++) {
+                await this.add()
+            }
+        else await this.add()
+    }
+
+    public async repeatedSubtract(
+        amount: number | undefined = undefined
+    ): Promise<void> {
+        if (amount)
+            for (let i = 0; i < amount; i++) {
+                await this.subtract()
+            }
+        else await this.subtract()
+    }
+
+    public async repeatedShiftLeft(
+        amount: number | undefined = undefined
+    ): Promise<void> {
+        if (amount)
+            for (let i = 0; i < amount; i++) {
+                await this.shiftLeft()
+            }
+        else await this.shiftLeft()
+    }
+
+    public async repeatedShiftRight(
+        amount: number | undefined = undefined
+    ): Promise<void> {
+        if (amount)
+            for (let i = 0; i < amount; i++) {
+                await this.shiftRight()
+            }
+        else await this.shiftRight()
+    }
 }
 
 function updateInputRecommendations(selected: Selectable | undefined) {

@@ -90,6 +90,10 @@ export class InputWheel
             )
     }
 
+    public setDigit(digit: number, digitValue: number) {
+        this.wheel.setDigit(digit, 9 - digitValue)
+    }
+
     perform(delta: number): void {
         this.wheel.perform(delta)
     }

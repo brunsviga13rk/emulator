@@ -43,11 +43,26 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
     ],
 }))
 
-function InstructionCard({ instruction }) {
+type InstructionCardProps = {
+    instruction: Instruction
+    ready: boolean
+    setReady: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+function InstructionCard({
+    instruction,
+    ready,
+    setReady,
+}: InstructionCardProps) {
     const [expanded, setExpanded] = useState(false)
 
     const handleExpandClick = () => {
         setExpanded(!expanded)
+    }
+
+    const handleExecuteClick = () => {
+        setReady(false)
+        instruction.execute().then(() => setReady(true))
     }
 
     return (
@@ -57,6 +72,8 @@ function InstructionCard({ instruction }) {
                 <IconButton
                     style={{ marginLeft: 'auto' }}
                     aria-label="add to favorites"
+                    onClick={handleExecuteClick}
+                    disabled={!ready}
                 >
                     <PlayArrowIcon />
                 </IconButton>
@@ -79,6 +96,7 @@ function InstructionCard({ instruction }) {
 export function Editor() {
     const [input, setInput] = useState('')
     const [tokens, setTokens] = useState<Instruction[]>([])
+    const [ready, setReady] = useState(true)
 
     function onSolve() {
         setTokens(solve(input))
@@ -119,9 +137,13 @@ export function Editor() {
             )}
             <div className="flex-col w-full h-full">
                 {tokens.map((token, index) => (
-                    <div className="flex flex-row ml-4">
+                    <div key={index} className="flex flex-row ml-4">
                         <span className="my-auto mr-4">{index + 1}</span>
-                        <InstructionCard instruction={token} />
+                        <InstructionCard
+                            instruction={token}
+                            ready={ready}
+                            setReady={setReady}
+                        />
                     </div>
                 ))}
             </div>

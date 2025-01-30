@@ -1,3 +1,5 @@
+import { Brunsviga13rk } from '../model/brunsviga13rk'
+
 function tokenize(text: string): Token[] {
     return text
         .split(/\s+|([+\-*/(),])/)
@@ -141,6 +143,39 @@ export class Instruction {
     public constructor(opcode: Opcode, value: number | undefined = undefined) {
         this.opcode = opcode
         this.value = value
+    }
+
+    public async execute(): Promise<void> {
+        const brunsviga = Brunsviga13rk.getInstance()
+        let promise = undefined
+
+        switch (this.opcode) {
+            case Opcode.Reset:
+                promise = brunsviga.clearRegisters()
+                break
+            case Opcode.Zero:
+                promise = brunsviga.clearOutputRegister()
+                break
+            case Opcode.Add:
+                promise = brunsviga.repeatedAdd(this.value)
+                break
+            case Opcode.Subtract:
+                promise = brunsviga.repeatedSubtract(this.value)
+                break
+            case Opcode.ShiftLeft:
+                promise = brunsviga.repeatedShiftLeft(this.value)
+                break
+            case Opcode.ShiftRight:
+                promise = brunsviga.repeatedShiftRight(this.value)
+                break
+            case Opcode.Load:
+                promise = brunsviga.setInput(this.value!)
+                break
+            default:
+                throw Error('unknown instruction opcode')
+        }
+
+        return promise
     }
 
     public getDescription(): string {
