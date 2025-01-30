@@ -1,6 +1,6 @@
 import { Group, Object3DEventMap } from 'three'
 import { EventHandler } from '../events'
-import { SprocketWheel } from '../sprocketWheel'
+import { SprocketWheel } from './sprocketWheel'
 import { Brunsviga13rk } from '../brunsviga13rk'
 
 import { HandleEventType } from '../handles/handle'

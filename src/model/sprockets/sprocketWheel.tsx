@@ -1,7 +1,7 @@
 import { Group, MathUtils, Object3D, Object3DEventMap } from 'three'
-import { ActionHandler } from '../actionHandler'
-import { EventBroker, EventEmitter } from './events'
-import { AnimationScalarState, CubicEaseInOutInterpolation } from './animation'
+import { ActionHandler } from '../../actionHandler'
+import { EventBroker, EventEmitter } from '../events'
+import { AnimationScalarState, CubicEaseInOutInterpolation } from '../animation'
 
 export enum SprocketWheelEventType {
     Increment,

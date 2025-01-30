@@ -1,6 +1,6 @@
 import { Group, Object3D, Object3DEventMap } from 'three'
 import { InputAction, Selectable, UserAction } from './selectable'
-import { SprocketWheel } from './sprocketWheel'
+import { SprocketWheel } from './sprockets/sprocketWheel'
 import { EventBroker, EventEmitter, EventHandler } from './events'
 import { ActionHandler } from '../actionHandler'
 import { Brunsviga13rk } from './brunsviga13rk'
