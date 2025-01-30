@@ -62,7 +62,7 @@ export class Sled implements ActionHandler, Selectable {
         }
     }
 
-    private shift(direction: Direction) {
+    public shift(direction: Direction) {
         if (
             this.offset + direction > -1e-3 &&
             this.offset + direction < 6.0 + 1e-3
