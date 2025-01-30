@@ -300,7 +300,7 @@ export class Brunsviga13rk implements ActionHandler {
     public async add(): Promise<void> {
         this.operation_crank.add()
 
-        return sleep(500)
+        return sleep(700)
     }
 
     public async subtract(): Promise<void> {
@@ -339,41 +339,49 @@ export class Brunsviga13rk implements ActionHandler {
     public async repeatedAdd(
         amount: number | undefined = undefined
     ): Promise<void> {
-        if (amount)
+        if (amount == undefined) {
+            await this.add()
+        } else {
             for (let i = 0; i < amount; i++) {
                 await this.add()
             }
-        else await this.add()
+        }
     }
 
     public async repeatedSubtract(
         amount: number | undefined = undefined
     ): Promise<void> {
-        if (amount)
+        if (amount == undefined) {
+            await this.subtract()
+        } else {
             for (let i = 0; i < amount; i++) {
                 await this.subtract()
             }
-        else await this.subtract()
+        }
     }
 
     public async repeatedShiftLeft(
         amount: number | undefined = undefined
     ): Promise<void> {
-        if (amount)
+        if (amount == undefined) {
+            await this.shiftLeft()
+        } else {
             for (let i = 0; i < amount; i++) {
                 await this.shiftLeft()
             }
-        else await this.shiftLeft()
+        }
     }
 
     public async repeatedShiftRight(
         amount: number | undefined = undefined
     ): Promise<void> {
-        if (amount)
+        if (amount == undefined) {
+            await this.shiftRight()
+        } else {
             for (let i = 0; i < amount; i++) {
                 await this.shiftRight()
             }
-        else await this.shiftRight()
+        }
     }
 }
 

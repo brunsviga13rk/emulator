@@ -93,6 +93,16 @@ function InstructionCard({
     )
 }
 
+async function executeInstruction(instructions: Instruction[]) {
+    const delay = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms))
+
+    for (const instr of instructions) {
+        await instr.execute()
+        await delay(500)
+    }
+}
+
 export function Editor() {
     const [input, setInput] = useState('')
     const [tokens, setTokens] = useState<Instruction[]>([])
@@ -100,6 +110,11 @@ export function Editor() {
 
     function onSolve() {
         setTokens(solve(input))
+    }
+
+    const handleExecuteAll = () => {
+        setReady(false)
+        executeInstruction(tokens).then(() => setReady(true))
     }
 
     return (
@@ -131,7 +146,17 @@ export function Editor() {
                 </IconButton>
             </Paper>
             {tokens.length ? (
-                <div className="m-2 mt-6">Solution steps:</div>
+                <div className="pt-4">
+                    <span className="mr-auto">{`Solution (${tokens.length} steps):`}</span>
+                    <IconButton
+                        style={{ marginLeft: 'auto' }}
+                        aria-label="add to favorites"
+                        onClick={handleExecuteAll}
+                        disabled={!ready}
+                    >
+                        <PlayArrowIcon />
+                    </IconButton>
+                </div>
             ) : (
                 <></>
             )}

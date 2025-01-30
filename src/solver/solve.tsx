@@ -231,6 +231,10 @@ function compile(tokens: Token[]): Instruction[] {
         if (token.isNumber()) {
             stack.push(token.value as number)
         } else if (token.isOperator()) {
+            if (!prog.length) {
+                prog.push(new Instruction(Opcode.Reset))
+            }
+
             const op1 = stack.pop()!
 
             if (token.value == '*') {
@@ -279,7 +283,6 @@ function compile(tokens: Token[]): Instruction[] {
                     intermediateResult += op0
 
                     // Do push.
-                    prog.push(new Instruction(Opcode.Reset))
                     prog.push(new Instruction(Opcode.Load, op0))
                     prog.push(new Instruction(Opcode.Add))
                     prog.push(new Instruction(Opcode.Load, op1))
