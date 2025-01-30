@@ -29,7 +29,7 @@ export class Engine {
         outputPass: OutputPass,
     ]
     controls: OrbitControls
-    gizmo: ViewportGizmo
+    gizmo!: ViewportGizmo
     handler: ActionHandler[]
 
     constructor(parent: HTMLElement) {
