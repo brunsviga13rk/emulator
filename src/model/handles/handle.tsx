@@ -4,12 +4,30 @@ import { InputAction, Selectable, UserAction } from '../selectable'
 import { EventBroker, EventEmitter, EventHandler } from '../events'
 import { AnimationScalarState, CubicEaseInOutInterpolation } from '../animation'
 
+/**
+ * Types of events emitted by a handle.
+ */
 export enum HandleEventType {
+    /**
+     * Emitted when the handle is being pushed up initially.
+     */
     PushUp,
+    /**
+     * Emitted when the handle is being pulled down initially.
+     */
     PullDown,
+    /**
+     * Emitted when the push up operation has finished.
+     */
     PushUpDone,
+    /**
+     * Emitted when the pull down operation has finished.
+     */
     PullDownDone,
 }
+
+// Event content.
+// Set to be undefined as there is nothing else to store.
 
 export type HandlePushUpEvent = undefined
 export type HandlePullDownEvent = undefined
@@ -22,12 +40,23 @@ export type HandleEvent =
     | HandlePushUpDoneEvent
     | HandlePullDownDoneEvent
 
+/**
+ * A lever that has two operations:
+ * - Push up
+ * - Pull down
+ *
+ * Either operation is defined as a back and forth rotation around the object
+ * local Y-axis by a specific amount.
+ */
 export class Handle
     implements
         ActionHandler,
         Selectable,
         EventBroker<HandleEventType, HandleEvent, Handle>
 {
+    /**
+     * Mesh of the lever used for transformation.
+     */
     protected mesh: Object3D<Object3DEventMap>
     protected _animationState: AnimationScalarState
     /**
@@ -35,6 +64,11 @@ export class Handle
      * Note that the minimum must be smaller than the maximum angle.
      */
     private _angleLimits: [minAngle: number, maxAngle: number]
+    /**
+     * State tracking whether or not the maximum limit of the levers rotation
+     * is met. Primarily servers the purpose to diffrentiate between pull down
+     * and push up operation during animation.
+     */
     protected limitReached: boolean
     protected emitter: EventEmitter<HandleEventType, HandleEvent, Handle>
 
@@ -56,6 +90,8 @@ export class Handle
         )
 
         this.emitter.setActor(this)
+        // Automatically push the lever back up once its been pulled down
+        // completely.
         this.emitter.subscribe(
             HandleEventType.PullDownDone,
             new EventHandler(() => {
@@ -82,6 +118,9 @@ export class Handle
         }
     }
 
+    /**
+     * Pull the lever down. Emitts `HandleEventType.PullDown`.
+     */
     public pullDown() {
         const [, maxAngle] = this._angleLimits
 
@@ -91,6 +130,9 @@ export class Handle
         this.emitter.emit(HandleEventType.PullDown, undefined)
     }
 
+    /**
+     * Push the lever up. Emitts `HandleEventType.PushUp`.
+     */
     public pushUp() {
         const [minAngle] = this._angleLimits
 
@@ -109,6 +151,7 @@ export class Handle
         this.mesh.rotation.y = this.animationState.currentState
 
         const [minAngle, maxAngle] = this._angleLimits
+        // Detect push up done state and emit event.
         if (
             Math.abs(this.animationState.currentState - minAngle) < 1e-3 &&
             this.limitReached
@@ -116,6 +159,7 @@ export class Handle
             this.emitter.emit(HandleEventType.PushUpDone, undefined)
             this.limitReached = false
         }
+        // Detect pull down done state and emit event.
         if (
             Math.abs(this.animationState.currentState - maxAngle) < 1e-3 &&
             !this.limitReached

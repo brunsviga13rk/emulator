@@ -5,10 +5,25 @@ import { InputAction, Selectable, UserAction } from '../selectable'
 import { AnimationScalarState, CubicEaseInOutInterpolation } from '../animation'
 import { Knob, KnobEventType } from './knob'
 
+/**
+ * Events emitted by the operation crank.
+ */
 export enum OperationHandleEventType {
+    /**
+     * When addition is performed by clockwise rotation.
+     */
     Add,
+    /**
+     * When subtraction is performed by counter-clockwise rotation.
+     */
     Subtract,
+    /**
+     * Emitted when addition animation has finished.
+     */
     AddEnded,
+    /**
+     * Emitted when subtraction animation has finished.
+     */
     SubtractEnded,
 }
 
@@ -23,6 +38,14 @@ export type OperationHandleEvent =
     | OperationHandleAddEndedEvent
     | OperationHandleSubtractEndedEvent
 
+/**
+ * Crank used for addition and subtraction operation.
+ * Clockwise rotation of the crank performs addition, a counter clockwise
+ * roation results in subtraction.
+ * The animation of the crank includes extruding and reseting the knob used to
+ * lock the crank in position which makes the animation non-linear unlike
+ * other animation.
+ */
 export class OperationHandle
     implements
         ActionHandler,
@@ -33,9 +56,15 @@ export class OperationHandle
             OperationHandle
         >
 {
+    /**
+     * Knob used to lock the crank during reset and configuration.
+     */
     protected knob: Knob
     protected mesh: Object3D<Object3DEventMap>
     protected animationState: AnimationScalarState
+    /**
+     * Track operational state of animation.
+     */
     protected currentOperation: OperationHandleEventType | undefined = undefined
     private emitter: EventEmitter<
         OperationHandleEventType,
@@ -63,7 +92,9 @@ export class OperationHandle
     }
 
     public registerEventSubscribtions() {
-        this.knob.getEmitter().subscribe(
+        const knobEmitter = this.knob.getEmitter()
+
+        knobEmitter.subscribe(
             KnobEventType.Extruded,
             new EventHandler(() => {
                 const sign =
@@ -76,7 +107,7 @@ export class OperationHandle
             })
         )
 
-        this.knob.getEmitter().subscribe(
+        knobEmitter.subscribe(
             KnobEventType.AtRest,
             new EventHandler(() => {
                 switch (this.currentOperation) {
@@ -116,6 +147,11 @@ export class OperationHandle
         return [this.mesh]
     }
 
+    /**
+     * Perform addition. Emits `OperationHandleEventType.Add` and cause
+     * `OperationHandleEventType.AddEnded` when the animation finished.
+     *
+     */
     public add() {
         // add -> knob extrude -> rotate -> knob intrude -> done
 
@@ -128,6 +164,11 @@ export class OperationHandle
         this.currentOperation = OperationHandleEventType.Add
     }
 
+    /**
+     * Perform subtraction. Emits `OperationHandleEventType.Subtract` and cause
+     * `OperationHandleEventType.SubtractEnded` when the animation finished.
+     *
+     */
     public subtract() {
         // Prevent crank from bein continouuisly accelerating.
         if (this.currentOperation != undefined) return

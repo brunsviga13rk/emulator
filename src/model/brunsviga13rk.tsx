@@ -9,7 +9,7 @@ import {
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { Engine } from '../engine'
 import { ActionHandler } from '../actionHandler'
-import { InputWheel } from './inputWheel'
+import { InputWheel } from './sprockets/inputWheel'
 import { Selectable } from './selectable'
 import {
     InputSprocket,
@@ -18,10 +18,11 @@ import {
 import { Handle } from './handles/handle'
 import { OperationHandle } from './handles/operationHandle'
 import { ResultSprocket } from './sprockets/resultSprocket'
-import { CounterSprocket } from './sprockets/CounterSprocket'
+import { CounterSprocket } from './sprockets/counterSprocket'
 import { CommataBar } from './commata'
 import { ResultResetHandle } from './handles/resultResetHandle'
 import { CounterResetHandle } from './handles/counterResetHandle'
+import { Sled } from './sled'
 
 export class Brunsviga13rk implements ActionHandler {
     /**
@@ -60,6 +61,7 @@ export class Brunsviga13rk implements ActionHandler {
     result_commata!: CommataBar
     counter_reset_handle!: CounterResetHandle
     result_reset_handle!: ResultResetHandle
+    sled!: Sled
 
     private static instance: Brunsviga13rk | undefined = undefined
 
@@ -107,7 +109,7 @@ export class Brunsviga13rk implements ActionHandler {
                 this.input_sprocket = new InputSprocket(this.scene)
                 this.counter_sprocket = new CounterSprocket(this.scene)
                 this.result_sprocket = new ResultSprocket(this.scene)
-
+                this.sled = new Sled(this.scene)
                 this.selector_sprocket = new InputWheel(this.scene)
                 this.result_reset_handle = new ResultResetHandle(this.scene)
                 this.counter_reset_handle = new CounterResetHandle(this.scene)
@@ -155,6 +157,7 @@ export class Brunsviga13rk implements ActionHandler {
                 this.selectables.push(this.count_commata)
                 this.selectables.push(this.result_commata)
                 this.selectables.push(this.result_reset_handle)
+                this.selectables.push(this.sled)
 
                 this.input_sprocket.registerActionEvents()
                 this.selector_sprocket.registerActionEvents()
@@ -202,6 +205,7 @@ export class Brunsviga13rk implements ActionHandler {
             this.result_commata.perform(delta)
             this.counter_reset_handle.perform(delta)
             this.result_reset_handle.perform(delta)
+            this.sled.perform(delta)
         }
     }
 
