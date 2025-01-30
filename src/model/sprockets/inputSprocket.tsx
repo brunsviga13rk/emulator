@@ -6,7 +6,7 @@ import {
     InputWheelDecrementEvent,
     InputWheelEventType,
     InputWheelIncrementEvent,
-} from '../inputWheel'
+} from './inputWheel'
 import { HandleEventType } from '../handles/handle'
 
 export class InputSprocket extends SprocketWheel {
