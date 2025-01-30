@@ -22,7 +22,7 @@ import { CounterSprocket } from './sprockets/counterSprocket'
 import { CommataBar } from './commata'
 import { ResultResetHandle } from './handles/resultResetHandle'
 import { CounterResetHandle } from './handles/counterResetHandle'
-import { Sled } from './sled'
+import { Direction, Sled } from './sled'
 
 export class Brunsviga13rk implements ActionHandler {
     /**
@@ -307,6 +307,18 @@ export class Brunsviga13rk implements ActionHandler {
         this.operation_crank.subtract()
 
         return sleep(500)
+    }
+
+    public async shiftLeft(): Promise<void> {
+        this.sled.shift(Direction.Left)
+
+        return sleep(100)
+    }
+
+    public async shiftRight(): Promise<void> {
+        this.sled.shift(Direction.Right)
+
+        return sleep(100)
     }
 }
 
