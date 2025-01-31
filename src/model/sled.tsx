@@ -70,6 +70,7 @@ export class Sled implements ActionHandler, Selectable {
             this.offset += direction as number
 
             Brunsviga13rk.getInstance().result_sprocket.offset = this.offset
+            Brunsviga13rk.getInstance().counter_sprocket.offset = this.offset
 
             this.animationState.targetState =
                 this.animationState.getLatestTarget() +
