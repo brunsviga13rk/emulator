@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import {
+    Box,
     Card,
     CardActions,
     CardContent,
@@ -118,7 +119,7 @@ export function Editor() {
     }
 
     return (
-        <div className="flex-col w-1/5 p-2">
+        <div className="w-full h-full">
             <Paper
                 component="form"
                 sx={{
@@ -146,7 +147,10 @@ export function Editor() {
                 </IconButton>
             </Paper>
             {tokens.length ? (
-                <div className="pt-4">
+                <Box
+                    className="pt-4 mb-4"
+                    sx={{ borderBottom: 1, borderColor: 'divider' }}
+                >
                     <span className="mr-auto">{`Solution (${tokens.length} steps):`}</span>
                     <IconButton
                         style={{ marginLeft: 'auto' }}
@@ -156,21 +160,23 @@ export function Editor() {
                     >
                         <PlayArrowIcon />
                     </IconButton>
-                </div>
+                </Box>
             ) : (
                 <></>
             )}
-            <div className="flex-col w-full h-full">
-                {tokens.map((token, index) => (
-                    <div key={index} className="flex flex-row ml-4">
-                        <span className="my-auto mr-4">{index + 1}</span>
-                        <InstructionCard
-                            instruction={token}
-                            ready={ready}
-                            setReady={setReady}
-                        />
-                    </div>
-                ))}
+            <div className="w-full h-full">
+                <div className="overflow-y-scroll">
+                    {tokens.map((token, index) => (
+                        <div key={index} className="flex flex-row ml-4">
+                            <span className="my-auto mr-4">{index + 1}</span>
+                            <InstructionCard
+                                instruction={token}
+                                ready={ready}
+                                setReady={setReady}
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     )

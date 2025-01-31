@@ -164,8 +164,7 @@ export class Engine {
      */
     private createGizmo(): ViewportGizmo {
         const gizmo = new ViewportGizmo(this.camera, this.renderer, {
-            offset: { top: 80 },
-            placement: 'top-left',
+            placement: 'top-right',
             container: this.parent,
         })
         gizmo.attachControls(this.controls)

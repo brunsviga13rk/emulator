@@ -8,6 +8,12 @@ import { Engine } from './engine'
 import { Brunsviga13rk } from './model/brunsviga13rk'
 import fragmentShader from './shader/gradient/fragmentShader.glsl?raw'
 import vertexShader from './shader/gradient/vertexShader.glsl?raw'
+import { Button, ButtonGroup, Tooltip } from '@mui/material'
+import RotateLeftIcon from '@mui/icons-material/RotateLeft'
+import RotateRightIcon from '@mui/icons-material/RotateRight'
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 
 /**
  * Setup the environment by: creating an environment lighmap for PBR rendering,
@@ -112,7 +118,47 @@ function Renderer() {
         // call api or anything
         setupRenderer()
     })
-    return <div id="renderer"></div>
+
+    return (
+        <div id="div-renderer-wrapper">
+            <div id="div-renderer-toolbar">
+                <ButtonGroup
+                    color="inherit"
+                    orientation="vertical"
+                    variant="contained"
+                    size="medium"
+                >
+                    <Tooltip title="Addition" placement="right-end">
+                        <Button>
+                            <RotateRightIcon />
+                        </Button>
+                    </Tooltip>
+                    <Tooltip title="Subtraction" placement="right-end">
+                        <Button>
+                            <RotateLeftIcon />
+                        </Button>
+                    </Tooltip>
+                    <Tooltip title="Shift sled right" placement="right-end">
+                        <Button>
+                            <KeyboardDoubleArrowRightIcon />
+                        </Button>
+                    </Tooltip>
+                    <Tooltip title="Shift sled left" placement="right-end">
+                        <Button>
+                            <KeyboardDoubleArrowLeftIcon />
+                        </Button>
+                    </Tooltip>
+                    <Tooltip title="Reset all registers" placement="right-end">
+                        <Button>
+                            <DeleteOutlineIcon />
+                        </Button>
+                    </Tooltip>
+                </ButtonGroup>
+            </div>
+            <div id="div-renderer-details"></div>
+            <div id="renderer"></div>
+        </div>
+    )
 }
 
 export default Renderer
