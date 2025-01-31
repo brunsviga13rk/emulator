@@ -1,6 +1,5 @@
 import Renderer from './Renderer.tsx'
 import { StatusPanel } from './StatusPanel.tsx'
-import { TailSpin } from 'react-loader-spinner'
 import { Header } from './Header.tsx'
 import { Editor } from './solver/Editor.tsx'
 import { CircularProgress } from '@mui/material'
