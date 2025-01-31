@@ -228,16 +228,19 @@ function compile(tokens: Token[]): Instruction[] {
     let intermediateResult = 0
 
     tokens.forEach((token) => {
+        console.log(token.toString())
         if (token.isNumber()) {
             stack.push(token.value as number)
         } else if (token.isOperator()) {
-            if (!prog.length) {
-                prog.push(new Instruction(Opcode.Reset))
-            }
-
             const op1 = stack.pop()!
 
             if (token.value == '*') {
+                if (!prog.length) {
+                    prog.push(new Instruction(Opcode.Reset))
+                } else {
+                    prog.push(new Instruction(Opcode.Zero))
+                }
+
                 // Long multiplication
 
                 let op0 = intermediateResult
@@ -283,6 +286,7 @@ function compile(tokens: Token[]): Instruction[] {
                     intermediateResult += op0
 
                     // Do push.
+                    prog.push(new Instruction(Opcode.Reset))
                     prog.push(new Instruction(Opcode.Load, op0))
                     prog.push(new Instruction(Opcode.Add))
                     prog.push(new Instruction(Opcode.Load, op1))
