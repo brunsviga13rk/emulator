@@ -166,7 +166,7 @@ export class SprocketWheel
     public add(values: number[]) {
         let overflow = 0
         for (let i = 0; i + this._offset < this.digits; i++) {
-            const current = this.decimalDigits[i]
+            const current = this.decimalDigits[i + this.offset]
             const increment = overflow + (values.length > i ? values[i] : 0)
 
             this.rotate(i + this._offset + 1, increment)
@@ -178,7 +178,7 @@ export class SprocketWheel
     public subtract(values: number[]) {
         let overflow = 0
         for (let i = this._offset; i + this._offset < this.digits; i++) {
-            const current = this.decimalDigits[i]
+            const current = this.decimalDigits[i + this.offset]
             const decrement = overflow + (values.length > i ? values[i] : 0)
 
             this.rotate(i + this._offset + 1, -decrement)

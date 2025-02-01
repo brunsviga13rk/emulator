@@ -16,6 +16,11 @@
     margin: 0;
 }
 
+html,
+body {
+    height: 100%;
+}
+
 /* Center all children of the header bar. */
 header > header-inline-start {
     margin-top: auto;
@@ -53,6 +58,35 @@ header > #header-inline-end > a {
     */
     overflow: hidden;
     margin: 0.5rem;
+    display: flex;
+    flex-grow: 1;
+}
+
+#div-renderer-wrapper {
+    position: relative;
+    display: flex;
+    flex-grow: 1;
+}
+
+#div-renderer-toolbar {
+    position: absolute;
+    z-index: 1;
+    margin: 0.5rem;
+    top: 1rem;
+    left: 1rem;
+}
+
+#div-renderer-details {
+    position: absolute;
+    z-index: 1;
+    margin: 0.5rem;
+    top: 1rem;
+    right: 1rem;
+}
+
+#div-editor-root {
+    border-radius: 1rem;
+    margin: 0.5rem;
 }
 
 #status-panel {
@@ -89,4 +123,9 @@ header > #header-inline-end > a {
     animation-name: fade-out;
     animation-delay: 2s;
     animation-timing-function: ease-out;
+}
+
+canvas {
+    display: flex;
+    flex-grow: 1;
 }

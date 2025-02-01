@@ -29,7 +29,7 @@ export class Engine {
         outputPass: OutputPass,
     ]
     controls: OrbitControls
-    gizmo: ViewportGizmo
+    gizmo!: ViewportGizmo
     handler: ActionHandler[]
 
     constructor(parent: HTMLElement) {
@@ -41,7 +41,6 @@ export class Engine {
         this.scene = new Scene()
         this.camera = this.createCamera()
         this.controls = this.createControls()
-        this.gizmo = this.createGizmo()
         this.composer = new EffectComposer(this.renderer)
         this.passes = this.createRenderPasses()
         // Attach passes to composer
@@ -60,6 +59,7 @@ export class Engine {
         } else {
             this.parent.appendChild(this.renderer.domElement)
         }
+        this.gizmo = this.createGizmo()
     }
 
     public startAnimationLoop() {
@@ -164,7 +164,8 @@ export class Engine {
      */
     private createGizmo(): ViewportGizmo {
         const gizmo = new ViewportGizmo(this.camera, this.renderer, {
-            offset: { top: 80 },
+            placement: 'top-right',
+            container: this.parent,
         })
         gizmo.attachControls(this.controls)
 

@@ -9,6 +9,11 @@ import {
 import { EventHandler } from './events'
 import { Brunsviga13rk } from './brunsviga13rk'
 
+export enum Direction {
+    Left = -1.0,
+    Right = 1.0,
+}
+
 export class Sled implements ActionHandler, Selectable {
     protected handle: Object3D<Object3DEventMap>
     protected appendages: Object3D<Object3DEventMap>[]
@@ -47,23 +52,29 @@ export class Sled implements ActionHandler, Selectable {
     }
 
     onClick(event: MouseEvent): void {
-        let sign = 1.0
         switch (event.button) {
             case 0:
-                sign = 1.0
+                this.shift(Direction.Right)
                 break
             case 2:
-                sign = -1.0
+                this.shift(Direction.Left)
                 break
         }
+    }
 
-        if (this.offset + sign > -1e-3 && this.offset + sign < 6.0 + 1e-3) {
-            this.offset += sign
+    public shift(direction: Direction) {
+        if (
+            this.offset + direction > -1e-3 &&
+            this.offset + direction < 6.0 + 1e-3
+        ) {
+            this.offset += direction as number
 
             Brunsviga13rk.getInstance().result_sprocket.offset = this.offset
+            Brunsviga13rk.getInstance().counter_sprocket.offset = this.offset
 
             this.animationState.targetState =
-                this.animationState.getLatestTarget() + 0.1 * sign
+                this.animationState.getLatestTarget() +
+                0.1 * (direction as number)
         }
     }
 
