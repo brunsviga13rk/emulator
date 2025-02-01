@@ -327,6 +327,18 @@ export class Brunsviga13rk implements ActionHandler {
         return sleep(500)
     }
 
+    public async clearInputRegister(): Promise<void> {
+        this.delete_input_handle.pullDown()
+
+        return sleep(500)
+    }
+
+    public async clearCounterRegister(): Promise<void> {
+        this.counter_reset_handle.pullDown()
+
+        return sleep(500)
+    }
+
     public async clearRegisters(): Promise<void> {
         this.delete_handle.pullDown()
         this.repeatedShiftLeft(6)

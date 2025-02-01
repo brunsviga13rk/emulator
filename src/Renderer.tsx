@@ -9,11 +9,12 @@ import { Brunsviga13rk } from './model/brunsviga13rk'
 import fragmentShader from './shader/gradient/fragmentShader.glsl?raw'
 import vertexShader from './shader/gradient/vertexShader.glsl?raw'
 import { Button, ButtonGroup, Tooltip } from '@mui/material'
-import RotateLeftIcon from '@mui/icons-material/RotateLeft'
-import RotateRightIcon from '@mui/icons-material/RotateRight'
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import AddIcon from '@mui/icons-material/Add'
+import RemoveIcon from '@mui/icons-material/Remove'
+import DeleteSweepOutlinedIcon from '@mui/icons-material/DeleteSweepOutlined'
 
 /**
  * Setup the environment by: creating an environment lighmap for PBR rendering,
@@ -129,28 +130,79 @@ function Renderer() {
                     size="medium"
                 >
                     <Tooltip title="Addition" placement="right-end">
-                        <Button>
-                            <RotateRightIcon />
+                        <Button
+                            onClick={() => Brunsviga13rk.getInstance().add()}
+                        >
+                            <AddIcon />
                         </Button>
                     </Tooltip>
                     <Tooltip title="Subtraction" placement="right-end">
-                        <Button>
-                            <RotateLeftIcon />
+                        <Button
+                            onClick={() =>
+                                Brunsviga13rk.getInstance().subtract()
+                            }
+                        >
+                            <RemoveIcon />
                         </Button>
                     </Tooltip>
                     <Tooltip title="Shift sled right" placement="right-end">
-                        <Button>
+                        <Button
+                            onClick={() =>
+                                Brunsviga13rk.getInstance().shiftRight()
+                            }
+                        >
                             <KeyboardDoubleArrowRightIcon />
                         </Button>
                     </Tooltip>
                     <Tooltip title="Shift sled left" placement="right-end">
-                        <Button>
+                        <Button
+                            onClick={() =>
+                                Brunsviga13rk.getInstance().shiftLeft()
+                            }
+                        >
                             <KeyboardDoubleArrowLeftIcon />
                         </Button>
                     </Tooltip>
                     <Tooltip title="Reset all registers" placement="right-end">
-                        <Button>
+                        <Button
+                            onClick={() =>
+                                Brunsviga13rk.getInstance().clearRegisters()
+                            }
+                        >
                             <DeleteOutlineIcon />
+                        </Button>
+                    </Tooltip>
+                    <Tooltip title="Reset input register" placement="right-end">
+                        <Button
+                            onClick={() =>
+                                Brunsviga13rk.getInstance().clearInputRegister()
+                            }
+                        >
+                            <DeleteSweepOutlinedIcon />
+                        </Button>
+                    </Tooltip>
+                    <Tooltip
+                        title="Reset result register"
+                        placement="right-end"
+                    >
+                        <Button
+                            onClick={() =>
+                                Brunsviga13rk.getInstance().clearOutputRegister()
+                            }
+                        >
+                            <DeleteSweepOutlinedIcon />
+                        </Button>
+                    </Tooltip>
+                    <Tooltip
+                        title="Reset counter register"
+                        placement="right-end"
+                    >
+                        <Button
+                            onClick={() =>
+                                Brunsviga13rk.getInstance().clearCounterRegister()
+                            }
+                        >
+                            <DeleteSweepOutlinedIcon />
                         </Button>
                     </Tooltip>
                 </ButtonGroup>
