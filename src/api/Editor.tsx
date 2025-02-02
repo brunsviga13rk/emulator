@@ -1,7 +1,7 @@
 import { VFC, useRef, useState, useEffect } from 'react'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { CaretRight } from 'react-bootstrap-icons'
-import { execute } from './api/lua'
+import { execute } from './lua'
 
 export const Editor: VFC = () => {
     const [editor, setEditor] =
