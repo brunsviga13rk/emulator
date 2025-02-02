@@ -2,6 +2,7 @@ import Renderer from './render/Renderer.tsx'
 import { Header } from './Header.tsx'
 import { Editor } from './solver/Editor.tsx'
 import { CircularProgress, Grid2, Stack } from '@mui/material'
+import Dashboard from './Dashboard.tsx'
 
 function App() {
     return (
@@ -27,7 +28,10 @@ function App() {
                     size={{ sm: 12, md: 5 }}
                     sx={{ padding: '1rem', height: '100%' }}
                 >
-                    <Editor />
+                    <Stack spacing={2}>
+                        <Dashboard />
+                        <Editor />
+                    </Stack>
                 </Grid2>
             </Grid2>
             <div

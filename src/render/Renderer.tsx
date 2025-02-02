@@ -8,18 +8,8 @@ import { Engine } from './engine'
 import { Brunsviga13rk } from '../model/brunsviga13rk'
 import fragmentShader from '../shader/gradient/fragmentShader.glsl?raw'
 import vertexShader from '../shader/gradient/vertexShader.glsl?raw'
-import {
-    Box,
-    IconButton,
-    Input,
-    Paper,
-    Stack,
-    Tooltip,
-    Typography,
-} from '@mui/material'
-
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import Toolbox from './Toolbox'
+import Box from '@mui/material/Box'
 
 /**
  * Setup the environment by: creating an environment lighmap for PBR rendering,
@@ -117,37 +107,6 @@ function setupRenderer() {
             rendererElement.appendChild(WebGL.getWebGL2ErrorMessage())
         }
     }
-}
-
-type RegisterStateProps = {
-    min: number
-    max: number
-}
-
-function RegisterState({ min, max }: RegisterStateProps) {
-    return (
-        <Paper>
-            <Stack margin={1} spacing={1}>
-                <Stack
-                    direction="row"
-                    sx={{ alignItems: 'center' }}
-                    spacing={2}
-                >
-                    <Typography>Register</Typography>
-                    <Tooltip title="Reset register">
-                        <IconButton>
-                            <DeleteOutlineIcon />
-                        </IconButton>
-                    </Tooltip>
-                </Stack>
-                <Input
-                    type="number"
-                    fullWidth
-                    inputProps={{ min: min, max: max }}
-                />
-            </Stack>
-        </Paper>
-    )
 }
 
 function Renderer() {

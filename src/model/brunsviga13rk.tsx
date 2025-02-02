@@ -7,7 +7,7 @@ import {
     Vector2,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { Engine } from '../engine'
+import { Engine } from '../render/engine'
 import { ActionHandler } from '../actionHandler'
 import { InputWheel } from './sprockets/inputWheel'
 import { Selectable } from './selectable'
