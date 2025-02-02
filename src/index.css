@@ -18,36 +18,8 @@
 
 html,
 body {
-    height: 100%;
-}
-
-/* Center all children of the header bar. */
-header > header-inline-start {
-    margin-top: auto;
-    margin-bottom: auto;
-}
-
-header > #header-inline-start > * {
-    margin-top: auto;
-    margin-bottom: auto;
-}
-
-header > #header-inline-start > #div-title > #label-title {
-    font-weight: 700;
-    font-size: 1.25rem;
-}
-
-header > #header-inline-start > #div-title > #label-subtitle {
-    font-size: 0.75rem;
-}
-
-header > #header-inline-end > * {
-    margin-top: auto;
-    margin-bottom: auto;
-}
-
-header > #header-inline-end > a {
-    margin-right: 16pt;
+    height: 100vh;
+    margin: 0;
 }
 
 #renderer {
@@ -57,31 +29,6 @@ header > #header-inline-end > a {
        See: https://stackoverflow.com/a/15090794
     */
     overflow: hidden;
-    margin: 0.5rem;
-    display: flex;
-    flex-grow: 1;
-}
-
-#div-renderer-wrapper {
-    position: relative;
-    display: flex;
-    flex-grow: 1;
-}
-
-#div-renderer-toolbar {
-    position: absolute;
-    z-index: 1;
-    margin: 0.5rem;
-    top: 1rem;
-    left: 1rem;
-}
-
-#div-renderer-details {
-    position: absolute;
-    z-index: 1;
-    margin: 0.5rem;
-    top: 1rem;
-    right: 1rem;
 }
 
 #div-editor-root {
@@ -104,10 +51,6 @@ header > #header-inline-end > a {
     font-size: 1.5rem;
 }
 
-#div-loading-indicator {
-    background: white;
-}
-
 @keyframes fade-out {
     from {
         opacity: 100%;
@@ -123,9 +66,4 @@ header > #header-inline-end > a {
     animation-name: fade-out;
     animation-delay: 2s;
     animation-timing-function: ease-out;
-}
-
-canvas {
-    display: flex;
-    flex-grow: 1;
 }

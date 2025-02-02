@@ -1,50 +1,41 @@
-import * as Icon from 'react-bootstrap-icons'
+import {
+    AppBar,
+    Box,
+    Button,
+    Chip,
+    IconButton,
+    Stack,
+    Toolbar,
+    Typography,
+} from '@mui/material'
+import GitHubIcon from '@mui/icons-material/GitHub'
 
 export function Header() {
     return (
-        <header className="flex flex-row w-full justify-around">
-            <div
-                className="flex flex-row justify-start"
-                id="header-inline-start"
-            >
-                <a href="https://github.com/brunsviga13rk">
-                    <img
-                        className="h-16 w-auto p-2 pl-4"
-                        src="./brains_of_steel.svg"
-                        alt=""
-                    />
-                </a>
-                <div className="flex flex-col" id="div-title">
-                    <span className="pl-2 pr-6" id="label-title">
+        <AppBar position="fixed" color="inherit">
+            <Toolbar>
+                <img
+                    className="w-auto p-2"
+                    src="./brains_of_steel.svg"
+                    alt=""
+                />
+                <Stack spacing={0} sx={{ marginRight: 4 }}>
+                    <Typography variant="h5" component="div">
                         Brunsviga 13 RK
-                    </span>
-                    <span className="pl-2 pr-6" id="label-subtitle">
+                    </Typography>
+                    <Typography variant="body1" component="div">
                         Brains of steel
-                    </span>
-                </div>
-            </div>
-            <div className="flex-grow"></div>
-            <div
-                className="flex flex-row-reverse justify-end"
-                id="header-inline-end"
-            >
-                <a
-                    id="a-github"
-                    href="https://github.com/brunsviga13rk/emulator"
-                >
-                    <Icon.Github size={32} />
-                </a>
-                <a href="#">About</a>
-                <a href="#">Docs</a>
-                <a href="https://github.com/brunsviga13rk/thesis">Paper</a>
-                <a
-                    href={`https://github.com/brunsviga13rk/emulator/releases/tag/v${__APP_VERSION__}`}
-                    id="a-version"
-                >
-                    {'v'}
-                    {__APP_VERSION__}
-                </a>
-            </div>
-        </header>
+                    </Typography>
+                </Stack>
+                <Chip label={`v${__APP_VERSION__}`} variant="outlined" />
+                <Box sx={{ flexGrow: 1 }}></Box>
+                <Button color="inherit">Docs</Button>
+                <Button color="inherit">Paper</Button>
+                <Button color="inherit">About</Button>
+                <IconButton>
+                    <GitHubIcon />
+                </IconButton>
+            </Toolbar>
+        </AppBar>
     )
 }

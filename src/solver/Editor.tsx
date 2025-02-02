@@ -9,6 +9,7 @@ import {
     IconButtonProps,
     InputBase,
     Paper,
+    Stack,
     styled,
 } from '@mui/material'
 import FunctionsIcon from '@mui/icons-material/Functions'
@@ -119,7 +120,7 @@ export function Editor() {
     }
 
     return (
-        <div className="w-full h-full">
+        <Stack sx={{ height: '100%' }}>
             <Paper
                 component="form"
                 sx={{
@@ -164,20 +165,18 @@ export function Editor() {
             ) : (
                 <></>
             )}
-            <div className="w-full h-full">
-                <div className="overflow-y-scroll">
-                    {tokens.map((token, index) => (
-                        <div key={index} className="flex flex-row ml-4">
-                            <span className="my-auto mr-4">{index + 1}</span>
-                            <InstructionCard
-                                instruction={token}
-                                ready={ready}
-                                setReady={setReady}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
+            <Stack sx={{ height: '100%', overflow: 'scroll' }}>
+                {tokens.map((token, index) => (
+                    <Stack direction="row" key={index}>
+                        <span className="my-auto">{index + 1}</span>
+                        <InstructionCard
+                            instruction={token}
+                            ready={ready}
+                            setReady={setReady}
+                        />
+                    </Stack>
+                ))}
+            </Stack>
+        </Stack>
     )
 }
