@@ -3,12 +3,23 @@ import * as THREE from 'three'
 import WebGL from 'three/addons/capabilities/WebGL.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 
-import { createBaseplane } from './baseplane'
+import { createBaseplane } from '../baseplane'
 import { Engine } from './engine'
-import { Brunsviga13rk } from './model/brunsviga13rk'
-import fragmentShader from './shader/gradient/fragmentShader.glsl?raw'
-import vertexShader from './shader/gradient/vertexShader.glsl?raw'
-import { Box } from '@mui/material'
+import { Brunsviga13rk } from '../model/brunsviga13rk'
+import fragmentShader from '../shader/gradient/fragmentShader.glsl?raw'
+import vertexShader from '../shader/gradient/vertexShader.glsl?raw'
+import {
+    Box,
+    IconButton,
+    Input,
+    Paper,
+    Stack,
+    Tooltip,
+    Typography,
+} from '@mui/material'
+
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import Toolbox from './Toolbox'
 
 /**
  * Setup the environment by: creating an environment lighmap for PBR rendering,
@@ -108,6 +119,37 @@ function setupRenderer() {
     }
 }
 
+type RegisterStateProps = {
+    min: number
+    max: number
+}
+
+function RegisterState({ min, max }: RegisterStateProps) {
+    return (
+        <Paper>
+            <Stack margin={1} spacing={1}>
+                <Stack
+                    direction="row"
+                    sx={{ alignItems: 'center' }}
+                    spacing={2}
+                >
+                    <Typography>Register</Typography>
+                    <Tooltip title="Reset register">
+                        <IconButton>
+                            <DeleteOutlineIcon />
+                        </IconButton>
+                    </Tooltip>
+                </Stack>
+                <Input
+                    type="number"
+                    fullWidth
+                    inputProps={{ min: min, max: max }}
+                />
+            </Stack>
+        </Paper>
+    )
+}
+
 function Renderer() {
     useEffect(() => {
         // call api or anything
@@ -116,7 +158,6 @@ function Renderer() {
 
     return (
         <Box
-            id="renderer"
             sx={{
                 position: 'relative',
                 top: 0,
@@ -125,7 +166,15 @@ function Renderer() {
                 right: 0,
                 height: '100%',
             }}
-        ></Box>
+        >
+            <Toolbox />
+            <Box
+                id="renderer"
+                sx={{
+                    height: '100%',
+                }}
+            ></Box>
+        </Box>
     )
 }
 

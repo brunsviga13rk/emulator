@@ -1,22 +1,7 @@
-import Renderer from './Renderer.tsx'
-import { StatusPanel } from './StatusPanel.tsx'
+import Renderer from './render/Renderer.tsx'
 import { Header } from './Header.tsx'
 import { Editor } from './solver/Editor.tsx'
-import {
-    AppBar,
-    Box,
-    CircularProgress,
-    Container,
-    Grid2,
-    IconButton,
-    Paper,
-    Stack,
-    Tab,
-    Tabs,
-    Toolbar,
-} from '@mui/material'
-import { useState } from 'react'
-import AddIcon from '@mui/icons-material/Add'
+import { CircularProgress, Grid2, Stack } from '@mui/material'
 
 function App() {
     return (
@@ -36,17 +21,6 @@ function App() {
                 <Grid2 size={{ sm: 12, md: 7 }} sx={{ padding: '1rem' }}>
                     <Stack direction="column" sx={{ height: '100%' }}>
                         <Renderer />
-                        <Toolbar
-                            sx={{
-                                position: 'absolute',
-                                left: 0,
-                                right: 0,
-                            }}
-                        >
-                            <IconButton>
-                                <AddIcon />
-                            </IconButton>
-                        </Toolbar>
                     </Stack>
                 </Grid2>
                 <Grid2
