@@ -10,6 +10,7 @@ import fragmentShader from '../shader/gradient/fragmentShader.glsl?raw'
 import vertexShader from '../shader/gradient/vertexShader.glsl?raw'
 import Toolbox from './Toolbox'
 import Box from '@mui/material/Box'
+import ActionRecommendations from './ActionRecommendations'
 
 /**
  * Setup the environment by: creating an environment lighmap for PBR rendering,
@@ -127,6 +128,7 @@ function Renderer() {
             }}
         >
             <Toolbox />
+            <ActionRecommendations />
             <Box
                 id="renderer"
                 sx={{

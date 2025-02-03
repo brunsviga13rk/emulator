@@ -10,7 +10,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { Engine } from '../render/engine'
 import { ActionHandler } from '../actionHandler'
 import { InputWheel } from './sprockets/inputWheel'
-import { Selectable } from './selectable'
+import { Selectable, UserAction } from './selectable'
 import {
     InputSprocket,
     MAX_INPUT_SPROCKET_VALUE,
@@ -24,6 +24,7 @@ import { ResultResetHandle } from './handles/resultResetHandle'
 import { CounterResetHandle } from './handles/counterResetHandle'
 import { Direction, Sled } from './sled'
 import { EventBroker, EventEmitter, Tautology } from './events'
+import { Dispatch, SetStateAction } from 'react'
 
 /**
  * How long to delay the emission of the AnimationEnded event.
@@ -91,6 +92,7 @@ export class Brunsviga13rk
     counter_reset_handle!: CounterResetHandle
     result_reset_handle!: ResultResetHandle
     sled!: Sled
+    _setRecommendations!: Dispatch<SetStateAction<UserAction[]>>
 
     private static instance: Brunsviga13rk = new Brunsviga13rk()
 
@@ -309,10 +311,22 @@ export class Brunsviga13rk
             const [, outlinePass] = this.engine.passes
             outlinePass.selectedObjects = selection
 
-            updateInputRecommendations(
-                this.selected == undefined ? undefined : this.selected[0]
-            )
+            let actions: UserAction[] = []
+
+            if (this.selected !== undefined) {
+                const selected = this.selected[0]
+
+                if (selected != undefined) {
+                    actions = selected.getAvailableUserActions()
+                }
+            }
+
+            this._setRecommendations(actions)
         }
+    }
+
+    public set recommendations(setter: Dispatch<SetStateAction<UserAction[]>>) {
+        this._setRecommendations = setter
     }
 
     // Brunsviga 13 RK programmatic API
@@ -472,23 +486,6 @@ export class Brunsviga13rk
                 await this.shiftRight()
             }
         }
-    }
-}
-
-function updateInputRecommendations(selected: Selectable | undefined) {
-    const htmlElement = document.getElementById('input-action-recommendations')
-
-    if (!htmlElement) throw new Error('no input recommendaton element')
-
-    htmlElement.setHTMLUnsafe('')
-
-    if (selected != undefined) {
-        selected.getAvailableUserActions().forEach(([action, description]) => {
-            const span = document.createElement('span')
-            const icon = action as string
-            span.innerHTML = `<span class="user-action"><i class="ph ${icon}"></i>${description}</span>`
-            htmlElement.append(span)
-        })
     }
 }
 
