@@ -18,6 +18,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore'
 import { useRef, useState } from 'react'
+import { Brunsviga13rk } from '../model/brunsviga13rk'
 
 const options = ['Clear counter', 'Clear input', 'Clear result', 'Clear all']
 const tips = [
@@ -33,7 +34,21 @@ export default function Toolbox() {
     const [selectedIndex, setSelectedIndex] = useState(1)
 
     const handleClick = () => {
-        console.info(`You clicked ${options[selectedIndex]}`)
+        const api = Brunsviga13rk.getInstance()
+        switch (selectedIndex) {
+            case 0:
+                api.clearCounterRegister()
+                break
+            case 1:
+                api.clearInputRegister()
+                break
+            case 2:
+                api.clearOutputRegister()
+                break
+            case 3:
+                api.clearRegisters()
+                break
+        }
     }
 
     const handleMenuItemClick = (
@@ -69,22 +84,28 @@ export default function Toolbox() {
         >
             <ButtonGroup variant="contained" color="inherit" size="small">
                 <Tooltip title="Add">
-                    <Button>
+                    <Button onClick={() => Brunsviga13rk.getInstance().add()}>
                         <RotateRightOutlinedIcon />
                     </Button>
                 </Tooltip>
                 <Tooltip title="Subtract">
-                    <Button>
+                    <Button
+                        onClick={() => Brunsviga13rk.getInstance().subtract()}
+                    >
                         <RotateLeftOutlinedIcon />
                     </Button>
                 </Tooltip>
                 <Tooltip title="Shift sled right">
-                    <Button>
+                    <Button
+                        onClick={() => Brunsviga13rk.getInstance().shiftRight()}
+                    >
                         <SwipeRightIcon />
                     </Button>
                 </Tooltip>
                 <Tooltip title="Shift sled left">
-                    <Button>
+                    <Button
+                        onClick={() => Brunsviga13rk.getInstance().shiftLeft()}
+                    >
                         <SwipeLeftIcon />
                     </Button>
                 </Tooltip>
