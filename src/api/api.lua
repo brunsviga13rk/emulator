@@ -61,4 +61,22 @@ function M.shift_right(value)
     ts_api.shift_right():await()
 end
 
+--- Returns the current value of the counter register.
+---@return integer
+function M.get_counter()
+    return ts_api.get_counter()
+end
+
+--- Returns the current value of the input register.
+---@return integer
+function M.get_input()
+    return ts_api.get_input()
+end
+
+--- Returns the current value of the resul register.
+---@return integer
+function M.get_result()
+    return ts_api.get_result()
+end
+
 return M

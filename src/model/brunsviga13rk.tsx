@@ -346,6 +346,21 @@ export class Brunsviga13rk implements ActionHandler {
         return sleep(500)
     }
 
+    // Synchronous API to retrieve values from the state of the machine.
+    // .......................................................................
+
+    public getCounterRegisterValue(): number {
+        return this.counter_sprocket.getDisplayValue()
+    }
+
+    public getInputRegisterValue(): number {
+        return this.input_sprocket.getDisplayValue()
+    }
+
+    public getResultRegisterValue(): number {
+        return this.result_sprocket.getDisplayValue()
+    }
+
     // Convinience wrapper function around single action variants.
     // .......................................................................
 

@@ -63,6 +63,18 @@ class Brunsviga13rkLuaAPI {
     public async shift_right() {
         await this._instance.shiftRight()
     }
+
+    public get_counter(): number {
+        return this._instance.getCounterRegisterValue()
+    }
+
+    public get_input(): number {
+        return this._instance.getInputRegisterValue()
+    }
+
+    public get_result(): number {
+        return this._instance.getResultRegisterValue()
+    }
 }
 
 lua.global.set(TS_API_NAME, () => new Brunsviga13rkLuaAPI())
