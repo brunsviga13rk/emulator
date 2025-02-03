@@ -1,7 +1,9 @@
 import { VFC, useRef, useState, useEffect } from 'react'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
-import { CaretRight } from 'react-bootstrap-icons'
 import { execute } from './lua'
+import { Button, ButtonGroup, Divider, Stack } from '@mui/material'
+import StopOutlinedIcon from '@mui/icons-material/StopOutlined'
+import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined'
 
 export const Editor: VFC = () => {
     const [editor, setEditor] =
@@ -34,11 +36,17 @@ export const Editor: VFC = () => {
 
     return (
         <div id="div-editor-root" className="w-full h-full flex flex-col">
-            <div>
-                <button onClick={runProgram}>
-                    <CaretRight size={24} />
-                </button>
-            </div>
+            <Stack direction="row" spacing={2}>
+                <ButtonGroup variant="contained" color="inherit" size="small">
+                    <Button onClick={runProgram}>
+                        <PlayArrowOutlinedIcon />
+                    </Button>
+                    <Button>
+                        <StopOutlinedIcon />
+                    </Button>
+                </ButtonGroup>
+            </Stack>
+            <Divider sx={{ marginY: 2 }} />
             <div className="flex-grow" ref={monacoEl}></div>
         </div>
     )
