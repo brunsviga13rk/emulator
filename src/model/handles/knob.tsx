@@ -79,7 +79,7 @@ export class Knob
         return this.emitter
     }
 
-    perform(delta: number): void {
+    perform(delta: number): boolean {
         this.animationState.advance(delta)
         this.mesh.position.z = this.animationState.currentState
 
@@ -95,6 +95,8 @@ export class Knob
 
             this.limitReached = true
         }
+
+        return this.animationState.isAnimationDone()
     }
 
     public isExtruded(): boolean {

@@ -89,8 +89,10 @@ export class Sled implements ActionHandler, Selectable {
         return [this.handle]
     }
 
-    perform(delta: number): void {
+    perform(delta: number): boolean {
         this.animationState.advance(delta)
+
+        return this.animationState.isAnimationDone()
     }
 }
 

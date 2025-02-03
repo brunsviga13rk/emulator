@@ -179,7 +179,7 @@ export class OperationHandle
         this.currentOperation = OperationHandleEventType.Subtract
     }
 
-    perform(delta: number): void {
+    perform(delta: number): boolean {
         this.animationState.advance(delta)
         this.mesh.rotation.y = this.animationState.currentState
 
@@ -189,6 +189,8 @@ export class OperationHandle
         if (this.knob.isExtruded() && this.animationState.isAnimationDone()) {
             this.knob.reset()
         }
+
+        return this.animationState.isAnimationDone()
     }
 
     getEmitter(): EventEmitter<

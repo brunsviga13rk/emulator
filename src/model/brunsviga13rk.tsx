@@ -69,7 +69,8 @@ export class Brunsviga13rk
         BrunsvigaAnimationEventContent,
         Brunsviga13rk
     >
-
+    animationStateActive: boolean
+    animationStateFinishCounter: number
     input_sprocket!: InputSprocket
     counter_sprocket!: CounterSprocket
     result_sprocket!: ResultSprocket
@@ -101,6 +102,8 @@ export class Brunsviga13rk
     }
 
     private constructor() {
+        this.animationStateActive = false
+        this.animationStateFinishCounter = 0
         this.raycaster = new Raycaster()
         this.pointer = new Vector2()
         this.emitter = new EventEmitter()
@@ -217,22 +220,48 @@ export class Brunsviga13rk
         }
     }
 
-    perform(delta: number): void {
+    perform(delta: number): boolean {
+        if (this.animationStateFinishCounter > 0)
+            this.animationStateFinishCounter += delta
+
         if (this.scene) {
-            this.input_sprocket.perform(delta)
-            this.counter_sprocket.perform(delta)
-            this.result_sprocket.perform(delta)
-            this.selector_sprocket.perform(delta)
-            this.delete_handle.perform(delta)
-            this.delete_input_handle.perform(delta)
-            this.operation_crank.perform(delta)
-            this.input_commata.perform(delta)
-            this.count_commata.perform(delta)
-            this.result_commata.perform(delta)
-            this.counter_reset_handle.perform(delta)
-            this.result_reset_handle.perform(delta)
-            this.sled.perform(delta)
+            let animationDone = true
+
+            animationDone &&= this.input_sprocket.perform(delta)
+            animationDone &&= this.counter_sprocket.perform(delta)
+            animationDone &&= this.result_sprocket.perform(delta)
+            animationDone &&= this.selector_sprocket.perform(delta)
+            animationDone &&= this.delete_handle.perform(delta)
+            animationDone &&= this.delete_input_handle.perform(delta)
+            animationDone &&= this.operation_crank.perform(delta)
+            animationDone &&= this.input_commata.perform(delta)
+            animationDone &&= this.count_commata.perform(delta)
+            animationDone &&= this.result_commata.perform(delta)
+            animationDone &&= this.counter_reset_handle.perform(delta)
+            animationDone &&= this.result_reset_handle.perform(delta)
+            animationDone &&= this.sled.perform(delta)
+
+            if (this.animationStateActive && !animationDone) {
+                this.emitter.emit(
+                    BrunsvigaAnimationEventType.AnimationStarted,
+                    undefined
+                )
+            } else if (!this.animationStateActive && animationDone) {
+                this.animationStateFinishCounter += delta
+            }
+
+            this.animationStateActive = animationDone
         }
+
+        if (this.animationStateFinishCounter >= 1000) {
+            this.emitter.emit(
+                BrunsvigaAnimationEventType.AnimationEnded,
+                undefined
+            )
+            this.animationStateFinishCounter = 0
+        }
+
+        return this.animationStateActive
     }
 
     onMouseMove(event: MouseEvent) {

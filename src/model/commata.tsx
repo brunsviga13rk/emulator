@@ -34,8 +34,10 @@ class Commata implements ActionHandler {
         )
     }
 
-    perform(delta: number): void {
+    perform(delta: number): boolean {
         this.animationState.advance(delta)
+
+        return this.animationState.isAnimationDone()
     }
 
     public move(translation: number) {
@@ -130,9 +132,13 @@ export class CommataBar implements ActionHandler, Selectable {
         return this.commata.map((commata) => commata.getMesh())
     }
 
-    perform(delta: number): void {
+    perform(delta: number): boolean {
+        let animationDone = true
+
         this.commata.forEach((commata) => {
-            commata.perform(delta)
+            animationDone &&= commata.perform(delta)
         })
+
+        return animationDone
     }
 }
