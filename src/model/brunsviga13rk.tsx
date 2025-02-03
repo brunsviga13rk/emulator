@@ -23,8 +23,24 @@ import { CommataBar } from './commata'
 import { ResultResetHandle } from './handles/resultResetHandle'
 import { CounterResetHandle } from './handles/counterResetHandle'
 import { Direction, Sled } from './sled'
+import { EventBroker, EventEmitter, Tautology } from './events'
 
-export class Brunsviga13rk implements ActionHandler {
+export enum BrunsvigaAnimationEventType {
+    AnimationStarted,
+    AnimationEnded,
+}
+
+type BrunsvigaAnimationEventContent = undefined
+
+export class Brunsviga13rk
+    implements
+        ActionHandler,
+        EventBroker<
+            BrunsvigaAnimationEventType,
+            BrunsvigaAnimationEventContent,
+            Brunsviga13rk
+        >
+{
     /**
      * Scene containing all meshes of the Brunsviga 13 RK.
      * @default
@@ -48,6 +64,11 @@ export class Brunsviga13rk implements ActionHandler {
     raycaster: Raycaster
     pointer: Vector2
     engine: Engine
+    emitter: EventEmitter<
+        BrunsvigaAnimationEventType,
+        BrunsvigaAnimationEventContent,
+        Brunsviga13rk
+    >
 
     input_sprocket!: InputSprocket
     counter_sprocket!: CounterSprocket
@@ -96,6 +117,8 @@ export class Brunsviga13rk implements ActionHandler {
         this.engine = engine
         this.raycaster = new Raycaster()
         this.pointer = new Vector2()
+        this.emitter = new EventEmitter()
+        this.emitter.setActor(this)
 
         // Load model.
         const loader = new GLTFLoader()
@@ -185,6 +208,15 @@ export class Brunsviga13rk implements ActionHandler {
         }
     }
 
+    getEmitter(): EventEmitter<
+        BrunsvigaAnimationEventType,
+        undefined,
+        Brunsviga13rk,
+        Tautology
+    > {
+        return this.emitter
+    }
+
     onClick(event: MouseEvent) {
         if (this.selected) {
             this.selected[0].onClick(event, this.selected[1].object)
@@ -253,6 +285,22 @@ export class Brunsviga13rk implements ActionHandler {
         }
     }
 
+    private async sleep(milliseconds: number): Promise<void> {
+        this.emitter.emit(
+            BrunsvigaAnimationEventType.AnimationStarted,
+            undefined
+        )
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                this.emitter.emit(
+                    BrunsvigaAnimationEventType.AnimationEnded,
+                    undefined
+                )
+                resolve()
+            }, milliseconds)
+        })
+    }
+
     // Brunsviga 13 RK programmatic API
     // ========================================================================
     // Application interface for interacting with the Brunsviga how a human
@@ -294,56 +342,56 @@ export class Brunsviga13rk implements ActionHandler {
             this.input_sprocket.setDigit(digit, 0)
         }
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async add(): Promise<void> {
         this.operation_crank.add()
 
-        return sleep(700)
+        return this.sleep(700)
     }
 
     public async subtract(): Promise<void> {
         this.operation_crank.subtract()
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async shiftLeft(): Promise<void> {
         this.sled.shift(Direction.Left)
 
-        return sleep(100)
+        return this.sleep(100)
     }
 
     public async shiftRight(): Promise<void> {
         this.sled.shift(Direction.Right)
 
-        return sleep(100)
+        return this.sleep(100)
     }
 
     public async clearOutputRegister(): Promise<void> {
         this.result_reset_handle.pullDown()
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async clearInputRegister(): Promise<void> {
         this.delete_input_handle.pullDown()
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async clearCounterRegister(): Promise<void> {
         this.counter_reset_handle.pullDown()
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async clearRegisters(): Promise<void> {
         this.delete_handle.pullDown()
         this.repeatedShiftLeft(6)
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     // Synchronous API to retrieve values from the state of the machine.
@@ -428,10 +476,4 @@ function updateInputRecommendations(selected: Selectable | undefined) {
             htmlElement.append(span)
         })
     }
-}
-
-async function sleep(milliseconds: number): Promise<void> {
-    return new Promise((resolve) => {
-        setTimeout(resolve, milliseconds)
-    })
 }
