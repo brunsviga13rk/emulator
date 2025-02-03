@@ -144,6 +144,7 @@ export default function Toolbox() {
             >
                 <Tooltip title={tips[selectedIndex]}>
                     <Button
+                        disabled={!ready}
                         onClick={handleClick}
                         startIcon={<SettingsBackupRestoreIcon />}
                     >
@@ -157,6 +158,7 @@ export default function Toolbox() {
                     aria-label="select merge strategy"
                     aria-haspopup="menu"
                     onClick={handleToggle}
+                    disabled={!ready}
                 >
                     <ArrowDropDownIcon />
                 </Button>
