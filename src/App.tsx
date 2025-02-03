@@ -1,10 +1,52 @@
 import Renderer from './render/Renderer.tsx'
 import { Header } from './Header.tsx'
-import { Editor } from './solver/Editor.tsx'
-import { CircularProgress, Grid2, Stack } from '@mui/material'
+import { Editor as Solver } from './solver/Editor.tsx'
+import { Editor as Coder } from './api/Editor.tsx'
+import { Box, CircularProgress, Grid2, Stack, Tab, Tabs } from '@mui/material'
 import Dashboard from './Dashboard.tsx'
+import { useState } from 'react'
+import CalculateIcon from '@mui/icons-material/Calculate'
+import CodeIcon from '@mui/icons-material/Code'
+
+interface TabPanelProps {
+    children?: React.ReactNode
+    index: number
+    value: number
+}
+
+function CustomTabPanel(props: TabPanelProps) {
+    const { children, value, index, ...other } = props
+
+    return (
+        <Box
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            style={{ height: '100%' }}
+            {...other}
+        >
+            {value === index && (
+                <Box sx={{ pt: 3, height: '100%' }}>{children}</Box>
+            )}
+        </Box>
+    )
+}
+
+function a11yProps(index: number) {
+    return {
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
+    }
+}
 
 function App() {
+    const [value, setValue] = useState(0)
+
+    const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
+        setValue(newValue)
+    }
+
     return (
         <Stack direction="column" sx={{ height: '100%' }}>
             <Header />
@@ -28,9 +70,38 @@ function App() {
                     size={{ sm: 12, md: 5 }}
                     sx={{ padding: '1rem', height: '100%' }}
                 >
-                    <Stack spacing={2}>
+                    <Stack spacing={2} sx={{ height: '100%' }}>
                         <Dashboard />
-                        <Editor />
+                        <Box sx={{ width: '100%', height: '100%' }}>
+                            <Box
+                                sx={{ borderBottom: 1, borderColor: 'divider' }}
+                            >
+                                <Tabs
+                                    value={value}
+                                    onChange={handleChange}
+                                    centered
+                                >
+                                    <Tab
+                                        icon={<CalculateIcon />}
+                                        iconPosition="start"
+                                        label="Solver"
+                                        {...a11yProps(0)}
+                                    />
+                                    <Tab
+                                        icon={<CodeIcon />}
+                                        iconPosition="start"
+                                        label="Code"
+                                        {...a11yProps(1)}
+                                    />
+                                </Tabs>
+                            </Box>
+                            <CustomTabPanel value={value} index={0}>
+                                <Solver />
+                            </CustomTabPanel>
+                            <CustomTabPanel value={value} index={1}>
+                                <Coder />
+                            </CustomTabPanel>
+                        </Box>
                     </Stack>
                 </Grid2>
             </Grid2>

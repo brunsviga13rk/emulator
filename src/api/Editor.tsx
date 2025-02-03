@@ -33,7 +33,7 @@ export const Editor: VFC = () => {
     }
 
     return (
-        <div id="div-editor-root" className="w-5/12 h-full flex flex-col">
+        <div id="div-editor-root" className="w-full h-full flex flex-col">
             <div>
                 <button onClick={runProgram}>
                     <CaretRight size={24} />
