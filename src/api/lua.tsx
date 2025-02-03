@@ -15,6 +15,9 @@ const lua = await factory.createEngine()
 lua.global.set('set', (v: number) => Brunsviga13rk.getInstance().setInput(v))
 lua.global.set('add', () => Brunsviga13rk.getInstance().add())
 lua.global.set('sub', () => Brunsviga13rk.getInstance().subtract())
+lua.global.set('shr', () => Brunsviga13rk.getInstance().shiftLeft())
+lua.global.set('shl', () => Brunsviga13rk.getInstance().shiftRight())
+lua.global.set('clr', () => Brunsviga13rk.getInstance().clearRegisters())
 
 export function execute(script: string) {
     new Promise(() => lua.doString(script))
