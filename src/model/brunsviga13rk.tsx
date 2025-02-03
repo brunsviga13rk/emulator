@@ -25,6 +25,13 @@ import { CounterResetHandle } from './handles/counterResetHandle'
 import { Direction, Sled } from './sled'
 import { EventBroker, EventEmitter, Tautology } from './events'
 
+/**
+ * How long to delay the emission of the AnimationEnded event.
+ * Prevents event "flickering" where subsequent non-linear animations
+ * cause this event to be fired too often.
+ */
+const ANIMATION_END_THRESHOLD_MS = 1000.0
+
 export enum BrunsvigaAnimationEventType {
     AnimationStarted,
     AnimationEnded,
@@ -253,7 +260,7 @@ export class Brunsviga13rk
             this.animationStateActive = animationDone
         }
 
-        if (this.animationStateFinishCounter >= 1000) {
+        if (this.animationStateFinishCounter >= ANIMATION_END_THRESHOLD_MS) {
             this.emitter.emit(
                 BrunsvigaAnimationEventType.AnimationEnded,
                 undefined
