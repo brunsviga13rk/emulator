@@ -24,6 +24,7 @@ export default function ActionRecommendations() {
             {actions ? (
                 actions.map(([action, description]) => (
                     <Chip
+                        key={description}
                         label={description}
                         icon={<i className={`ph ${action as string}`} />}
                     ></Chip>

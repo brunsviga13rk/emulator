@@ -6,14 +6,17 @@ import { AnimationScalarState, CubicEaseInOutInterpolation } from '../animation'
 export enum SprocketWheelEventType {
     Increment,
     Decrement,
+    Change,
 }
 
 export type SprocketWheelIncrementEvent = { digit: number }
 export type SprocketWheelDecrementEvent = { digit: number }
+export type SprocketWheelChangeEvent = { value: number }
 
 export type InputWheelEvent =
     | SprocketWheelIncrementEvent
     | SprocketWheelDecrementEvent
+    | SprocketWheelChangeEvent
 
 export class SprocketWheel
     implements
@@ -166,6 +169,9 @@ export class SprocketWheel
                 digit: digit,
             })
         }
+        this.emitter.emit(SprocketWheelEventType.Change, {
+            value: this.getDisplayValue(),
+        })
     }
 
     public add(values: number[]) {

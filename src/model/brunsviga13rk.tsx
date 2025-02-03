@@ -40,6 +40,11 @@ export enum BrunsvigaAnimationEventType {
 
 type BrunsvigaAnimationEventContent = undefined
 
+/**
+ * Hooks executed when the machine is done initializing.
+ */
+export type onInitHook = (instancer: Brunsviga13rk) => void
+
 export class Brunsviga13rk
     implements
         ActionHandler,
@@ -77,6 +82,7 @@ export class Brunsviga13rk
         BrunsvigaAnimationEventContent,
         Brunsviga13rk
     >
+    onInitHooks: onInitHook[]
     animationStateActive: boolean
     animationStateFinishCounter: number
     input_sprocket!: InputSprocket
@@ -111,6 +117,7 @@ export class Brunsviga13rk
     }
 
     private constructor() {
+        this.onInitHooks = []
         this.animationStateActive = false
         this.animationStateFinishCounter = 0
         this.raycaster = new Raycaster()
@@ -200,6 +207,9 @@ export class Brunsviga13rk
 
                 // Handle events.
                 engine.registerActionHandler(this)
+
+                // Run post init hooks.
+                this.onInitHooks.forEach((hook) => hook(this))
             },
             undefined,
             onLoadingError
@@ -212,6 +222,10 @@ export class Brunsviga13rk
         this.engine.renderer.domElement.onmouseup = (event) => {
             this.onClick(event)
         }
+    }
+
+    public whenReady(hook: onInitHook) {
+        this.onInitHooks.push(hook)
     }
 
     getEmitter(): EventEmitter<
