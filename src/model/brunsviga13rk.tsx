@@ -63,7 +63,7 @@ export class Brunsviga13rk
     selectables: Selectable[] = []
     raycaster: Raycaster
     pointer: Vector2
-    engine: Engine
+    engine!: Engine
     emitter: EventEmitter<
         BrunsvigaAnimationEventType,
         BrunsvigaAnimationEventContent,
@@ -84,41 +84,35 @@ export class Brunsviga13rk
     result_reset_handle!: ResultResetHandle
     sled!: Sled
 
-    private static instance: Brunsviga13rk | undefined = undefined
+    private static instance: Brunsviga13rk = new Brunsviga13rk()
 
-    public static createInstance(
+    public static initInstance(
         engine: Engine,
         onModelLoaded: () => void,
         onLoadingError: (error: unknown) => void
-    ): Brunsviga13rk {
-        if (!Brunsviga13rk.instance) {
-            Brunsviga13rk.instance = new Brunsviga13rk(
-                engine,
-                onModelLoaded,
-                onLoadingError
-            )
+    ) {
+        if (Brunsviga13rk.instance) {
+            Brunsviga13rk.instance.init(engine, onModelLoaded, onLoadingError)
         }
-
-        return Brunsviga13rk.instance
     }
 
     public static getInstance(): Brunsviga13rk {
-        if (!Brunsviga13rk.instance) {
-            throw new Error('No instance created yet')
-        }
         return Brunsviga13rk.instance
     }
 
-    private constructor(
+    private constructor() {
+        this.raycaster = new Raycaster()
+        this.pointer = new Vector2()
+        this.emitter = new EventEmitter()
+        this.emitter.setActor(this)
+    }
+
+    private init(
         engine: Engine,
         onModelLoaded: () => void,
         onLoadingError: (error: unknown) => void
     ) {
         this.engine = engine
-        this.raycaster = new Raycaster()
-        this.pointer = new Vector2()
-        this.emitter = new EventEmitter()
-        this.emitter.setActor(this)
 
         // Load model.
         const loader = new GLTFLoader()
@@ -285,22 +279,6 @@ export class Brunsviga13rk
         }
     }
 
-    private async sleep(milliseconds: number): Promise<void> {
-        this.emitter.emit(
-            BrunsvigaAnimationEventType.AnimationStarted,
-            undefined
-        )
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                this.emitter.emit(
-                    BrunsvigaAnimationEventType.AnimationEnded,
-                    undefined
-                )
-                resolve()
-            }, milliseconds)
-        })
-    }
-
     // Brunsviga 13 RK programmatic API
     // ========================================================================
     // Application interface for interacting with the Brunsviga how a human
@@ -342,56 +320,56 @@ export class Brunsviga13rk
             this.input_sprocket.setDigit(digit, 0)
         }
 
-        return this.sleep(500)
+        return sleep(500)
     }
 
     public async add(): Promise<void> {
         this.operation_crank.add()
 
-        return this.sleep(700)
+        return sleep(700)
     }
 
     public async subtract(): Promise<void> {
         this.operation_crank.subtract()
 
-        return this.sleep(500)
+        return sleep(500)
     }
 
     public async shiftLeft(): Promise<void> {
         this.sled.shift(Direction.Left)
 
-        return this.sleep(100)
+        return sleep(100)
     }
 
     public async shiftRight(): Promise<void> {
         this.sled.shift(Direction.Right)
 
-        return this.sleep(100)
+        return sleep(100)
     }
 
     public async clearOutputRegister(): Promise<void> {
         this.result_reset_handle.pullDown()
 
-        return this.sleep(500)
+        return sleep(500)
     }
 
     public async clearInputRegister(): Promise<void> {
         this.delete_input_handle.pullDown()
 
-        return this.sleep(500)
+        return sleep(500)
     }
 
     public async clearCounterRegister(): Promise<void> {
         this.counter_reset_handle.pullDown()
 
-        return this.sleep(500)
+        return sleep(500)
     }
 
     public async clearRegisters(): Promise<void> {
         this.delete_handle.pullDown()
         this.repeatedShiftLeft(6)
 
-        return this.sleep(500)
+        return sleep(500)
     }
 
     // Synchronous API to retrieve values from the state of the machine.
@@ -476,4 +454,10 @@ function updateInputRecommendations(selected: Selectable | undefined) {
             htmlElement.append(span)
         })
     }
+}
+
+async function sleep(milliseconds: number): Promise<void> {
+    return new Promise((resolve) => {
+        setTimeout(resolve, milliseconds)
+    })
 }

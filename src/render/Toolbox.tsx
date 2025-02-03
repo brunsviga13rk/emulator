@@ -18,7 +18,11 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore'
 import { useRef, useState } from 'react'
-import { Brunsviga13rk } from '../model/brunsviga13rk'
+import {
+    Brunsviga13rk,
+    BrunsvigaAnimationEventType,
+} from '../model/brunsviga13rk'
+import { EventHandler } from '../model/events'
 
 const options = ['Clear counter', 'Clear input', 'Clear result', 'Clear all']
 const tips = [
@@ -29,9 +33,24 @@ const tips = [
 ]
 
 export default function Toolbox() {
+    const [ready, setReady] = useState(false)
     const [open, setOpen] = useState(false)
     const anchorRef = useRef<HTMLDivElement>(null)
     const [selectedIndex, setSelectedIndex] = useState(1)
+
+    Brunsviga13rk.getInstance()
+        .getEmitter()
+        .subscribe(
+            BrunsvigaAnimationEventType.AnimationStarted,
+            new EventHandler(() => setReady(false))
+        )
+
+    Brunsviga13rk.getInstance()
+        .getEmitter()
+        .subscribe(
+            BrunsvigaAnimationEventType.AnimationEnded,
+            new EventHandler(() => setReady(true))
+        )
 
     const handleClick = () => {
         const api = Brunsviga13rk.getInstance()
@@ -84,12 +103,16 @@ export default function Toolbox() {
         >
             <ButtonGroup variant="contained" color="inherit" size="small">
                 <Tooltip title="Add">
-                    <Button onClick={() => Brunsviga13rk.getInstance().add()}>
+                    <Button
+                        disabled={!ready}
+                        onClick={() => Brunsviga13rk.getInstance().add()}
+                    >
                         <RotateRightOutlinedIcon />
                     </Button>
                 </Tooltip>
                 <Tooltip title="Subtract">
                     <Button
+                        disabled={!ready}
                         onClick={() => Brunsviga13rk.getInstance().subtract()}
                     >
                         <RotateLeftOutlinedIcon />
@@ -97,6 +120,7 @@ export default function Toolbox() {
                 </Tooltip>
                 <Tooltip title="Shift sled right">
                     <Button
+                        disabled={!ready}
                         onClick={() => Brunsviga13rk.getInstance().shiftRight()}
                     >
                         <SwipeRightIcon />
@@ -104,6 +128,7 @@ export default function Toolbox() {
                 </Tooltip>
                 <Tooltip title="Shift sled left">
                     <Button
+                        disabled={!ready}
                         onClick={() => Brunsviga13rk.getInstance().shiftLeft()}
                     >
                         <SwipeLeftIcon />

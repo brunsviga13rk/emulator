@@ -83,7 +83,7 @@ function initThree(parent: HTMLElement) {
     // Setup the environment lightmap, background and ground plate.
     setupEnvironment(engine)
 
-    Brunsviga13rk.createInstance(
+    Brunsviga13rk.initInstance(
         engine,
         () => postLoadSetup(engine),
         onLoadingError
