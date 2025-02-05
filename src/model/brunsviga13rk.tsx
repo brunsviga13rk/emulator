@@ -25,6 +25,7 @@ import { CounterResetHandle } from './handles/counterResetHandle'
 import { Direction, Sled } from './sled'
 import { EventBroker, EventEmitter, Tautology } from './events'
 import { Dispatch, SetStateAction } from 'react'
+import { AnimationScalarState } from './animation'
 
 export enum BrunsvigaAnimationEventType {
     AnimationStarted,
@@ -37,6 +38,12 @@ type BrunsvigaAnimationEventContent = undefined
  * Hooks executed when the machine is done initializing.
  */
 export type onInitHook = (instancer: Brunsviga13rk) => void
+
+/**
+ * Milliseconds in which no animation takes place after which and AnimationEnded
+ * event is emitted.
+ */
+const ANIMATION_END_DELAY_TIME: number = 500
 
 export class Brunsviga13rk
     implements
@@ -92,6 +99,8 @@ export class Brunsviga13rk
     result_reset_handle!: ResultResetHandle
     sled!: Sled
     _setRecommendations!: Dispatch<SetStateAction<UserAction[]>>
+    animationOngoing = false
+    animationStateChangeCounter = 0
 
     private static instance: Brunsviga13rk = new Brunsviga13rk()
 
@@ -231,7 +240,7 @@ export class Brunsviga13rk
     }
 
     onClick(event: MouseEvent) {
-        if (this.selected) {
+        if (this.selected && !AnimationScalarState.isAnyAnimationOngoing()) {
             this.selected[0].onClick(event, this.selected[1].object)
         }
     }
@@ -251,6 +260,32 @@ export class Brunsviga13rk
             this.counter_reset_handle.perform(delta)
             this.result_reset_handle.perform(delta)
             this.sled.perform(delta)
+
+            // Get current frame animation state.
+            const lastAnimationOngoing =
+                AnimationScalarState.isAnyAnimationOngoing()
+
+            if (this.animationOngoing && !lastAnimationOngoing) {
+                this.animationStateChangeCounter += delta
+            } else if (!this.animationOngoing && lastAnimationOngoing) {
+                this.emitter.emit(
+                    BrunsvigaAnimationEventType.AnimationStarted,
+                    undefined
+                )
+            } else if (this.animationStateChangeCounter > 0) {
+                this.animationStateChangeCounter += delta
+            }
+
+            // Store animation state for next frame.
+            this.animationOngoing = lastAnimationOngoing
+
+            if (this.animationStateChangeCounter >= ANIMATION_END_DELAY_TIME) {
+                this.animationStateChangeCounter = 0
+                this.emitter.emit(
+                    BrunsvigaAnimationEventType.AnimationEnded,
+                    undefined
+                )
+            }
         }
     }
 
@@ -311,18 +346,8 @@ export class Brunsviga13rk
     }
 
     private async sleep(milliseconds: number): Promise<void> {
-        this.getEmitter().emit(
-            BrunsvigaAnimationEventType.AnimationStarted,
-            undefined
-        )
         return new Promise((resolve) => {
             setTimeout(resolve, milliseconds)
-            setTimeout(() => {
-                this.getEmitter().emit(
-                    BrunsvigaAnimationEventType.AnimationEnded,
-                    undefined
-                )
-            }, milliseconds)
         })
     }
 

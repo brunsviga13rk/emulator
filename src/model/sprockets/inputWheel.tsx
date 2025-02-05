@@ -5,6 +5,7 @@ import { EventBroker, EventEmitter, EventHandler } from '../events'
 import { ActionHandler } from '../../actionHandler'
 import { Brunsviga13rk } from '../brunsviga13rk'
 import { HandleEventType } from '../handles/handle'
+import { AnimationScalarState } from '../animation'
 
 const INPUT_WHEEL_DIGITS = 10
 const INPUT_WHEEL_MESH_NAME = 'selctor_sprocket_wheel'
@@ -49,6 +50,15 @@ export class InputWheel
         // operate in reverse direction as the display sprocket wheels.
         for (let i = 1; i <= INPUT_WHEEL_DIGITS; i++) {
             this.wheel.rotate(i, -1)
+        }
+
+        // Apply inital rotation to fix global animation counter state.
+        for (let i = 1; i <= INPUT_WHEEL_DIGITS; i++) {
+            this.wheel.rotate(i, -1)
+
+            while (AnimationScalarState.isAnyAnimationOngoing()) {
+                this.wheel.perform(1.0)
+            }
         }
 
         this.emitter = new EventEmitter()

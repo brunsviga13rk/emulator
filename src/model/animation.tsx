@@ -214,6 +214,8 @@ export class AnimationScalarState
         AnimationScalarConditon
     >
 
+    private static isAnimationOngoing = 0
+
     public constructor(
         initialState: number,
         interpolation: InterpolationMethod = LinearInterpolation,
@@ -264,6 +266,8 @@ export class AnimationScalarState
             // Remove first element which is the reached target.
             this._targetState.splice(0, 1)
             this.advanceFactor = 0.0
+
+            AnimationScalarState.isAnimationOngoing -= 1
         } else {
             this._currentState = this._interpolation(
                 this.zeroState,
@@ -305,6 +309,7 @@ export class AnimationScalarState
                 AnimationScalarStateEventType.StateChanged,
                 this.synchronizeHandler
             )
+        AnimationScalarState.isAnimationOngoing -= this._targetState.length
         this._targetState = []
         this.advanceFactor = 0
         this.zeroState = this._currentState
@@ -359,9 +364,15 @@ export class AnimationScalarState
 
     public set targetState(targetState: number) {
         this._targetState.push(targetState)
+
+        AnimationScalarState.isAnimationOngoing += 1
     }
 
     public get currentState(): number {
         return this._currentState
+    }
+
+    public static isAnyAnimationOngoing(): boolean {
+        return AnimationScalarState.isAnimationOngoing > 0
     }
 }

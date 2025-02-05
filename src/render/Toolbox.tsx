@@ -33,7 +33,7 @@ const tips = [
 ]
 
 export default function Toolbox() {
-    const [ready, setReady] = useState(false)
+    const [ready, setReady] = useState(true)
     const [open, setOpen] = useState(false)
     const anchorRef = useRef<HTMLDivElement>(null)
     const [selectedIndex, setSelectedIndex] = useState(1)
