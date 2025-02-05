@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
     Box,
     Card,
     CardActions,
     CardContent,
     Collapse,
+    Container,
     IconButton,
     IconButtonProps,
     InputBase,
@@ -119,8 +120,17 @@ export function Editor() {
         executeInstruction(tokens).then(() => setReady(true))
     }
 
+    const [interiorHeight, setInteriorHeight] = useState(0)
+
+    const measuredRef = useCallback((node) => {
+        if (node !== null) {
+            console.log(node.getBoundingClientRect().height)
+            setInteriorHeight(node.getBoundingClientRect().height)
+        }
+    }, [])
+
     return (
-        <Stack sx={{ height: '100%' }}>
+        <Stack sx={{ flexGrow: 1 }} ref={measuredRef}>
             <Paper
                 component="form"
                 sx={{
@@ -165,7 +175,12 @@ export function Editor() {
             ) : (
                 <></>
             )}
-            <Stack sx={{ height: '100%', overflow: 'scroll' }}>
+            <Container
+                sx={{
+                    height: `${interiorHeight}px`,
+                    overflow: 'scroll',
+                }}
+            >
                 {tokens.map((token, index) => (
                     <Stack direction="row" key={index}>
                         <span className="my-auto">{index + 1}</span>
@@ -176,7 +191,7 @@ export function Editor() {
                         />
                     </Stack>
                 ))}
-            </Stack>
+            </Container>
         </Stack>
     )
 }

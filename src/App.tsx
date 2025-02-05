@@ -2,7 +2,15 @@ import Renderer from './render/Renderer.tsx'
 import { Header } from './Header.tsx'
 import { Editor as Solver } from './solver/Editor.tsx'
 import { Editor as Coder } from './api/Editor.tsx'
-import { Box, CircularProgress, Grid2, Stack, Tab, Tabs } from '@mui/material'
+import {
+    Box,
+    CircularProgress,
+    Grid2,
+    Paper,
+    Stack,
+    Tab,
+    Tabs,
+} from '@mui/material'
 import Dashboard from './Dashboard.tsx'
 import { useState } from 'react'
 import CalculateIcon from '@mui/icons-material/Calculate'
@@ -23,11 +31,23 @@ function CustomTabPanel(props: TabPanelProps) {
             hidden={value !== index}
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
-            style={{ height: '100%' }}
+            sx={{
+                display: 'flex',
+                flexGrow: 1,
+                flexDirection: 'column',
+            }}
             {...other}
         >
             {value === index && (
-                <Box sx={{ pt: 3, height: '100%' }}>{children}</Box>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexGrow: 1,
+                        flexDirection: 'column',
+                    }}
+                >
+                    {children}
+                </Box>
             )}
         </Box>
     )
@@ -70,39 +90,59 @@ function App() {
                     size={{ sm: 12, md: 5 }}
                     sx={{ padding: '1rem', height: '100%' }}
                 >
-                    <Stack spacing={2} sx={{ height: '100%' }}>
+                    <Box
+                        sx={{
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
+                    >
                         <Dashboard />
-                        <Box sx={{ width: '100%', height: '100%' }}>
-                            <Box
-                                sx={{ borderBottom: 1, borderColor: 'divider' }}
+                        <Tabs
+                            value={value}
+                            sx={{ flexShrink: 0 }}
+                            onChange={handleChange}
+                            centered
+                        >
+                            <Tab
+                                icon={<CalculateIcon />}
+                                iconPosition="start"
+                                label="Solver"
+                                {...a11yProps(0)}
+                            />
+                            <Tab
+                                icon={<CodeIcon />}
+                                iconPosition="start"
+                                label="Code"
+                                {...a11yProps(1)}
+                            />
+                        </Tabs>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                flexGrow: 1,
+                            }}
+                        >
+                            <Paper
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    flexGrow: 1,
+                                    padding: 2,
+                                }}
+                                elevation={0}
+                                variant="outlined"
                             >
-                                <Tabs
-                                    value={value}
-                                    onChange={handleChange}
-                                    centered
-                                >
-                                    <Tab
-                                        icon={<CalculateIcon />}
-                                        iconPosition="start"
-                                        label="Solver"
-                                        {...a11yProps(0)}
-                                    />
-                                    <Tab
-                                        icon={<CodeIcon />}
-                                        iconPosition="start"
-                                        label="Code"
-                                        {...a11yProps(1)}
-                                    />
-                                </Tabs>
-                            </Box>
-                            <CustomTabPanel value={value} index={0}>
-                                <Solver />
-                            </CustomTabPanel>
-                            <CustomTabPanel value={value} index={1}>
-                                <Coder />
-                            </CustomTabPanel>
+                                <CustomTabPanel value={value} index={0}>
+                                    <Solver />
+                                </CustomTabPanel>
+                                <CustomTabPanel value={value} index={1}>
+                                    <Coder />
+                                </CustomTabPanel>
+                            </Paper>
                         </Box>
-                    </Stack>
+                    </Box>
                 </Grid2>
             </Grid2>
             <div

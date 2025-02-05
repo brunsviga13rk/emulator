@@ -1,6 +1,5 @@
 import {
     Divider,
-    Grid2,
     IconButton,
     Input,
     Paper,
@@ -111,28 +110,34 @@ function RegisterState({ title, min, max, sprocket }: RegisterStateProps) {
 
 export default function Dashboard() {
     return (
-        <Stack
-            spacing={2}
-            divider={<Divider orientation="horizontal" flexItem />}
+        <Paper
+            sx={{ position: 'static', padding: 2 }}
+            elevation={0}
+            variant="outlined"
         >
-            <RegisterState
-                title="Counter register"
-                min={0}
-                max={99}
-                sprocket={Sprocket.Counter}
-            />
-            <RegisterState
-                title="Input register"
-                min={0}
-                max={MAX_INPUT_SPROCKET_VALUE}
-                sprocket={Sprocket.Input}
-            />
-            <RegisterState
-                title="Result register"
-                min={0}
-                max={99}
-                sprocket={Sprocket.Result}
-            />
-        </Stack>
+            <Stack
+                spacing={2}
+                divider={<Divider orientation="horizontal" flexItem />}
+            >
+                <RegisterState
+                    title="Counter register"
+                    min={0}
+                    max={99}
+                    sprocket={Sprocket.Counter}
+                />
+                <RegisterState
+                    title="Input register"
+                    min={0}
+                    max={MAX_INPUT_SPROCKET_VALUE}
+                    sprocket={Sprocket.Input}
+                />
+                <RegisterState
+                    title="Result register"
+                    min={0}
+                    max={99}
+                    sprocket={Sprocket.Result}
+                />
+            </Stack>
+        </Paper>
     )
 }
