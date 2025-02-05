@@ -43,7 +43,7 @@ export type onInitHook = (instancer: Brunsviga13rk) => void
  * Milliseconds in which no animation takes place after which and AnimationEnded
  * event is emitted.
  */
-const ANIMATION_END_DELAY_TIME: number = 500
+const ANIMATION_END_DELAY_TIME: number = 1000
 
 export class Brunsviga13rk
     implements
