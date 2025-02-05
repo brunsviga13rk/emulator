@@ -12,7 +12,7 @@ import GitHubIcon from '@mui/icons-material/GitHub'
 
 export function Header() {
     return (
-        <AppBar position="fixed" color="inherit">
+        <AppBar position="fixed" color="inherit" variant="outlined">
             <Toolbar>
                 <img
                     className="w-auto p-2"
