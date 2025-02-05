@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react'
 import {
     Box,
+    Button,
+    ButtonGroup,
     Card,
     CardActions,
     CardContent,
@@ -11,12 +13,14 @@ import {
     InputBase,
     Paper,
     Stack,
+    StepIcon,
     styled,
 } from '@mui/material'
 import FunctionsIcon from '@mui/icons-material/Functions'
 import { Instruction, solve } from './solve'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import StopIcon from '@mui/icons-material/Stop'
 
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean
@@ -110,6 +114,7 @@ export function Editor() {
     const [input, setInput] = useState('')
     const [tokens, setTokens] = useState<Instruction[]>([])
     const [ready, setReady] = useState(true)
+    const [running, setRunning] = useState(false)
 
     function onSolve() {
         setTokens(solve(input))
@@ -117,7 +122,11 @@ export function Editor() {
 
     const handleExecuteAll = () => {
         setReady(false)
-        executeInstruction(tokens).then(() => setReady(true))
+        setRunning(true)
+        executeInstruction(tokens).then(() => {
+            setReady(true)
+            setRunning(false)
+        })
     }
 
     const [interiorHeight, setInteriorHeight] = useState(0)
@@ -158,20 +167,31 @@ export function Editor() {
                 </IconButton>
             </Paper>
             {tokens.length ? (
-                <Box
+                <Stack
+                    direction="row"
                     className="pt-4 mb-4"
-                    sx={{ borderBottom: 1, borderColor: 'divider' }}
+                    sx={{
+                        paddingBottom: 1,
+                        paddingTop: 3,
+                        borderBottom: 1,
+                        borderColor: 'divider',
+                    }}
+                    alignContent="center"
                 >
                     <span className="mr-auto">{`Solution (${tokens.length} steps):`}</span>
-                    <IconButton
+                    <ButtonGroup
                         style={{ marginLeft: 'auto' }}
-                        aria-label="add to favorites"
-                        onClick={handleExecuteAll}
-                        disabled={!ready}
+                        size="small"
+                        variant="contained"
                     >
-                        <PlayArrowIcon />
-                    </IconButton>
-                </Box>
+                        <Button
+                            onClick={handleExecuteAll}
+                            color={running ? 'error' : 'primary'}
+                        >
+                            {running ? <StopIcon /> : <PlayArrowIcon />}
+                        </Button>
+                    </ButtonGroup>
+                </Stack>
             ) : (
                 <></>
             )}
