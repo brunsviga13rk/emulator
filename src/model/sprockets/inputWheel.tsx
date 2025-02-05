@@ -94,8 +94,8 @@ export class InputWheel
         this.wheel.setDigit(digit, 9 - digitValue)
     }
 
-    perform(delta: number): boolean {
-        return this.wheel.perform(delta)
+    perform(delta: number): void {
+        this.wheel.perform(delta)
     }
 
     getEmitter(): EventEmitter<

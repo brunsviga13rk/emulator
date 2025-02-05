@@ -104,16 +104,11 @@ export class SprocketWheel
         return this.emitter
     }
 
-    public perform(delta: number): boolean {
-        let animationDone = true
-
+    public perform(delta: number): void {
         for (let i = 0; i < this.digits; i++) {
             this.rotationAnimations[i].advance(delta)
             this.wheels[i].rotation.y = this.rotationAnimations[i].currentState
-            animationDone &&= this.rotationAnimations[i].isAnimationDone()
         }
-
-        return animationDone
     }
 
     /**

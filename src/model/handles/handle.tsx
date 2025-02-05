@@ -146,7 +146,7 @@ export class Handle
         return [this.mesh]
     }
 
-    perform(delta: number): boolean {
+    perform(delta: number): void {
         this.animationState.advance(delta)
         this.mesh.rotation.y = this.animationState.currentState
 
@@ -167,8 +167,6 @@ export class Handle
             this.emitter.emit(HandleEventType.PullDownDone, undefined)
             this.limitReached = true
         }
-
-        return this._animationState.isAnimationDone()
     }
 
     public get angleLimits(): [minAngle: number, maxAngle: number] {
