@@ -310,6 +310,22 @@ export class Brunsviga13rk
         this._setRecommendations = setter
     }
 
+    private async sleep(milliseconds: number): Promise<void> {
+        this.getEmitter().emit(
+            BrunsvigaAnimationEventType.AnimationStarted,
+            undefined
+        )
+        return new Promise((resolve) => {
+            setTimeout(resolve, milliseconds)
+            setTimeout(() => {
+                this.getEmitter().emit(
+                    BrunsvigaAnimationEventType.AnimationEnded,
+                    undefined
+                )
+            }, milliseconds)
+        })
+    }
+
     // Brunsviga 13 RK programmatic API
     // ========================================================================
     // Application interface for interacting with the Brunsviga how a human
@@ -351,56 +367,56 @@ export class Brunsviga13rk
             this.input_sprocket.setDigit(digit, 0)
         }
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async add(): Promise<void> {
         this.operation_crank.add()
 
-        return sleep(700)
+        return this.sleep(700)
     }
 
     public async subtract(): Promise<void> {
         this.operation_crank.subtract()
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async shiftLeft(): Promise<void> {
         this.sled.shift(Direction.Left)
 
-        return sleep(100)
+        return this.sleep(100)
     }
 
     public async shiftRight(): Promise<void> {
         this.sled.shift(Direction.Right)
 
-        return sleep(100)
+        return this.sleep(100)
     }
 
     public async clearOutputRegister(): Promise<void> {
         this.result_reset_handle.pullDown()
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async clearInputRegister(): Promise<void> {
         this.delete_input_handle.pullDown()
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async clearCounterRegister(): Promise<void> {
         this.counter_reset_handle.pullDown()
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async clearRegisters(): Promise<void> {
         this.delete_handle.pullDown()
         this.repeatedShiftLeft(6)
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     // Synchronous API to retrieve values from the state of the machine.
@@ -468,10 +484,4 @@ export class Brunsviga13rk
             }
         }
     }
-}
-
-async function sleep(milliseconds: number): Promise<void> {
-    return new Promise((resolve) => {
-        setTimeout(resolve, milliseconds)
-    })
 }
