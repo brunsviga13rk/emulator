@@ -1,8 +1,8 @@
-import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import { useState } from 'react'
 import { UserAction } from '../model/selectable'
 import { Brunsviga13rk } from '../model/brunsviga13rk'
+import Paper from '@mui/material/Paper'
 
 export default function ActionRecommendations() {
     const [actions, setActions] = useState<UserAction[]>([])
@@ -23,11 +23,15 @@ export default function ActionRecommendations() {
         >
             {actions ? (
                 actions.map(([action, description]) => (
-                    <Chip
+                    <Paper
+                        variant="elevation"
+                        elevation={4}
                         key={description}
-                        label={description}
-                        icon={<i className={`ph ${action as string}`} />}
-                    ></Chip>
+                        sx={{ padding: 1 }}
+                    >
+                        <i className={`ph ${action as string}`} />
+                        {description}
+                    </Paper>
                 ))
             ) : (
                 <></>
