@@ -5,17 +5,32 @@
 
 <div align="center">
     <h2>Brunsviga 13 RK emulator</h2>
+    <p>
+        Web based emulation of the Brunsviga 13 RK
+        mechanical calculator from the 1950s.
+    </p>
     <img src="https://img.shields.io/github/check-runs/brunsviga13rk/emulator/main">
     <img src="https://img.shields.io/github/deployments/brunsviga13rk/emulator/github-pages?label=deployment">
     <img src="https://img.shields.io/github/package-json/v/brunsviga13rk/emulator">
     <img src="https://img.shields.io/github/license/brunsviga13rk/emulator">
     <img src="https://img.shields.io/github/languages/top/brunsviga13rk/emulator">
-    <p>
-        Web based emulation of the Brunsviga 13 RK
-        mechanical calculator from the 1950s.
-    </p>
+    <br>
+    <img src="https://img.shields.io/badge/MUI-%230081CB.svg?logo=mui&logoColor=white">
+    <img src="https://img.shields.io/badge/react-%2320232a.svg?logo=react&logoColor=%2361DAFB">
+    <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?logo=tailwind-css&logoColor=white">
+    <img src="https://img.shields.io/badge/vite-%23646CFF.svg?logo=vite&logoColor=white">
+    <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?logo=typescript&logoColor=white">
+    <img src="https://img.shields.io/badge/lua-%232C2D72.svg?logo=lua&logoColor=white">
+    <br>
+    <img src="https://img.shields.io/badge/github%20pages-121013?logo=github&logoColor=white">
 </div>
 <br>
+
+# Features
+
+- Fully interactive 3D visualisation
+- Automatically geberate steps for calculation
+- Lua scripting
 
 # Technology
 
@@ -27,7 +42,8 @@ following list of frameworks and build systems was chosen:
 - 🎁 Three.js (WebGL abstraction)
 - 🧻 Typescript (typesafe(r) Javascript)
 - 🌪️ Tailwind CSS (styling through classes)
-- 🥾 Bootstrap icons (scalable vector images)
+- 🌍 Material UI
+- 🌕 Lua scripting
 - 🔥 Phosphor Icons
 
 # Quick Start
