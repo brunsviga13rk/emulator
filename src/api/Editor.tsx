@@ -5,6 +5,7 @@ import { Button, ButtonGroup, Divider, Stack } from '@mui/material'
 import StopOutlinedIcon from '@mui/icons-material/StopOutlined'
 import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined'
 import './userWorker'
+import template from './template.lua?raw'
 
 export const Editor: VFC = () => {
     const [editor, setEditor] =
@@ -17,7 +18,7 @@ export const Editor: VFC = () => {
                 if (editor) return editor
 
                 return monaco.editor.create(monacoEl.current!, {
-                    value: '',
+                    value: template,
                     language: 'lua',
                     tabSize: 2,
                 })
