@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import {
     Button,
     ButtonGroup,
@@ -12,7 +12,6 @@ import {
     InputBase,
     Paper,
     Stack,
-    StepIcon,
     styled,
 } from '@mui/material'
 import FunctionsIcon from '@mui/icons-material/Functions'
@@ -179,17 +178,8 @@ export function Editor() {
         }
     }
 
-    const [interiorHeight, setInteriorHeight] = useState(0)
-
-    const measuredRef = useCallback((node) => {
-        if (node !== null) {
-            console.log(node.getBoundingClientRect().height)
-            setInteriorHeight(node.getBoundingClientRect().height - 128)
-        }
-    }, [])
-
     return (
-        <Stack sx={{ height: '100%' }} ref={measuredRef}>
+        <Stack sx={{ height: '100%' }}>
             <Paper
                 component="form"
                 sx={{
