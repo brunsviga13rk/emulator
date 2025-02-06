@@ -44,9 +44,6 @@ export const Editor: VFC = () => {
                     <Button onClick={runProgram}>
                         <PlayArrowOutlinedIcon />
                     </Button>
-                    <Button>
-                        <StopOutlinedIcon />
-                    </Button>
                 </ButtonGroup>
             </Stack>
             <Divider sx={{ marginY: 2 }} />
