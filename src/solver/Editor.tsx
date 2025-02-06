@@ -184,18 +184,19 @@ export function Editor() {
     const measuredRef = useCallback((node) => {
         if (node !== null) {
             console.log(node.getBoundingClientRect().height)
-            setInteriorHeight(node.getBoundingClientRect().height)
+            setInteriorHeight(node.getBoundingClientRect().height - 128)
         }
     }, [])
 
     return (
-        <Stack sx={{ flexGrow: 1 }} ref={measuredRef}>
+        <Stack sx={{ height: '100%' }} ref={measuredRef}>
             <Paper
                 component="form"
                 sx={{
                     p: '2px 4px',
                     display: 'flex',
                     alignItems: 'center',
+                    height: '3rem',
                 }}
             >
                 <InputBase
@@ -225,6 +226,7 @@ export function Editor() {
                         paddingTop: 3,
                         borderBottom: 1,
                         borderColor: 'divider',
+                        height: '4rem',
                     }}
                     alignContent="center"
                 >
@@ -266,7 +268,7 @@ export function Editor() {
             )}
             <Container
                 sx={{
-                    height: `${interiorHeight}px`,
+                    height: 'calc(100% - 7rem)',
                     overflow: 'scroll',
                 }}
             >

@@ -33,7 +33,7 @@ function CustomTabPanel(props: TabPanelProps) {
             aria-labelledby={`simple-tab-${index}`}
             sx={{
                 display: 'flex',
-                flexGrow: 1,
+                height: `${value === index ? '100%' : '0'}`,
                 flexDirection: 'column',
             }}
             {...other}
@@ -42,7 +42,7 @@ function CustomTabPanel(props: TabPanelProps) {
                 <Box
                     sx={{
                         display: 'flex',
-                        flexGrow: 1,
+                        height: '100%',
                         flexDirection: 'column',
                     }}
                 >
@@ -74,11 +74,7 @@ function App() {
                 container
                 spacing={1}
                 sx={{
-                    position: 'fixed',
-                    top: '4rem',
-                    bottom: 0,
-                    right: 0,
-                    left: 0,
+                    height: 'calc(100% - 4rem)',
                 }}
             >
                 <Grid2 size={{ sm: 12, md: 7 }} sx={{ padding: '1rem' }}>
@@ -90,58 +86,50 @@ function App() {
                     size={{ sm: 12, md: 5 }}
                     sx={{ padding: '1rem', height: '100%' }}
                 >
+                    <Dashboard />
+                    <Tabs
+                        value={value}
+                        sx={{ flexShrink: 0, height: '4rem' }}
+                        onChange={handleChange}
+                        centered
+                    >
+                        <Tab
+                            icon={<CalculateIcon />}
+                            iconPosition="start"
+                            label="Solver"
+                            {...a11yProps(0)}
+                        />
+                        <Tab
+                            icon={<CodeIcon />}
+                            iconPosition="start"
+                            label="Code"
+                            {...a11yProps(1)}
+                        />
+                    </Tabs>
                     <Box
                         sx={{
-                            height: '100%',
                             display: 'flex',
                             flexDirection: 'column',
+                            height: 'calc(100% - 18rem)',
                         }}
                     >
-                        <Dashboard />
-                        <Tabs
-                            value={value}
-                            sx={{ flexShrink: 0 }}
-                            onChange={handleChange}
-                            centered
-                        >
-                            <Tab
-                                icon={<CalculateIcon />}
-                                iconPosition="start"
-                                label="Solver"
-                                {...a11yProps(0)}
-                            />
-                            <Tab
-                                icon={<CodeIcon />}
-                                iconPosition="start"
-                                label="Code"
-                                {...a11yProps(1)}
-                            />
-                        </Tabs>
-                        <Box
+                        <Paper
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',
-                                flexGrow: 1,
+                                height: '100%',
+                                padding: 2,
                             }}
+                            elevation={0}
+                            variant="outlined"
                         >
-                            <Paper
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    flexGrow: 1,
-                                    padding: 2,
-                                }}
-                                elevation={0}
-                                variant="outlined"
-                            >
-                                <CustomTabPanel value={value} index={0}>
-                                    <Solver />
-                                </CustomTabPanel>
-                                <CustomTabPanel value={value} index={1}>
-                                    <Coder />
-                                </CustomTabPanel>
-                            </Paper>
-                        </Box>
+                            <CustomTabPanel value={value} index={0}>
+                                <Solver />
+                            </CustomTabPanel>
+                            <CustomTabPanel value={value} index={1}>
+                                <Coder />
+                            </CustomTabPanel>
+                        </Paper>
                     </Box>
                 </Grid2>
             </Grid2>
