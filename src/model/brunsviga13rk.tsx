@@ -7,10 +7,10 @@ import {
     Vector2,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { Engine } from '../engine'
+import { Engine } from '../render/engine'
 import { ActionHandler } from '../actionHandler'
 import { InputWheel } from './sprockets/inputWheel'
-import { Selectable } from './selectable'
+import { Selectable, UserAction } from './selectable'
 import {
     InputSprocket,
     MAX_INPUT_SPROCKET_VALUE,
@@ -23,8 +23,37 @@ import { CommataBar } from './commata'
 import { ResultResetHandle } from './handles/resultResetHandle'
 import { CounterResetHandle } from './handles/counterResetHandle'
 import { Direction, Sled } from './sled'
+import { EventBroker, EventEmitter, Tautology } from './events'
+import { Dispatch, SetStateAction } from 'react'
+import { AnimationScalarState } from './animation'
 
-export class Brunsviga13rk implements ActionHandler {
+export enum BrunsvigaAnimationEventType {
+    AnimationStarted,
+    AnimationEnded,
+}
+
+type BrunsvigaAnimationEventContent = undefined
+
+/**
+ * Hooks executed when the machine is done initializing.
+ */
+export type onInitHook = (instancer: Brunsviga13rk) => void
+
+/**
+ * Milliseconds in which no animation takes place after which and AnimationEnded
+ * event is emitted.
+ */
+const ANIMATION_END_DELAY_TIME: number = 1000
+
+export class Brunsviga13rk
+    implements
+        ActionHandler,
+        EventBroker<
+            BrunsvigaAnimationEventType,
+            BrunsvigaAnimationEventContent,
+            Brunsviga13rk
+        >
+{
     /**
      * Scene containing all meshes of the Brunsviga 13 RK.
      * @default
@@ -47,8 +76,15 @@ export class Brunsviga13rk implements ActionHandler {
     selectables: Selectable[] = []
     raycaster: Raycaster
     pointer: Vector2
-    engine: Engine
-
+    engine!: Engine
+    emitter: EventEmitter<
+        BrunsvigaAnimationEventType,
+        BrunsvigaAnimationEventContent,
+        Brunsviga13rk
+    >
+    onInitHooks: onInitHook[]
+    animationStateActive: boolean
+    animationStateFinishCounter: number
     input_sprocket!: InputSprocket
     counter_sprocket!: CounterSprocket
     result_sprocket!: ResultSprocket
@@ -62,40 +98,42 @@ export class Brunsviga13rk implements ActionHandler {
     counter_reset_handle!: CounterResetHandle
     result_reset_handle!: ResultResetHandle
     sled!: Sled
+    _setRecommendations!: Dispatch<SetStateAction<UserAction[]>>
+    animationOngoing = false
+    animationStateChangeCounter = 0
 
-    private static instance: Brunsviga13rk | undefined = undefined
+    private static instance: Brunsviga13rk = new Brunsviga13rk()
 
-    public static createInstance(
+    public static initInstance(
         engine: Engine,
         onModelLoaded: () => void,
         onLoadingError: (error: unknown) => void
-    ): Brunsviga13rk {
-        if (!Brunsviga13rk.instance) {
-            Brunsviga13rk.instance = new Brunsviga13rk(
-                engine,
-                onModelLoaded,
-                onLoadingError
-            )
+    ) {
+        if (Brunsviga13rk.instance) {
+            Brunsviga13rk.instance.init(engine, onModelLoaded, onLoadingError)
         }
-
-        return Brunsviga13rk.instance
     }
 
     public static getInstance(): Brunsviga13rk {
-        if (!Brunsviga13rk.instance) {
-            throw new Error('No instance created yet')
-        }
         return Brunsviga13rk.instance
     }
 
-    private constructor(
+    private constructor() {
+        this.onInitHooks = []
+        this.animationStateActive = false
+        this.animationStateFinishCounter = 0
+        this.raycaster = new Raycaster()
+        this.pointer = new Vector2()
+        this.emitter = new EventEmitter()
+        this.emitter.setActor(this)
+    }
+
+    private init(
         engine: Engine,
         onModelLoaded: () => void,
         onLoadingError: (error: unknown) => void
     ) {
         this.engine = engine
-        this.raycaster = new Raycaster()
-        this.pointer = new Vector2()
 
         // Load model.
         const loader = new GLTFLoader()
@@ -171,6 +209,9 @@ export class Brunsviga13rk implements ActionHandler {
 
                 // Handle events.
                 engine.registerActionHandler(this)
+
+                // Run post init hooks.
+                this.onInitHooks.forEach((hook) => hook(this))
             },
             undefined,
             onLoadingError
@@ -185,13 +226,26 @@ export class Brunsviga13rk implements ActionHandler {
         }
     }
 
+    public whenReady(hook: onInitHook) {
+        this.onInitHooks.push(hook)
+    }
+
+    getEmitter(): EventEmitter<
+        BrunsvigaAnimationEventType,
+        undefined,
+        Brunsviga13rk,
+        Tautology
+    > {
+        return this.emitter
+    }
+
     onClick(event: MouseEvent) {
-        if (this.selected) {
+        if (this.selected && !AnimationScalarState.isAnyAnimationOngoing()) {
             this.selected[0].onClick(event, this.selected[1].object)
         }
     }
 
-    perform(delta: number): void {
+    perform(delta: number) {
         if (this.scene) {
             this.input_sprocket.perform(delta)
             this.counter_sprocket.perform(delta)
@@ -206,6 +260,32 @@ export class Brunsviga13rk implements ActionHandler {
             this.counter_reset_handle.perform(delta)
             this.result_reset_handle.perform(delta)
             this.sled.perform(delta)
+
+            // Get current frame animation state.
+            const lastAnimationOngoing =
+                AnimationScalarState.isAnyAnimationOngoing()
+
+            if (this.animationOngoing && !lastAnimationOngoing) {
+                this.animationStateChangeCounter += delta
+            } else if (!this.animationOngoing && lastAnimationOngoing) {
+                this.emitter.emit(
+                    BrunsvigaAnimationEventType.AnimationStarted,
+                    undefined
+                )
+            } else if (this.animationStateChangeCounter > 0) {
+                this.animationStateChangeCounter += delta
+            }
+
+            // Store animation state for next frame.
+            this.animationOngoing = lastAnimationOngoing
+
+            if (this.animationStateChangeCounter >= ANIMATION_END_DELAY_TIME) {
+                this.animationStateChangeCounter = 0
+                this.emitter.emit(
+                    BrunsvigaAnimationEventType.AnimationEnded,
+                    undefined
+                )
+            }
         }
     }
 
@@ -247,10 +327,28 @@ export class Brunsviga13rk implements ActionHandler {
             const [, outlinePass] = this.engine.passes
             outlinePass.selectedObjects = selection
 
-            updateInputRecommendations(
-                this.selected == undefined ? undefined : this.selected[0]
-            )
+            let actions: UserAction[] = []
+
+            if (this.selected !== undefined) {
+                const selected = this.selected[0]
+
+                if (selected != undefined) {
+                    actions = selected.getAvailableUserActions()
+                }
+            }
+
+            this._setRecommendations(actions)
         }
+    }
+
+    public set recommendations(setter: Dispatch<SetStateAction<UserAction[]>>) {
+        this._setRecommendations = setter
+    }
+
+    private async sleep(milliseconds: number): Promise<void> {
+        return new Promise((resolve) => {
+            setTimeout(resolve, milliseconds)
+        })
     }
 
     // Brunsviga 13 RK programmatic API
@@ -294,56 +392,71 @@ export class Brunsviga13rk implements ActionHandler {
             this.input_sprocket.setDigit(digit, 0)
         }
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async add(): Promise<void> {
         this.operation_crank.add()
 
-        return sleep(700)
+        return this.sleep(700)
     }
 
     public async subtract(): Promise<void> {
         this.operation_crank.subtract()
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async shiftLeft(): Promise<void> {
         this.sled.shift(Direction.Left)
 
-        return sleep(100)
+        return this.sleep(100)
     }
 
     public async shiftRight(): Promise<void> {
         this.sled.shift(Direction.Right)
 
-        return sleep(100)
+        return this.sleep(100)
     }
 
     public async clearOutputRegister(): Promise<void> {
         this.result_reset_handle.pullDown()
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async clearInputRegister(): Promise<void> {
         this.delete_input_handle.pullDown()
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async clearCounterRegister(): Promise<void> {
         this.counter_reset_handle.pullDown()
 
-        return sleep(500)
+        return this.sleep(500)
     }
 
     public async clearRegisters(): Promise<void> {
         this.delete_handle.pullDown()
         this.repeatedShiftLeft(6)
 
-        return sleep(500)
+        return this.sleep(500)
+    }
+
+    // Synchronous API to retrieve values from the state of the machine.
+    // .......................................................................
+
+    public getCounterRegisterValue(): number {
+        return this.counter_sprocket.getDisplayValue()
+    }
+
+    public getInputRegisterValue(): number {
+        return this.input_sprocket.getDisplayValue()
+    }
+
+    public getResultRegisterValue(): number {
+        return this.result_sprocket.getDisplayValue()
     }
 
     // Convinience wrapper function around single action variants.
@@ -396,27 +509,4 @@ export class Brunsviga13rk implements ActionHandler {
             }
         }
     }
-}
-
-function updateInputRecommendations(selected: Selectable | undefined) {
-    const htmlElement = document.getElementById('input-action-recommendations')
-
-    if (!htmlElement) throw new Error('no input recommendaton element')
-
-    htmlElement.setHTMLUnsafe('')
-
-    if (selected != undefined) {
-        selected.getAvailableUserActions().forEach(([action, description]) => {
-            const span = document.createElement('span')
-            const icon = action as string
-            span.innerHTML = `<span class="user-action"><i class="ph ${icon}"></i>${description}</span>`
-            htmlElement.append(span)
-        })
-    }
-}
-
-async function sleep(milliseconds: number): Promise<void> {
-    return new Promise((resolve) => {
-        setTimeout(resolve, milliseconds)
-    })
 }

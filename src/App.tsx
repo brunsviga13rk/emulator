@@ -1,8 +1,17 @@
-import Renderer from './Renderer.tsx'
-import { StatusPanel } from './StatusPanel.tsx'
+import Renderer from './render/Renderer.tsx'
 import { Header } from './Header.tsx'
-import { Editor } from './solver/Editor.tsx'
-import { Box, CircularProgress, Tab, Tabs } from '@mui/material'
+import { Editor as Solver } from './solver/Editor.tsx'
+import { Editor as Coder } from './api/Editor.tsx'
+import {
+    Box,
+    CircularProgress,
+    Grid2,
+    Paper,
+    Stack,
+    Tab,
+    Tabs,
+} from '@mui/material'
+import Dashboard from './Dashboard.tsx'
 import { useState } from 'react'
 import CalculateIcon from '@mui/icons-material/Calculate'
 import CodeIcon from '@mui/icons-material/Code'
@@ -17,18 +26,30 @@ function CustomTabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props
 
     return (
-        <div
+        <Box
             role="tabpanel"
             hidden={value !== index}
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
-            className="flex flex-grow p-4 h-full"
+            sx={{
+                display: 'flex',
+                height: `${value === index ? '100%' : '0'}`,
+                flexDirection: 'column',
+            }}
             {...other}
         >
             {value === index && (
-                <div className="flex flex-grow h-full">{children}</div>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        height: '100%',
+                        flexDirection: 'column',
+                    }}
+                >
+                    {children}
+                </Box>
             )}
-        </div>
+        </Box>
     )
 }
 
@@ -47,48 +68,81 @@ function App() {
     }
 
     return (
-        <div className="flex flex-col h-full">
+        <Stack direction="column" sx={{ height: '100%' }}>
             <Header />
-            <div id="div-center" className="h-full flex flex-row">
-                <Renderer />
-                <Box id="div-side-panel" className="flex flex-col w-1/5">
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <Tabs
-                            value={value}
-                            onChange={handleChange}
-                            aria-label="basic tabs example"
-                            variant="fullWidth"
+            <Grid2
+                container
+                spacing={1}
+                sx={{
+                    height: 'calc(100% - 4rem)',
+                }}
+            >
+                <Grid2 size={{ sm: 12, md: 7 }} sx={{ padding: '1rem' }}>
+                    <Stack direction="column" sx={{ height: '100%' }}>
+                        <Renderer />
+                    </Stack>
+                </Grid2>
+                <Grid2
+                    size={{ sm: 12, md: 5 }}
+                    sx={{ padding: '1rem', height: '100%' }}
+                >
+                    <Dashboard />
+                    <Tabs
+                        value={value}
+                        sx={{ flexShrink: 0, height: '4rem' }}
+                        onChange={handleChange}
+                        centered
+                    >
+                        <Tab
+                            icon={<CalculateIcon />}
+                            iconPosition="start"
+                            label="Solver"
+                            {...a11yProps(0)}
+                        />
+                        <Tab
+                            icon={<CodeIcon />}
+                            iconPosition="start"
+                            label="Code"
+                            {...a11yProps(1)}
+                        />
+                    </Tabs>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            height: 'calc(100% - 18rem)',
+                        }}
+                    >
+                        <Paper
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                height: '100%',
+                                padding: 2,
+                            }}
+                            elevation={0}
+                            variant="outlined"
                         >
-                            <Tab
-                                icon={<CalculateIcon />}
-                                iconPosition="start"
-                                label="Solver"
-                                {...a11yProps(0)}
-                            />
-                            <Tab
-                                icon={<CodeIcon />}
-                                iconPosition="start"
-                                label="Coding"
-                                {...a11yProps(1)}
-                            />
-                        </Tabs>
+                            <CustomTabPanel value={value} index={0}>
+                                <Solver />
+                            </CustomTabPanel>
+                            <CustomTabPanel value={value} index={1}>
+                                <Coder />
+                            </CustomTabPanel>
+                        </Paper>
                     </Box>
-                    <CustomTabPanel value={value} index={0}>
-                        <Editor />
-                    </CustomTabPanel>
-                </Box>
-            </div>
-            <StatusPanel />
+                </Grid2>
+            </Grid2>
             <div
                 id="div-loading-indicator"
-                className="flex h-full w-full absolute bg-opacity-100 z-50"
+                className="flex h-full w-full absolute bg-white bg-opacity-100 z-100"
             >
                 <div className="m-auto flex-col justify-center">
                     <CircularProgress color="inherit" size={60} />
                     <p className="mt-8">Loading...</p>
                 </div>
             </div>
-        </div>
+        </Stack>
     )
 }
 

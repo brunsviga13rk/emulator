@@ -1,20 +1,28 @@
 import { useState } from 'react'
 import {
-    Box,
+    Button,
+    ButtonGroup,
     Card,
     CardActions,
     CardContent,
     Collapse,
+    Container,
     IconButton,
     IconButtonProps,
     InputBase,
     Paper,
+    Stack,
     styled,
+    Tooltip,
 } from '@mui/material'
 import FunctionsIcon from '@mui/icons-material/Functions'
 import { Instruction, solve } from './solve'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import StopIcon from '@mui/icons-material/Stop'
+import RedoIcon from '@mui/icons-material/Redo'
+import PauseIcon from '@mui/icons-material/Pause'
+import { useTheme } from '@mui/material/styles'
 
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean
@@ -45,17 +53,25 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }))
 
 type InstructionCardProps = {
+    index: number
     instruction: Instruction
     ready: boolean
     setReady: React.Dispatch<React.SetStateAction<boolean>>
+    active: number | undefined
+    setActive: React.Dispatch<React.SetStateAction<number | undefined>>
 }
 
 function InstructionCard({
+    index,
     instruction,
     ready,
     setReady,
+    active,
+    setActive,
 }: InstructionCardProps) {
     const [expanded, setExpanded] = useState(false)
+    const theme = useTheme()
+    const primaryColor = theme.palette.primary.main
 
     const handleExpandClick = () => {
         setExpanded(!expanded)
@@ -63,11 +79,19 @@ function InstructionCard({
 
     const handleExecuteClick = () => {
         setReady(false)
+        setActive(index)
         instruction.execute().then(() => setReady(true))
     }
 
     return (
-        <Card variant="outlined" className="m-2 flex-grow">
+        <Card
+            variant="outlined"
+            className="m-2 flex-grow"
+            sx={{
+                borderColor: `${index == active ? primaryColor : ''}`,
+                borderWidth: `${index == active ? 'medium' : 'thin'}`,
+            }}
+        >
             <CardActions disableSpacing>
                 {instruction.getTitle()}
                 <IconButton
@@ -94,13 +118,34 @@ function InstructionCard({
     )
 }
 
-async function executeInstruction(instructions: Instruction[]) {
+let abort: boolean = false
+let pause: boolean = false
+let step: boolean = false
+
+async function execute(
+    program: Instruction[],
+    setActive: React.Dispatch<React.SetStateAction<number | undefined>>
+): Promise<void> {
     const delay = (ms: number) =>
         new Promise((resolve) => setTimeout(resolve, ms))
 
-    for (const instr of instructions) {
-        await instr.execute()
+    for (let i = 0; i < program.length; i++) {
+        while (pause && !step) {
+            await delay(500)
+        }
+        step = false
+
+        if (abort) {
+            break
+        }
+
+        setActive(i)
+        await program[i].execute()
         await delay(500)
+    }
+
+    if (abort) {
+        abort = false
     }
 }
 
@@ -108,24 +153,41 @@ export function Editor() {
     const [input, setInput] = useState('')
     const [tokens, setTokens] = useState<Instruction[]>([])
     const [ready, setReady] = useState(true)
+    const [running, setRunning] = useState(false)
+    const [paused, setPaused] = useState(false)
+    const [active, setActive] = useState<number | undefined>(undefined)
 
     function onSolve() {
         setTokens(solve(input))
     }
 
     const handleExecuteAll = () => {
-        setReady(false)
-        executeInstruction(tokens).then(() => setReady(true))
+        if (ready) {
+            setReady(false)
+            setRunning(true)
+            setPaused(false)
+
+            execute(tokens, setActive).then(() => {
+                setReady(true)
+                setRunning(false)
+                setPaused(false)
+                setActive(undefined)
+            })
+        } else {
+            abort = true
+            pause = false
+        }
     }
 
     return (
-        <div className="w-full h-full">
+        <Stack sx={{ height: '100%' }}>
             <Paper
                 component="form"
                 sx={{
                     p: '2px 4px',
                     display: 'flex',
                     alignItems: 'center',
+                    height: '3rem',
                 }}
             >
                 <InputBase
@@ -137,47 +199,92 @@ export function Editor() {
                         setInput(event.target.value)
                     }}
                 />
-                <IconButton
-                    type="button"
-                    sx={{ p: '10px' }}
-                    aria-label="solve"
-                    onClick={onSolve}
-                >
-                    <FunctionsIcon />
-                </IconButton>
+                <Tooltip title="Solve calculation">
+                    <IconButton
+                        type="button"
+                        sx={{ p: '10px' }}
+                        aria-label="solve"
+                        onClick={onSolve}
+                    >
+                        <FunctionsIcon />
+                    </IconButton>
+                </Tooltip>
             </Paper>
             {tokens.length ? (
-                <Box
+                <Stack
+                    direction="row"
                     className="pt-4 mb-4"
-                    sx={{ borderBottom: 1, borderColor: 'divider' }}
+                    sx={{
+                        paddingBottom: 1,
+                        paddingTop: 3,
+                        borderBottom: 1,
+                        borderColor: 'divider',
+                        height: '4rem',
+                    }}
+                    alignContent="center"
                 >
                     <span className="mr-auto">{`Solution (${tokens.length} steps):`}</span>
-                    <IconButton
+                    <ButtonGroup
                         style={{ marginLeft: 'auto' }}
-                        aria-label="add to favorites"
-                        onClick={handleExecuteAll}
-                        disabled={!ready}
+                        size="small"
+                        variant="contained"
                     >
-                        <PlayArrowIcon />
-                    </IconButton>
-                </Box>
+                        <Tooltip title="Run all steps">
+                            <Button
+                                onClick={handleExecuteAll}
+                                color={running ? 'error' : 'primary'}
+                            >
+                                {running ? <StopIcon /> : <PlayArrowIcon />}
+                            </Button>
+                        </Tooltip>
+                        <Tooltip title="Pause run">
+                            <Button
+                                color="inherit"
+                                disabled={!running}
+                                onClick={() => {
+                                    setPaused(!paused)
+                                    pause = !paused
+                                }}
+                            >
+                                {paused ? <PlayArrowIcon /> : <PauseIcon />}
+                            </Button>
+                        </Tooltip>
+                        <Tooltip title="Run next steps">
+                            <Button
+                                color="inherit"
+                                disabled={!paused}
+                                onClick={() => {
+                                    step = true
+                                }}
+                            >
+                                <RedoIcon />
+                            </Button>
+                        </Tooltip>
+                    </ButtonGroup>
+                </Stack>
             ) : (
                 <></>
             )}
-            <div className="w-full h-full">
-                <div className="overflow-y-scroll">
-                    {tokens.map((token, index) => (
-                        <div key={index} className="flex flex-row ml-4">
-                            <span className="my-auto mr-4">{index + 1}</span>
-                            <InstructionCard
-                                instruction={token}
-                                ready={ready}
-                                setReady={setReady}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
+            <Container
+                sx={{
+                    height: 'calc(100% - 7rem)',
+                    overflow: 'scroll',
+                }}
+            >
+                {tokens.map((token, index) => (
+                    <Stack direction="row" key={index}>
+                        <span className="my-auto">{index + 1}</span>
+                        <InstructionCard
+                            index={index}
+                            instruction={token}
+                            ready={ready}
+                            setReady={setReady}
+                            active={active}
+                            setActive={setActive}
+                        />
+                    </Stack>
+                ))}
+            </Container>
+        </Stack>
     )
 }

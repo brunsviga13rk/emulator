@@ -169,6 +169,7 @@ export class EventHandler<E, T, C extends Conditional = Tautology> {
             if (!this.condition.compare(condition)) return
         }
 
-        this.action(event, actor, condition)
+        // Run event action asynchronously.
+        new Promise(() => this.action(event, actor, condition))
     }
 }
