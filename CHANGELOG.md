@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.4.0](https://github.com/brunsviga13rk/emulator/compare/v1.3.0...v1.4.0) (2025-02-06)
+
+
+### Features
+
+* add calculator demo ([b28cf05](https://github.com/brunsviga13rk/emulator/commit/b28cf0525b28d348f3b746352882188ed76b2728))
+* add general animation event capture ([0e9a4be](https://github.com/brunsviga13rk/emulator/commit/0e9a4be9aee3c13e1af95da4409b2664a645c844))
+* add multiplication algorithm to solver ([b28cf05](https://github.com/brunsviga13rk/emulator/commit/b28cf0525b28d348f3b746352882188ed76b2728))
+* add register dashboard ([0e9a4be](https://github.com/brunsviga13rk/emulator/commit/0e9a4be9aee3c13e1af95da4409b2664a645c844))
+* add synchronous get API ([0e9a4be](https://github.com/brunsviga13rk/emulator/commit/0e9a4be9aee3c13e1af95da4409b2664a645c844))
+* add tamplate for Lua API ([0e9a4be](https://github.com/brunsviga13rk/emulator/commit/0e9a4be9aee3c13e1af95da4409b2664a645c844))
+* brunsviga api ([#76](https://github.com/brunsviga13rk/emulator/issues/76)) ([b28cf05](https://github.com/brunsviga13rk/emulator/commit/b28cf0525b28d348f3b746352882188ed76b2728))
+* implement debugger interface for solver ([0e9a4be](https://github.com/brunsviga13rk/emulator/commit/0e9a4be9aee3c13e1af95da4409b2664a645c844))
+* redesign UI with MUI ([#78](https://github.com/brunsviga13rk/emulator/issues/78)) ([0e9a4be](https://github.com/brunsviga13rk/emulator/commit/0e9a4be9aee3c13e1af95da4409b2664a645c844))
+
+
+### Bug Fixes
+
+* overflow computation when offset &gt; 0 ([b28cf05](https://github.com/brunsviga13rk/emulator/commit/b28cf0525b28d348f3b746352882188ed76b2728))
+
 ## [1.3.0](https://github.com/brunsviga13rk/emulator/compare/v1.2.0...v1.3.0) (2025-01-29)
 
 
