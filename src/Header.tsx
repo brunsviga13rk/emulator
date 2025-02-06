@@ -32,12 +32,43 @@ export function Header() {
                         Brains of steel
                     </Typography>
                 </Stack>
-                <Chip label={`v${__APP_VERSION__}`} variant="outlined" />
+                <Chip
+                    component="a"
+                    href={`https://github.com/brunsviga13rk/emulator/releases/tag/v${__APP_VERSION__}`}
+                    clickable
+                    label={`v${__APP_VERSION__}`}
+                    variant="outlined"
+                />
                 <Box sx={{ flexGrow: 1 }}></Box>
-                <Button color="inherit">Docs</Button>
-                <Button color="inherit">Paper</Button>
-                <Button color="inherit">About</Button>
-                <IconButton>
+                <Button
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    color="inherit"
+                >
+                    Docs
+                </Button>
+                <Button
+                    href={`https://github.com/brunsviga13rk/thesis/releases/download/v${__APP_VERSION__}/44124_emulation-of-the-brunsviga-13-rk.pdf`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    color="inherit"
+                >
+                    Paper
+                </Button>
+                <Button
+                    href="https://github.com/brunsviga13rk"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    color="inherit"
+                >
+                    About
+                </Button>
+                <IconButton
+                    href="https://github.com/brunsviga13rk/emulator"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
                     <GitHubIcon />
                 </IconButton>
             </Toolbar>
