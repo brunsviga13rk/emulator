@@ -13,6 +13,7 @@ import {
     Paper,
     Stack,
     styled,
+    Tooltip,
 } from '@mui/material'
 import FunctionsIcon from '@mui/icons-material/Functions'
 import { Instruction, solve } from './solve'
@@ -198,14 +199,16 @@ export function Editor() {
                         setInput(event.target.value)
                     }}
                 />
-                <IconButton
-                    type="button"
-                    sx={{ p: '10px' }}
-                    aria-label="solve"
-                    onClick={onSolve}
-                >
-                    <FunctionsIcon />
-                </IconButton>
+                <Tooltip title="Solve calculation">
+                    <IconButton
+                        type="button"
+                        sx={{ p: '10px' }}
+                        aria-label="solve"
+                        onClick={onSolve}
+                    >
+                        <FunctionsIcon />
+                    </IconButton>
+                </Tooltip>
             </Paper>
             {tokens.length ? (
                 <Stack
@@ -226,31 +229,37 @@ export function Editor() {
                         size="small"
                         variant="contained"
                     >
-                        <Button
-                            onClick={handleExecuteAll}
-                            color={running ? 'error' : 'primary'}
-                        >
-                            {running ? <StopIcon /> : <PlayArrowIcon />}
-                        </Button>
-                        <Button
-                            color="inherit"
-                            disabled={!running}
-                            onClick={() => {
-                                setPaused(!paused)
-                                pause = !paused
-                            }}
-                        >
-                            {paused ? <PlayArrowIcon /> : <PauseIcon />}
-                        </Button>
-                        <Button
-                            color="inherit"
-                            disabled={!paused}
-                            onClick={() => {
-                                step = true
-                            }}
-                        >
-                            <RedoIcon />
-                        </Button>
+                        <Tooltip title="Run all steps">
+                            <Button
+                                onClick={handleExecuteAll}
+                                color={running ? 'error' : 'primary'}
+                            >
+                                {running ? <StopIcon /> : <PlayArrowIcon />}
+                            </Button>
+                        </Tooltip>
+                        <Tooltip title="Pause run">
+                            <Button
+                                color="inherit"
+                                disabled={!running}
+                                onClick={() => {
+                                    setPaused(!paused)
+                                    pause = !paused
+                                }}
+                            >
+                                {paused ? <PlayArrowIcon /> : <PauseIcon />}
+                            </Button>
+                        </Tooltip>
+                        <Tooltip title="Run next steps">
+                            <Button
+                                color="inherit"
+                                disabled={!paused}
+                                onClick={() => {
+                                    step = true
+                                }}
+                            >
+                                <RedoIcon />
+                            </Button>
+                        </Tooltip>
                     </ButtonGroup>
                 </Stack>
             ) : (
