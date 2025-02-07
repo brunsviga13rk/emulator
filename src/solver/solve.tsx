@@ -225,6 +225,9 @@ function compile(tokens: Token[]): Instruction[] {
     const stack: number[] = []
     const prog: Instruction[] = []
 
+    let inputRegisterValue = 0
+    let resultRegisterValue = 0
+
     tokens.forEach((token) => {
         if (token.isNumber()) {
             stack.push(token.value as number)
@@ -255,32 +258,60 @@ function compile(tokens: Token[]): Instruction[] {
 
                 prog.push(new Instruction(Opcode.Zero))
                 prog.push(new Instruction(Opcode.Load, m0))
-                prog.push(new Instruction(Opcode.ShiftRight, shifts))
+
+                if (shifts > 0) {
+                    prog.push(new Instruction(Opcode.ShiftRight, shifts))
+                }
 
                 const decimalDigits = []
                 for (; m1 > 0; m1 /= 10) {
                     decimalDigits.push(Math.floor(m1 % 10))
                 }
 
-                for (; shifts >= 0; shifts--) {
+                for (; shifts > 0; shifts--) {
                     prog.push(
                         new Instruction(Opcode.Add, decimalDigits[shifts])
                     )
                     prog.push(new Instruction(Opcode.ShiftLeft, 1))
                 }
             } else {
-                prog.push(new Instruction(Opcode.Zero))
-                prog.push(new Instruction(Opcode.Load, op0))
-                prog.push(new Instruction(Opcode.Add))
-                prog.push(new Instruction(Opcode.Load, op1))
+                let m0 = op0 // value to load to result.
+                let m1 = op1 // value to add to reult (non-zero).
+                let clear = true // wheter to clear input register.
+
+                // No need to clear and overwrite result register when
+                // one of the operands is already present.
+                if (resultRegisterValue == op0) {
+                    clear = false
+                } else if (resultRegisterValue == op1) {
+                    clear = false
+                    m0 = op1
+                    m1 = op0
+                }
+
+                // Overwrite result register.
+                if (clear) {
+                    prog.push(new Instruction(Opcode.Zero))
+                    prog.push(new Instruction(Opcode.Load, m0))
+                    prog.push(new Instruction(Opcode.Add))
+                    resultRegisterValue = m0
+                    inputRegisterValue = m0
+                }
+
+                if (inputRegisterValue != m1) {
+                    prog.push(new Instruction(Opcode.Load, m1))
+                    inputRegisterValue = m1
+                }
 
                 switch (token.value) {
                     case '+':
                         prog.push(new Instruction(Opcode.Add))
+                        resultRegisterValue += m1
                         result = op0 + op1
                         break
                     case '-':
                         prog.push(new Instruction(Opcode.Subtract))
+                        resultRegisterValue += m1
                         result = op0 - op1
                         break
                 }
