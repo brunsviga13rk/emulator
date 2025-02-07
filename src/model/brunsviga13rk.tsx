@@ -369,6 +369,9 @@ export class Brunsviga13rk
      * @param value
      */
     public async setInput(value: number): Promise<void> {
+        // Negative numbers are reprented by complementary.
+        if (value < 0) value = MAX_INPUT_SPROCKET_VALUE - value
+
         // Saturate value.
         if (value < 0) value = 0
         if (value > MAX_INPUT_SPROCKET_VALUE) value = MAX_INPUT_SPROCKET_VALUE

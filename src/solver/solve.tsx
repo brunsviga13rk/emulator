@@ -109,7 +109,7 @@ function infix2postfix(tokens: Token[]): Token[] {
                 if (
                     top.isOperator() &&
                     top.value != '(' &&
-                    top.getPrecedence() > token.getPrecedence()
+                    top.getPrecedence() >= token.getPrecedence()
                 ) {
                     output.push(stack.pop()!)
                 } else {
@@ -229,13 +229,31 @@ function compile(tokens: Token[]): Instruction[] {
     let resultRegisterValue = 0
 
     tokens.forEach((token) => {
+        // Operation loading a value into the result sprocket accounting for the
+        // sign of the value.
+        const load = (value: number) => {
+            prog.push(new Instruction(Opcode.Zero))
+            prog.push(new Instruction(Opcode.Load, value))
+
+            // Positive values are added onto the result sprocket
+            // negative values are subtracted since a sprocket cannot
+            // represent actual negative values.
+            prog.push(new Instruction(value > 0 ? Opcode.Add : Opcode.Subtract))
+
+            // Update intermediate states of sprockets.
+            resultRegisterValue = value
+            inputRegisterValue = value
+        }
+
         if (token.isNumber()) {
             stack.push(token.value as number)
         } else if (token.isOperator()) {
+            // Reset entire machine at the start of the calculation.
             if (!prog.length) {
                 prog.push(new Instruction(Opcode.Reset))
             }
 
+            // Get operands from stack.
             const op0 = stack.pop()!
             const op1 = stack.pop()!
 
@@ -258,62 +276,70 @@ function compile(tokens: Token[]): Instruction[] {
 
                 prog.push(new Instruction(Opcode.Zero))
                 prog.push(new Instruction(Opcode.Load, m0))
+                // Update intermediate states of sprockets.
+                resultRegisterValue = m0
+                inputRegisterValue = m0
 
                 if (shifts > 0) {
                     prog.push(new Instruction(Opcode.ShiftRight, shifts))
-                }
 
-                const decimalDigits = []
-                for (; m1 > 0; m1 /= 10) {
-                    decimalDigits.push(Math.floor(m1 % 10))
-                }
+                    const decimalDigits = []
+                    for (; m1 > 0; m1 /= 10) {
+                        decimalDigits.push(Math.abs(Math.floor(m1 % 10)))
+                    }
 
-                for (; shifts > 0; shifts--) {
-                    prog.push(
-                        new Instruction(Opcode.Add, decimalDigits[shifts])
-                    )
-                    prog.push(new Instruction(Opcode.ShiftLeft, 1))
+                    for (; shifts > 0; shifts--) {
+                        prog.push(
+                            new Instruction(Opcode.Add, decimalDigits[shifts])
+                        )
+                        prog.push(new Instruction(Opcode.ShiftLeft, 1))
+                    }
+                } else {
+                    prog.push(new Instruction(Opcode.Add, m1))
                 }
             } else {
-                let m0 = op0 // value to load to result.
-                let m1 = op1 // value to add to reult (non-zero).
-                let clear = true // wheter to clear input register.
+                if (token.value == '+') {
+                    let m0 = op0 // value to load to result.
+                    let m1 = op1 // value to add to reult (non-zero).
+                    let clear = true // wheter to clear input register.
 
-                // No need to clear and overwrite result register when
-                // one of the operands is already present.
-                if (resultRegisterValue == op0) {
-                    clear = false
-                } else if (resultRegisterValue == op1) {
-                    clear = false
-                    m0 = op1
-                    m1 = op0
-                }
+                    // No need to clear and overwrite result register when
+                    // one of the operands is already present.
+                    if (resultRegisterValue == op0) {
+                        clear = false
+                    } else if (resultRegisterValue == op1) {
+                        clear = false
+                        m0 = op1
+                        m1 = op0
+                    }
 
-                // Overwrite result register.
-                if (clear) {
-                    prog.push(new Instruction(Opcode.Zero))
-                    prog.push(new Instruction(Opcode.Load, m0))
+                    // Overwrite result register.
+                    if (clear) {
+                        load(m0)
+                    }
+
+                    if (inputRegisterValue != m1) {
+                        prog.push(new Instruction(Opcode.Load, m1))
+                        inputRegisterValue = m1
+                    }
+
                     prog.push(new Instruction(Opcode.Add))
-                    resultRegisterValue = m0
-                    inputRegisterValue = m0
-                }
+                    resultRegisterValue += m1
+                    result = op0 + op1
+                } else if (token.value == '-') {
+                    // Overwrite result register.
+                    if (resultRegisterValue != op1) {
+                        load(op1)
+                    }
 
-                if (inputRegisterValue != m1) {
-                    prog.push(new Instruction(Opcode.Load, m1))
-                    inputRegisterValue = m1
-                }
+                    if (inputRegisterValue != op0) {
+                        prog.push(new Instruction(Opcode.Load, op0))
+                        inputRegisterValue = op0
+                    }
 
-                switch (token.value) {
-                    case '+':
-                        prog.push(new Instruction(Opcode.Add))
-                        resultRegisterValue += m1
-                        result = op0 + op1
-                        break
-                    case '-':
-                        prog.push(new Instruction(Opcode.Subtract))
-                        resultRegisterValue += m1
-                        result = op0 - op1
-                        break
+                    prog.push(new Instruction(Opcode.Subtract))
+                    resultRegisterValue -= op0
+                    result = op1 - op0
                 }
             }
 
@@ -324,6 +350,50 @@ function compile(tokens: Token[]): Instruction[] {
     return prog
 }
 
+const squashOperation = (program: Instruction[], opcode: Opcode) =>
+    program.reduce((acc: Instruction[], curr: Instruction) => {
+        if (
+            curr.opcode === opcode &&
+            acc[acc.length - 1] &&
+            acc[acc.length - 1].opcode === opcode
+        ) {
+            acc[acc.length - 1] = new Instruction(
+                opcode,
+                (curr.value || 1) + (acc[acc.length - 1].value || 1)
+            )
+        } else {
+            acc.push(curr)
+        }
+        return acc
+    }, [])
+
+const squashResets = (program: Instruction[]) =>
+    program.reduce((acc: Instruction[], curr: Instruction) => {
+        const squashable = (element: Opcode) =>
+            [Opcode.Reset, Opcode.Zero].includes(element)
+        if (
+            squashable(curr.opcode) &&
+            acc[acc.length - 1] &&
+            squashable(acc[acc.length - 1].opcode)
+        ) {
+            acc[acc.length - 1] = new Instruction(Opcode.Reset)
+        } else {
+            acc.push(curr)
+        }
+        return acc
+    }, [])
+
+function squash(program: Instruction[]): Instruction[] {
+    let squashed: Instruction[] = []
+
+    // Squash all repeating operators into single instances.
+    squashed = squashOperation(program, Opcode.Add)
+    squashed = squashOperation(squashed, Opcode.Subtract)
+    squashed = squashResets(squashed)
+
+    return squashed
+}
+
 export function solve(text: string): Instruction[] {
-    return compile(infix2postfix(tokenize(text)))
+    return squash(compile(infix2postfix(tokenize(text))))
 }
