@@ -20,6 +20,7 @@ export const Editor: VFC = () => {
                     value: template,
                     language: 'lua',
                     tabSize: 2,
+                    automaticLayout: true,
                 })
             })
         }
@@ -37,7 +38,10 @@ export const Editor: VFC = () => {
     }
 
     return (
-        <div id="div-editor-root" className="w-full h-full flex flex-col">
+        <div
+            id="div-editor-root"
+            className="w-full h-full flex flex-grow flex-col"
+        >
             <Stack direction="row" spacing={2}>
                 <ButtonGroup variant="contained" color="inherit" size="small">
                     <Button onClick={runProgram}>
@@ -46,7 +50,7 @@ export const Editor: VFC = () => {
                 </ButtonGroup>
             </Stack>
             <Divider sx={{ marginY: 2 }} />
-            <div className="flex-grow" ref={monacoEl}></div>
+            <div className="flex-grow resize-y" ref={monacoEl}></div>
         </div>
     )
 }

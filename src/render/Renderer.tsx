@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 import * as THREE from 'three'
 import WebGL from 'three/addons/capabilities/WebGL.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
@@ -110,7 +110,7 @@ function setupRenderer() {
     }
 }
 
-function Renderer() {
+const Renderer = memo(() => {
     useEffect(() => {
         // call api or anything
         setupRenderer()
@@ -137,6 +137,6 @@ function Renderer() {
             ></Box>
         </Box>
     )
-}
+})
 
 export default Renderer
