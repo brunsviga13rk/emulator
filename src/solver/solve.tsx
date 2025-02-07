@@ -183,9 +183,9 @@ export class Instruction {
             case Opcode.Zero:
                 return 'Clear input register by pulling the handle on the left side.'
             case Opcode.Add:
-                return `Add by rotating the crank clockwise ${this.value} times.`
+                return `Add by rotating the crank clockwise ${this.value ? this.value + ' times' : 'once'}.`
             case Opcode.Subtract:
-                return `Subtract by rotating the crank clockwise ${this.value} times.`
+                return `Subtract by rotating the crank clockwise ${this.value ? this.value + ' times' : 'once'}.`
             case Opcode.Load:
                 return `Set input register to a value of ${this.value}`
             case Opcode.Reset:
@@ -204,9 +204,9 @@ export class Instruction {
             case Opcode.Zero:
                 return 'Clear input'
             case Opcode.Add:
-                return `Add ${this.value} times`
+                return `Add ${this.value ? this.value + ' times' : 'once'}`
             case Opcode.Subtract:
-                return `Subtract ${this.value} times`
+                return `Subtract ${this.value ? this.value + ' times' : 'once'}`
             case Opcode.Load:
                 return `Load ${this.value}`
             case Opcode.Reset:
