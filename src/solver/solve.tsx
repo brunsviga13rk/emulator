@@ -225,32 +225,26 @@ function compile(tokens: Token[]): Instruction[] {
     const stack: number[] = []
     const prog: Instruction[] = []
 
-    let intermediateResult = 0
-
     tokens.forEach((token) => {
-        console.log(token.toString())
         if (token.isNumber()) {
             stack.push(token.value as number)
         } else if (token.isOperator()) {
+            if (!prog.length) {
+                prog.push(new Instruction(Opcode.Reset))
+            }
+
+            const op0 = stack.pop()!
             const op1 = stack.pop()!
 
+            let result = 0
+
             if (token.value == '*') {
-                if (!prog.length) {
-                    prog.push(new Instruction(Opcode.Reset))
-                } else {
-                    prog.push(new Instruction(Opcode.Zero))
-                }
-
                 // Long multiplication
-
-                let op0 = intermediateResult
-
-                if (stack.at(-1)! != undefined) {
-                    op0 = stack.pop()!
-                }
 
                 let m0 = op0 // Larger of the two op0 and op1
                 let m1 = op1 // Smaller of the two op0 and op1
+
+                result = op0 * op1
 
                 if (op0 < op1) {
                     m0 = op1
@@ -259,6 +253,7 @@ function compile(tokens: Token[]): Instruction[] {
 
                 let shifts = Math.floor(Math.log10(m1))
 
+                prog.push(new Instruction(Opcode.Zero))
                 prog.push(new Instruction(Opcode.Load, m0))
                 prog.push(new Instruction(Opcode.ShiftRight, shifts))
 
@@ -274,33 +269,24 @@ function compile(tokens: Token[]): Instruction[] {
                     prog.push(new Instruction(Opcode.ShiftLeft, 1))
                 }
             } else {
-                intermediateResult += op1
-
-                if (prog.length) {
-                    prog.push(new Instruction(Opcode.Load, op1))
-                } else {
-                    // First instruction ever.
-                    // Take first two operands from stack.
-                    const op0 = stack.pop()!
-
-                    intermediateResult += op0
-
-                    // Do push.
-                    prog.push(new Instruction(Opcode.Reset))
-                    prog.push(new Instruction(Opcode.Load, op0))
-                    prog.push(new Instruction(Opcode.Add))
-                    prog.push(new Instruction(Opcode.Load, op1))
-                }
+                prog.push(new Instruction(Opcode.Zero))
+                prog.push(new Instruction(Opcode.Load, op0))
+                prog.push(new Instruction(Opcode.Add))
+                prog.push(new Instruction(Opcode.Load, op1))
 
                 switch (token.value) {
                     case '+':
                         prog.push(new Instruction(Opcode.Add))
+                        result = op0 + op1
                         break
                     case '-':
                         prog.push(new Instruction(Opcode.Subtract))
+                        result = op0 - op1
                         break
                 }
             }
+
+            stack.push(result)
         }
     })
 
