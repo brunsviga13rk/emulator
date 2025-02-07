@@ -28,27 +28,18 @@ function CustomTabPanel(props: TabPanelProps) {
     return (
         <Box
             role="tabpanel"
-            hidden={value !== index}
+            visibility={value === index ? 'visible' : 'hidden'}
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
+            height={value === index ? '100%' : '0'}
             sx={{
                 display: 'flex',
-                height: `${value === index ? '100%' : '0'}`,
                 flexDirection: 'column',
+                overflow: 'hidden',
             }}
             {...other}
         >
-            {value === index && (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        height: '100%',
-                        flexDirection: 'column',
-                    }}
-                >
-                    {children}
-                </Box>
-            )}
+            {children}
         </Box>
     )
 }
