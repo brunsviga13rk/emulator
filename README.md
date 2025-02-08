@@ -24,8 +24,8 @@
     <img src="https://img.shields.io/badge/github%20pages-121013?logo=github&logoColor=white">
     <br>
     <br>
-    <a href="https://brunsviga13rk.github.io/docs">Demo<a/> |
-    <a href="https://brunsviga13rk.github.io/emulator">Docs<a/> |
+    <a href="https://brunsviga13rk.github.io/emulator">Demo<a/> |
+    <a href="https://brunsviga13rk.github.io/docs">Docs<a/> |
     <a href="https://github.com/brunsviga13rk/thesis">Paper<a/>
 </div>
 <br>
