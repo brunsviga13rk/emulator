@@ -43,7 +43,7 @@ export function Header() {
                 />
                 <Box sx={{ flexGrow: 1 }}></Box>
                 <Button
-                    href="#"
+                    href="https://brunsviga13rk.github.io/docs"
                     target="_blank"
                     rel="noopener noreferrer"
                     color="inherit"
