@@ -8,6 +8,9 @@ export default defineConfig({
     // Based on: https://stackoverflow.com/a/70524430
     define: {
         __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+        __APP_BASE_PATH__: JSON.stringify(
+            process.env.REACT_APP_BASE_PATH || '/'
+        ),
     },
     css: {
         postcss: {

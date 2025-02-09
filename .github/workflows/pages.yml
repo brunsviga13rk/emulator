@@ -38,7 +38,7 @@ jobs:
               run: npm ci
             - name: Customize Build
               run: |
-                  sed -i "/base/cbase: '/emulator'," vite.config.ts
+                  export REACT_APP_BASE_PATH="/emulator"
             - name: Build Project
               run: make build
             - name: Upload artifact
