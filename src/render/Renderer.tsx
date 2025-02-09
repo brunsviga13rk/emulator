@@ -20,7 +20,7 @@ import ActionRecommendations from './ActionRecommendations'
  */
 function setupEnvironment(engine: Engine) {
     // Load environment texture.
-    new RGBELoader().load('./studio_small_09_2k.hdr', (texture) => {
+    new RGBELoader().load('/studio_small_09_2k.hdr', (texture) => {
         texture.mapping = THREE.EquirectangularReflectionMapping
         engine.scene.environment = texture
     })

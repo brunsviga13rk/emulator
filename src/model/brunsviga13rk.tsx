@@ -138,7 +138,7 @@ export class Brunsviga13rk
         // Load model.
         const loader = new GLTFLoader()
         loader.load(
-            './brunsviga.glb',
+            '/brunsviga.glb',
             (gltf) => {
                 // Store scene in object and assign to engine for rendering.
                 engine.scene.add(gltf.scene)
