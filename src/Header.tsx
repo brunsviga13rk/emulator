@@ -21,7 +21,7 @@ export function Header() {
             <Toolbar>
                 <img
                     className="w-auto p-2"
-                    src="./brains_of_steel.svg"
+                    src={`${__APP_BASE_PATH__}/brains_of_steel.svg`}
                     alt=""
                 />
                 <Stack spacing={0} sx={{ marginRight: 4, marginLeft: 1 }}>

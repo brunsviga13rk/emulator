@@ -39,6 +39,7 @@ jobs:
             - name: Build Project
               run: |
                 export REACT_APP_BASE_PATH="/emulator"
+                sed -i "/base/cbase: '/emulator'," vite.config.ts
                 make build
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3

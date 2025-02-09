@@ -9,7 +9,7 @@ export default defineConfig({
     define: {
         __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
         __APP_BASE_PATH__: JSON.stringify(
-            process.env.REACT_APP_BASE_PATH || '/'
+            process.env.REACT_APP_BASE_PATH || ''
         ),
     },
     css: {
