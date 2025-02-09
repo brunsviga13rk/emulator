@@ -288,11 +288,13 @@ function compile(tokens: Token[]): Instruction[] {
                         decimalDigits.push(Math.abs(Math.floor(m1 % 10)))
                     }
 
-                    for (; shifts > 0; shifts--) {
+                    for (; shifts >= 0; shifts--) {
                         prog.push(
                             new Instruction(Opcode.Add, decimalDigits[shifts])
                         )
-                        prog.push(new Instruction(Opcode.ShiftLeft, 1))
+                        if (shifts > 0) {
+                            prog.push(new Instruction(Opcode.ShiftLeft, 1))
+                        }
                     }
                 } else {
                     prog.push(new Instruction(Opcode.Add, m1))
