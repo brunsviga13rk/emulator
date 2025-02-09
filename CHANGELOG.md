@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/brunsviga13rk/emulator/compare/v1.5.0...v1.5.1) (2025-02-09)
+
+
+### Bug Fixes
+
+* react router in sub paths not serving assets ([#97](https://github.com/brunsviga13rk/emulator/issues/97)) ([91b9dcf](https://github.com/brunsviga13rk/emulator/commit/91b9dcf41d1b64fe5964edc8e343c5131c7610e8))
+
 ## [1.5.0](https://github.com/brunsviga13rk/emulator/compare/v1.4.1...v1.5.0) (2025-02-09)
 
 
