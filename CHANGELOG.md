@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/brunsviga13rk/emulator/compare/v1.5.1...v1.5.2) (2025-02-09)
+
+
+### Bug Fixes
+
+* configure sub path for pages in build block ([658427b](https://github.com/brunsviga13rk/emulator/commit/658427b783ba8fb0474bd731f24f3b299e42dae7))
+
 ## [1.5.1](https://github.com/brunsviga13rk/emulator/compare/v1.5.0...v1.5.1) (2025-02-09)
 
 
