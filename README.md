@@ -21,15 +21,19 @@
     <img src="https://img.shields.io/badge/vite-%23646CFF.svg?logo=vite&logoColor=white">
     <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?logo=typescript&logoColor=white">
     <img src="https://img.shields.io/badge/lua-%232C2D72.svg?logo=lua&logoColor=white">
-    <br>
     <img src="https://img.shields.io/badge/github%20pages-121013?logo=github&logoColor=white">
+    <br>
+    <br>
+    <a href="https://brunsviga13rk.github.io/emulator">Demo<a/> |
+    <a href="https://brunsviga13rk.github.io/docs">Docs<a/> |
+    <a href="https://github.com/brunsviga13rk/thesis">Paper<a/>
 </div>
 <br>
 
 # Features
 
-- Fully interactive 3D visualisation
-- Automatically geberate steps for calculation
+- Fully interactive 3D visualization
+- Automatically generate steps for calculation
 - Lua scripting
 
 # Technology
