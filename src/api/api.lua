@@ -2,7 +2,7 @@
 --- Get Typescript API abstraction.
 ---@type any
 ---@diagnostic disable-next-line: undefined-global
-local ts_api = ts_api_get_1_4_1()
+local ts_api = ts_api_get_0_0_2()
 
 local M = {}
 

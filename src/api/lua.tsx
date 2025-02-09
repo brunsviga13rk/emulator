@@ -2,7 +2,7 @@ import { LuaFactory } from 'wasmoon'
 import { Brunsviga13rk } from '../model/brunsviga13rk'
 import luaAPI from './api.lua?raw'
 
-const TS_API_NAME = `ts_api_get_${__APP_VERSION__}`.replace(/\./g, '_')
+const TS_API_NAME = `ts_api_get_0_0_2`
 
 // Initialize a new lua environment factory
 // You can pass the wasm location as the first argument, useful if you are using
