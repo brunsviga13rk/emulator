@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.3](https://github.com/brunsviga13rk/emulator/compare/v1.5.2...v1.5.3) (2025-02-09)
+
+
+### Bug Fixes
+
+* set basePath in vite config alongside configuring router at compile time ([9e3f8be](https://github.com/brunsviga13rk/emulator/commit/9e3f8be056ce609a84cfa13aec606dc0cbf90465))
+
 ## [1.5.2](https://github.com/brunsviga13rk/emulator/compare/v1.5.1...v1.5.2) (2025-02-09)
 
 
