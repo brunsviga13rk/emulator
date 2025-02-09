@@ -36,11 +36,10 @@ jobs:
                   node-version-file: '.nvmrc'
             - name: Clean Install
               run: npm ci
-            - name: Customize Build
-              run: |
-                  export REACT_APP_BASE_PATH="/emulator"
             - name: Build Project
-              run: make build
+              run: |
+                export REACT_APP_BASE_PATH="/emulator"
+                make build
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
               with:
