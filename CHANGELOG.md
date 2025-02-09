@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.5.0](https://github.com/brunsviga13rk/emulator/compare/v1.4.1...v1.5.0) (2025-02-09)
+
+
+### Features
+
+* add custom title logo ([#82](https://github.com/brunsviga13rk/emulator/issues/82)) ([43a7998](https://github.com/brunsviga13rk/emulator/commit/43a7998a89ca02def0397899080e49d447ef8ce4))
+* add embed page route ([#96](https://github.com/brunsviga13rk/emulator/issues/96)) ([d69d718](https://github.com/brunsviga13rk/emulator/commit/d69d718ee693e316c012c709f30769d9a1ea305e))
+* reduce addition and multiplication steps ([a1c85da](https://github.com/brunsviga13rk/emulator/commit/a1c85da188deebe9db301b28cc33e2a647e0c2cd))
+
+
+### Bug Fixes
+
+* calculation solver producing wrong sequence ([#87](https://github.com/brunsviga13rk/emulator/issues/87)) ([a1c85da](https://github.com/brunsviga13rk/emulator/commit/a1c85da188deebe9db301b28cc33e2a647e0c2cd))
+* memoize renderer component ([dd9bd57](https://github.com/brunsviga13rk/emulator/commit/dd9bd57c5c6a6fa6a1858f115405b06d63747519))
+* overwrite token value when undefined in toString() ([a1c85da](https://github.com/brunsviga13rk/emulator/commit/a1c85da188deebe9db301b28cc33e2a647e0c2cd))
+* prevent unecessary editor reloads ([#85](https://github.com/brunsviga13rk/emulator/issues/85)) ([dd9bd57](https://github.com/brunsviga13rk/emulator/commit/dd9bd57c5c6a6fa6a1858f115405b06d63747519))
+* remove parameter of `shift_left` `shift_right` from Lua API ([#95](https://github.com/brunsviga13rk/emulator/issues/95)) ([2d0b026](https://github.com/brunsviga13rk/emulator/commit/2d0b0263d521a20f4e014849694714ce95a04f58))
+* rename sub call to subtract in Lua API template ([a1c85da](https://github.com/brunsviga13rk/emulator/commit/a1c85da188deebe9db301b28cc33e2a647e0c2cd))
+* resize canvas when needed ([#84](https://github.com/brunsviga13rk/emulator/issues/84)) ([7bff021](https://github.com/brunsviga13rk/emulator/commit/7bff02122d10e88ba23f8146a3d9ec46d6dd12ff))
+* set link for docs to deployed mkdocs github page ([#89](https://github.com/brunsviga13rk/emulator/issues/89)) ([61ea1f4](https://github.com/brunsviga13rk/emulator/commit/61ea1f4763584baba869e868d916bb87a9b80ba4))
+* swap links for docs and emulator ([#92](https://github.com/brunsviga13rk/emulator/issues/92)) ([abec47c](https://github.com/brunsviga13rk/emulator/commit/abec47cced3b2d97af9e6056f5c8562a60cb99ca))
+
 ## [1.4.1](https://github.com/brunsviga13rk/emulator/compare/v1.4.0...v1.4.1) (2025-02-06)
 
 
