@@ -51,13 +51,13 @@ end
 
 --- Shift the result register by one digit to the left.
 --- Execution time depends on the animation time of task.
-function M.shift_left(value)
+function M.shift_left()
     ts_api.shift_left():await()
 end
 
 --- Shift the result register by one digit to the right.
 --- Execution time depends on the animation time of task.
-function M.shift_right(value)
+function M.shift_right()
     ts_api.shift_right():await()
 end
 
