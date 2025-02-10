@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.6.0](https://github.com/brunsviga13rk/emulator/compare/v1.5.3...v1.6.0) (2025-02-10)
+
+
+### Features
+
+* add text logo to loading screen ([#107](https://github.com/brunsviga13rk/emulator/issues/107)) ([dcd3e62](https://github.com/brunsviga13rk/emulator/commit/dcd3e62a1341d6cbc3da4267c1594a43f0b35699))
+* embed when running in iFrame ([#105](https://github.com/brunsviga13rk/emulator/issues/105)) ([f154f73](https://github.com/brunsviga13rk/emulator/commit/f154f73f9c15f3b462c0a2af3d3d6f9c3cc54eb2))
+* solver error handling ([#112](https://github.com/brunsviga13rk/emulator/issues/112)) ([35801db](https://github.com/brunsviga13rk/emulator/commit/35801db6ecf4cb0c53158190908b8e97b1d28062))
+
+
+### Bug Fixes
+
+* set fixed digit for inital state of inout sprocket wheel ([#108](https://github.com/brunsviga13rk/emulator/issues/108)) ([e9ad5e9](https://github.com/brunsviga13rk/emulator/commit/e9ad5e9a292074b2cb7d29ba6d4ddb455a916ef1))
+
 ## [1.5.3](https://github.com/brunsviga13rk/emulator/compare/v1.5.2...v1.5.3) (2025-02-09)
 
 
