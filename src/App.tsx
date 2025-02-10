@@ -44,7 +44,38 @@ function a11yProps(index: number) {
     }
 }
 
+/**
+ * Detect when running in iFrame component.
+ *
+ * @returns true when running in iFrame, false otherwise.
+ */
+function inIframe() {
+    try {
+        return window.self !== window.top
+    } catch {
+        // Access to window.top may be blocked due to cross origin.
+        return true
+    }
+}
+
 function App() {
+    return (
+        <>
+            {inIframe() ? (
+                /* Embed 3d renderer only when in iFrame  */
+                <div className="w-full h-full">
+                    <Renderer />
+                    <LoadingIndicator />
+                </div>
+            ) : (
+                <Content />
+            )}
+        </>
+    )
+}
+
+function Content() {
+    /* Tab index */
     const [value, setValue] = useState(0)
 
     const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -61,11 +92,13 @@ function App() {
                     height: 'calc(100% - 4rem)',
                 }}
             >
+                {/* Renderer on left hand side */}
                 <Grid2 size={{ sm: 12, md: 7 }} sx={{ padding: '1rem' }}>
                     <Stack direction="column" sx={{ height: '100%' }}>
                         <Renderer />
                     </Stack>
                 </Grid2>
+                {/* Editors on right hand side */}
                 <Grid2
                     size={{ sm: 12, md: 5 }}
                     sx={{ padding: '1rem', height: '100%' }}
