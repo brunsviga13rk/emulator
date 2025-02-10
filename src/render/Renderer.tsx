@@ -60,6 +60,8 @@ function postLoadSetup(engine: Engine) {
 
     if (!loadingIndicator) throw new Error('missing loading indicator')
 
+    return
+
     // Start fade animation by appending animation CSS class.
     loadingIndicator.className += ' fade-out'
     // When the animation finishes remove the indicator overlay.
