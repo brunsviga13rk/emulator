@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import {
+    Alert,
+    AlertTitle,
     Button,
     ButtonGroup,
     Card,
@@ -156,9 +158,17 @@ export function Editor() {
     const [running, setRunning] = useState(false)
     const [paused, setPaused] = useState(false)
     const [active, setActive] = useState<number | undefined>(undefined)
+    const [errorMessage, setErrorMessage] = useState<string | undefined>(
+        undefined
+    )
 
     function onSolve() {
-        setTokens(solve(input))
+        try {
+            setErrorMessage(undefined)
+            setTokens(solve(input))
+        } catch (e: unknown) {
+            setErrorMessage((e as Error).message)
+        }
     }
 
     const handleExecuteAll = () => {
@@ -284,6 +294,16 @@ export function Editor() {
                         />
                     </Stack>
                 ))}
+                {errorMessage ? (
+                    <Stack direction="row" sx={{ marginTop: 2, width: '100%' }}>
+                        <Alert severity="error" sx={{ width: '100%' }}>
+                            <AlertTitle>Invalid calculation syntax</AlertTitle>
+                            {errorMessage}
+                        </Alert>
+                    </Stack>
+                ) : (
+                    <></>
+                )}
             </Container>
         </Stack>
     )
