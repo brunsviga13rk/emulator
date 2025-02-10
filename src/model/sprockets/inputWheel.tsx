@@ -45,16 +45,12 @@ export class InputWheel
             10
         )
 
+        // Apply inital rotation to fix global animation counter state.
         // Initialize rotation of wheels.
         // A full rotation around the "dead-zone" is required as these wheels
         // operate in reverse direction as the display sprocket wheels.
         for (let i = 1; i <= INPUT_WHEEL_DIGITS; i++) {
-            this.wheel.rotate(i, -1)
-        }
-
-        // Apply inital rotation to fix global animation counter state.
-        for (let i = 1; i <= INPUT_WHEEL_DIGITS; i++) {
-            this.wheel.rotate(i, -1)
+            this.wheel.setDigit(i, 9)
 
             while (AnimationScalarState.isAnyAnimationOngoing()) {
                 this.wheel.perform(1.0)
