@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/brunsviga13rk/emulator/compare/v1.6.0...v1.7.0) (2025-02-18)
+
+
+### Features
+
+* set brunsviga image as icon ([#116](https://github.com/brunsviga13rk/emulator/issues/116)) ([9f670ac](https://github.com/brunsviga13rk/emulator/commit/9f670acedff0cd3ab1f4702bb87b7847facbb174))
+
 ## [1.6.0](https://github.com/brunsviga13rk/emulator/compare/v1.5.3...v1.6.0) (2025-02-10)
 
 
