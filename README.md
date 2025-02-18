@@ -30,6 +30,12 @@
 </div>
 <br>
 
+<div align="center">
+    <img width="65%" src="assets/preview.gif">
+</div>
+
+---
+
 # Features
 
 - Fully interactive 3D visualization
