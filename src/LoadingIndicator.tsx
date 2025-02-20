@@ -1,19 +1,26 @@
 import CircularProgress from '@mui/material/CircularProgress'
 import { TextLogo } from './TextLogo'
+import { Box, Typography, useColorScheme } from '@mui/material'
+import { useBackgroundColorFromScheme } from './utils'
 
 export function LoadingIndicator() {
+    const { mode } = useColorScheme()
+
     return (
-        <div
+        <Box
             id="div-loading-indicator"
-            className="flex h-full w-full absolute bg-white bg-opacity-100 z-100"
+            sx={{ backgroundColor: useBackgroundColorFromScheme(mode) }}
+            className="flex h-full w-full absolute bg-opacity-100 z-100"
         >
-            <div className="m-auto flex-col text-center">
+            <Box className="m-auto flex-col text-center">
                 <CircularProgress color="inherit" size={60} />
-                <p style={{ marginTop: '2.5rem' }}>
+                <Typography style={{ marginTop: '2.5rem' }}>
                     <TextLogo width="12rem" />
-                </p>
-                <p style={{ marginTop: '1rem' }}>Loading assets...</p>
-            </div>
-        </div>
+                </Typography>
+                <Typography style={{ marginTop: '1rem' }}>
+                    Loading assets...
+                </Typography>
+            </Box>
+        </Box>
     )
 }
