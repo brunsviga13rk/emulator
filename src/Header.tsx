@@ -7,11 +7,20 @@ import {
     Stack,
     Toolbar,
     Typography,
+    useColorScheme,
 } from '@mui/material'
 import GitHubIcon from '@mui/icons-material/GitHub'
 import { TextLogo } from './TextLogo'
+import LightModeIcon from '@mui/icons-material/LightMode'
+import DarkModeIcon from '@mui/icons-material/DarkMode'
+import ContrastIcon from '@mui/icons-material/Contrast'
+import { BrunsvigaLogo } from './BrunsvigaLogo'
+import { environmentUniforms } from './render/environment'
+import { isDarkMode } from './utils'
 
 export function Header() {
+    const { mode, setMode } = useColorScheme()
+
     return (
         <AppBar
             position="static"
@@ -20,11 +29,7 @@ export function Header() {
             sx={{ height: '4rem' }}
         >
             <Toolbar>
-                <img
-                    className="w-auto p-2"
-                    src={`${__APP_BASE_PATH__}/brains_of_steel.svg`}
-                    alt=""
-                />
+                <BrunsvigaLogo />
                 <Stack spacing={0} sx={{ marginRight: 4, marginLeft: 1 }}>
                     <TextLogo width="8rem" />
                     <Typography variant="body2" component="div">
@@ -39,6 +44,24 @@ export function Header() {
                     variant="outlined"
                 />
                 <Box sx={{ flexGrow: 1 }}></Box>
+                <IconButton
+                    onClick={() => {
+                        const nextMode =
+                            mode == 'dark'
+                                ? 'light'
+                                : mode == 'light'
+                                  ? 'system'
+                                  : 'dark'
+                        setMode(nextMode)
+
+                        environmentUniforms.darkMode.value =
+                            isDarkMode(nextMode)
+                    }}
+                >
+                    {mode == 'system' && <ContrastIcon />}
+                    {mode == 'dark' && <DarkModeIcon />}
+                    {mode == 'light' && <LightModeIcon />}
+                </IconButton>
                 <Button
                     href="https://brunsviga13rk.github.io/docs"
                     target="_blank"

@@ -2,7 +2,17 @@ import Renderer from './render/Renderer.tsx'
 import { Header } from './Header.tsx'
 import { Editor as Solver } from './solver/Editor.tsx'
 import { Editor as Coder } from './api/Editor.tsx'
-import { Box, Grid2, Paper, Stack, Tab, Tabs } from '@mui/material'
+import {
+    Box,
+    createTheme,
+    CssBaseline,
+    Grid2,
+    Paper,
+    Stack,
+    Tab,
+    Tabs,
+    ThemeProvider,
+} from '@mui/material'
 import Dashboard from './Dashboard.tsx'
 import { useState } from 'react'
 import CalculateIcon from '@mui/icons-material/Calculate'
@@ -59,18 +69,25 @@ function inIframe() {
 }
 
 function App() {
+    const theme = createTheme({
+        colorSchemes: {
+            dark: true,
+        },
+    })
+
     return (
-        <>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
             {inIframe() ? (
                 /* Embed 3d renderer only when in iFrame  */
-                <div className="w-full h-full">
+                <Box className="w-full h-full">
                     <Renderer />
                     <LoadingIndicator />
-                </div>
+                </Box>
             ) : (
                 <Content />
             )}
-        </>
+        </ThemeProvider>
     )
 }
 
