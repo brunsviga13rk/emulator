@@ -1,10 +1,17 @@
 import { VFC, useRef, useState, useEffect } from 'react'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { execute } from './lua'
-import { Button, ButtonGroup, Divider, Stack } from '@mui/material'
+import {
+    Button,
+    ButtonGroup,
+    Divider,
+    Stack,
+    useColorScheme,
+} from '@mui/material'
 import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined'
 import './userWorker'
 import template from './template.lua?raw'
+import { useManacoThemeFromScheme } from '../utils'
 
 export const Editor: VFC = () => {
     const [editor, setEditor] =
@@ -29,6 +36,9 @@ export const Editor: VFC = () => {
             editor?.dispose()
         }
     }, [editor])
+
+    const { mode } = useColorScheme()
+    useManacoThemeFromScheme(mode)
 
     function runProgram() {
         const text = editor?.getModel()?.getValue()

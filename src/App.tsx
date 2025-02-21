@@ -68,13 +68,13 @@ function inIframe() {
     }
 }
 
-const theme = createTheme({
-    colorSchemes: {
-        dark: true,
-    },
-})
-
 function App() {
+    const theme = createTheme({
+        colorSchemes: {
+            dark: true,
+        },
+    })
+
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
