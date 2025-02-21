@@ -6,11 +6,13 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import { createBaseplane } from '../baseplane'
 import { Engine } from './engine'
 import { Brunsviga13rk } from '../model/brunsviga13rk'
-import fragmentShader from '../shader/gradient/fragmentShader.glsl?raw'
-import vertexShader from '../shader/gradient/vertexShader.glsl?raw'
 import Toolbox from './Toolbox'
 import Box from '@mui/material/Box'
 import ActionRecommendations from './ActionRecommendations'
+import { createBackground } from './environment'
+import { useColorScheme } from '@mui/material'
+import { environmentUniforms } from './environment'
+import { isDarkMode } from '../utils'
 
 /**
  * Setup the environment by: creating an environment lighmap for PBR rendering,
@@ -28,20 +30,7 @@ function setupEnvironment(engine: Engine) {
         }
     )
 
-    // Create quad spanning full canvas and fill with a simple gradient shader.
-    // This is used as background for the scene.
-    const myGradient = new THREE.Mesh(
-        new THREE.PlaneGeometry(4, 4, 1, 1),
-        new THREE.ShaderMaterial({
-            vertexShader: vertexShader,
-            fragmentShader: fragmentShader,
-        })
-    )
-    // Make sure the quad is rendered first and overwirtten by everyting else.
-    myGradient.material.depthWrite = false
-    myGradient.renderOrder = -99999
-
-    engine.scene.add(myGradient)
+    engine.scene.add(createBackground())
     engine.scene.add(createBaseplane())
 }
 
@@ -114,7 +103,12 @@ function setupRenderer() {
 }
 
 const Renderer = memo(() => {
+    const { mode } = useColorScheme()
+
     useEffect(() => {
+        // Initialize color for 3D environment.
+        environmentUniforms.darkMode.value = isDarkMode(mode)
+
         // call api or anything
         setupRenderer()
     })

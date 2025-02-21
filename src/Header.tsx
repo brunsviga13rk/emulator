@@ -15,6 +15,8 @@ import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import ContrastIcon from '@mui/icons-material/Contrast'
 import { BrunsvigaLogo } from './BrunsvigaLogo'
+import { environmentUniforms } from './render/environment'
+import { isDarkMode } from './utils'
 
 export function Header() {
     const { mode, setMode } = useColorScheme()
@@ -44,13 +46,16 @@ export function Header() {
                 <Box sx={{ flexGrow: 1 }}></Box>
                 <IconButton
                     onClick={() => {
-                        setMode(
+                        const nextMode =
                             mode == 'dark'
                                 ? 'light'
                                 : mode == 'light'
                                   ? 'system'
                                   : 'dark'
-                        )
+                        setMode(nextMode)
+
+                        environmentUniforms.darkMode.value =
+                            isDarkMode(nextMode)
                     }}
                 >
                     {mode == 'system' && <ContrastIcon />}

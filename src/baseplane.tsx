@@ -7,6 +7,7 @@ import {
     PlaneGeometry,
     ShaderMaterial,
 } from 'three'
+import { environmentUniforms } from './render/environment'
 
 /**
  * Radius of the base plane.
@@ -28,6 +29,7 @@ export function createBaseplane(): Object3D {
             fragmentShader: fragmentShader,
             blending: NormalBlending,
             transparent: true,
+            uniforms: environmentUniforms,
         })
     )
 
