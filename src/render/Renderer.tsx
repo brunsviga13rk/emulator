@@ -46,8 +46,12 @@ function postLoadSetup(engine: Engine) {
 
     // Remote loading indicator.
     const loadingIndicator = document.getElementById('div-loading-indicator')
+    const textLogo = document.getElementById('text-logo-loading-indicator')
 
     if (!loadingIndicator) throw new Error('missing loading indicator')
+    if (!textLogo) throw new Error('missing text logo')
+
+    textLogo.className += ' jump'
 
     // Start fade animation by appending animation CSS class.
     loadingIndicator.className += ' fade-out'
