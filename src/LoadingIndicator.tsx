@@ -15,7 +15,9 @@ export function LoadingIndicator() {
             <Box className="m-auto flex-col text-center">
                 <CircularProgress color="inherit" size={60} />
                 <Typography style={{ marginTop: '2.5rem' }}>
-                    <TextLogo width="12rem" />
+                    <div id="text-logo-loading-indicator">
+                        <TextLogo width="12rem" />
+                    </div>
                 </Typography>
                 <Typography style={{ marginTop: '1rem' }}>
                     Loading assets...

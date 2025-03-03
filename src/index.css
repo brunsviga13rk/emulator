@@ -43,11 +43,15 @@ body {
 }
 
 @keyframes fade-out {
-    from {
+    0% {
         opacity: 100%;
     }
 
-    to {
+    25% {
+        opacity: 100%;
+    }
+
+    100% {
         opacity: 0%;
     }
 }
@@ -55,6 +59,27 @@ body {
 .fade-out {
     animation-duration: 1s;
     animation-name: fade-out;
+    animation-delay: 2s;
+    animation-timing-function: ease-out;
+}
+
+@keyframes jump {
+    0% {
+        transform: scale(1, 1);
+    }
+
+    25% {
+        transform: scale(1.25, 1.25);
+    }
+
+    100% {
+        transform: scale(0.5, 0.5);
+    }
+}
+
+.jump {
+    animation-duration: 1s;
+    animation-name: jump;
     animation-delay: 2s;
     animation-timing-function: ease-out;
 }
