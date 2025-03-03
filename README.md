@@ -1,40 +1,33 @@
 
 <div align="center">
-    <img alt="icon" src="./public/brunsviga_icon.svg" width="30%"/>
+    <img alt="icon" src="./assets/banner.svg" width="100%"/>
 </div>
 
 <div align="center">
-    <h2>Brunsviga 13 RK emulator</h2>
+    <h2>Simulation of the Brunsviga 13 RK</h2>
+    <p>
+        <a href="https://brunsviga13rk.github.io/emulator">DEMO<a/>
+            &ensp; | &ensp;
+        <a href="https://brunsviga13rk.github.io/docs">DOCS<a/>
+            &ensp; |  &ensp;
+        <a href="https://github.com/brunsviga13rk/thesis">PAPER<a/>
+    </p>
     <p>
         Web based emulation of the Brunsviga 13 RK
         mechanical calculator from the 1950s.
     </p>
-    <img src="https://img.shields.io/github/check-runs/brunsviga13rk/emulator/main">
-    <img src="https://img.shields.io/github/deployments/brunsviga13rk/emulator/github-pages?label=deployment">
-    <img src="https://img.shields.io/github/package-json/v/brunsviga13rk/emulator">
-    <img src="https://img.shields.io/github/license/brunsviga13rk/emulator">
-    <img src="https://img.shields.io/github/languages/top/brunsviga13rk/emulator">
+    <img src="https://img.shields.io/github/license/brunsviga13rk/emulator?style=for-the-badge">
+    <img src="https://img.shields.io/github/check-runs/brunsviga13rk/emulator/main?style=for-the-badge">
+    <img src="https://img.shields.io/github/deployments/brunsviga13rk/emulator/github-pages?style=for-the-badge&label=deployment">
+    <img src="https://img.shields.io/github/package-json/v/brunsviga13rk/emulator?style=for-the-badge">
     <br>
-    <img src="https://img.shields.io/badge/MUI-%230081CB.svg?logo=mui&logoColor=white">
-    <img src="https://img.shields.io/badge/react-%2320232a.svg?logo=react&logoColor=%2361DAFB">
-    <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?logo=tailwind-css&logoColor=white">
-    <img src="https://img.shields.io/badge/vite-%23646CFF.svg?logo=vite&logoColor=white">
-    <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?logo=typescript&logoColor=white">
-    <img src="https://img.shields.io/badge/lua-%232C2D72.svg?logo=lua&logoColor=white">
-    <img src="https://img.shields.io/badge/github%20pages-121013?logo=github&logoColor=white">
-    <br>
-    <br>
-    <a href="https://brunsviga13rk.github.io/emulator">Demo<a/> |
-    <a href="https://brunsviga13rk.github.io/docs">Docs<a/> |
-    <a href="https://github.com/brunsviga13rk/thesis">Paper<a/>
+    <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white">
+    <img src="https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white">
+    <img src="https://img.shields.io/github/languages/top/brunsviga13rk/emulator?style=for-the-badge">
+    <img src="https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white">
+    <img src="https://img.shields.io/badge/lua-%232C2D72.svg?style=for-the-badge&logo=lua&logoColor=white">
+    <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB">
 </div>
-<br>
-
-<div align="center">
-    <img width="65%" src="assets/preview.gif">
-</div>
-
----
 
 # Features
 
@@ -55,6 +48,12 @@ following list of frameworks and build systems was chosen:
 - 🌍 Material UI
 - 🌕 Lua scripting
 - 🔥 Phosphor Icons
+
+# Live demonstration
+
+![GitHub pages shield](https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white)
+
+Latest version is automatically deployed to GitHub pages [under here](https://brunsviga13rk.github.io/emulator).
 
 # Quick Start
 
