@@ -360,6 +360,46 @@ export class Brunsviga13rk
     // add
     // sub
 
+    private _pause = false
+    private _abort = false
+
+    public setPausing(pausing: boolean) {
+        this._pause = pausing
+    }
+
+    public abort() {
+        this._abort = true
+    }
+
+    /**
+     * Process the abort and pause flag. Either returns true to abort immediately
+     * or waits until the pausing period is over.
+     *
+     * @returns True when the calling process is to abort, false otherwise.
+     */
+    private async pollAbortAndProcessPause(): Promise<boolean> {
+        // Abort if prompted.
+        // Abortion can happen indipendently of pausing.
+        if (this._abort) {
+            this._abort = false
+            return true
+        }
+
+        // Wait until pausing is disabled.
+        while (this._pause) {
+            // Abort if prompted.
+            // May happen while waiting.
+            if (this._abort) {
+                this._abort = false
+                return true
+            }
+
+            await this.sleep(50)
+        }
+
+        return false
+    }
+
     /**
      * Slides the nput slider to represent the given value.
      * The input value is saturated to the maximum and minimum value
@@ -368,7 +408,7 @@ export class Brunsviga13rk
      * @since 1.3.0
      * @param value
      */
-    public async setInput(value: number): Promise<void> {
+    public async setInput(value: number): Promise<boolean> {
         // Negative numbers are reprented by complementary.
         if (value < 0) value = MAX_INPUT_SPROCKET_VALUE - value
 
@@ -380,6 +420,10 @@ export class Brunsviga13rk
 
         // Set digits covered by value.
         for (; digit <= 10 && value >= 1; digit++) {
+            if (await this.pollAbortAndProcessPause()) {
+                return true
+            }
+
             const digitValue = value % 10
 
             this.selector_sprocket.setDigit(digit, digitValue)
@@ -391,60 +435,110 @@ export class Brunsviga13rk
 
         // Reset left over slider to resting position.
         for (; digit <= 10; digit++) {
+            if (await this.pollAbortAndProcessPause()) {
+                return true
+            }
+
             this.selector_sprocket.setDigit(digit, 0)
             this.input_sprocket.setDigit(digit, 0)
         }
 
-        return this.sleep(500)
+        await this.sleep(500)
+
+        return false
     }
 
-    public async add(): Promise<void> {
+    public async add(): Promise<boolean> {
+        if (await this.pollAbortAndProcessPause()) {
+            return true
+        }
+
         this.operation_crank.add()
 
-        return this.sleep(700)
+        await this.sleep(700)
+
+        return false
     }
 
-    public async subtract(): Promise<void> {
+    public async subtract(): Promise<boolean> {
+        if (await this.pollAbortAndProcessPause()) {
+            return true
+        }
+
         this.operation_crank.subtract()
 
-        return this.sleep(500)
+        await this.sleep(500)
+
+        return false
     }
 
-    public async shiftLeft(): Promise<void> {
+    public async shiftLeft(): Promise<boolean> {
+        if (await this.pollAbortAndProcessPause()) {
+            return true
+        }
+
         this.sled.shift(Direction.Left)
 
-        return this.sleep(100)
+        await this.sleep(100)
+
+        return false
     }
 
-    public async shiftRight(): Promise<void> {
+    public async shiftRight(): Promise<boolean> {
+        if (await this.pollAbortAndProcessPause()) {
+            return true
+        }
+
         this.sled.shift(Direction.Right)
 
-        return this.sleep(100)
+        await this.sleep(100)
+
+        return false
     }
 
-    public async clearOutputRegister(): Promise<void> {
+    public async clearOutputRegister(): Promise<boolean> {
+        if (await this.pollAbortAndProcessPause()) {
+            return true
+        }
+
         this.result_reset_handle.pullDown()
 
-        return this.sleep(500)
+        await this.sleep(500)
+
+        return false
     }
 
-    public async clearInputRegister(): Promise<void> {
+    public async clearInputRegister(): Promise<boolean> {
+        if (await this.pollAbortAndProcessPause()) {
+            return true
+        }
+
         this.delete_input_handle.pullDown()
 
-        return this.sleep(500)
+        await this.sleep(500)
+
+        return false
     }
 
-    public async clearCounterRegister(): Promise<void> {
+    public async clearCounterRegister(): Promise<boolean> {
+        if (await this.pollAbortAndProcessPause()) {
+            return true
+        }
+
         this.counter_reset_handle.pullDown()
 
-        return this.sleep(500)
+        await this.sleep(500)
+
+        return false
     }
 
-    public async clearRegisters(): Promise<void> {
+    public async clearRegisters(): Promise<boolean> {
         this.delete_handle.pullDown()
         this.repeatedShiftLeft(6)
 
-        return this.sleep(500)
+        await this.sleep(500)
+
+        return false
     }
 
     // Synchronous API to retrieve values from the state of the machine.
@@ -467,49 +561,62 @@ export class Brunsviga13rk
 
     public async repeatedAdd(
         amount: number | undefined = undefined
-    ): Promise<void> {
+    ): Promise<boolean> {
         if (amount == undefined) {
-            await this.add()
+            return await this.add()
         } else {
             for (let i = 0; i < amount; i++) {
-                await this.add()
+                if (await this.add()) {
+                    return true
+                }
             }
         }
+        return false
     }
 
     public async repeatedSubtract(
         amount: number | undefined = undefined
-    ): Promise<void> {
+    ): Promise<boolean> {
         if (amount == undefined) {
-            await this.subtract()
+            return await this.subtract()
         } else {
             for (let i = 0; i < amount; i++) {
-                await this.subtract()
+                if (await this.subtract()) {
+                    return true
+                }
             }
         }
+
+        return false
     }
 
     public async repeatedShiftLeft(
         amount: number | undefined = undefined
-    ): Promise<void> {
+    ): Promise<boolean> {
         if (amount == undefined) {
-            await this.shiftLeft()
+            return await this.shiftLeft()
         } else {
             for (let i = 0; i < amount; i++) {
-                await this.shiftLeft()
+                if (await this.shiftLeft()) {
+                    return true
+                }
             }
         }
+        return false
     }
 
     public async repeatedShiftRight(
         amount: number | undefined = undefined
-    ): Promise<void> {
+    ): Promise<boolean> {
         if (amount == undefined) {
-            await this.shiftRight()
+            return await this.shiftRight()
         } else {
             for (let i = 0; i < amount; i++) {
-                await this.shiftRight()
+                if (await this.shiftRight()) {
+                    return true
+                }
             }
         }
+        return false
     }
 }

@@ -25,6 +25,7 @@ import StopIcon from '@mui/icons-material/Stop'
 import RedoIcon from '@mui/icons-material/Redo'
 import PauseIcon from '@mui/icons-material/Pause'
 import { useTheme } from '@mui/material/styles'
+import { Brunsviga13rk } from '../model/brunsviga13rk'
 
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean
@@ -121,7 +122,6 @@ function InstructionCard({
 }
 
 let abort: boolean = false
-let pause: boolean = false
 let step: boolean = false
 
 async function execute(
@@ -132,23 +132,25 @@ async function execute(
         new Promise((resolve) => setTimeout(resolve, ms))
 
     for (let i = 0; i < program.length; i++) {
-        while (pause && !step) {
-            await delay(500)
-        }
-        step = false
+        setActive(i)
+
+        await program[i].execute().then(() => {
+            // Pause before invoking next step.
+            if (step) {
+                Brunsviga13rk.getInstance().setPausing(true)
+                step = false
+            }
+        })
 
         if (abort) {
             break
         }
 
-        setActive(i)
-        await program[i].execute()
+        // Wait until dispatching next animation.
         await delay(500)
     }
 
-    if (abort) {
-        abort = false
-    }
+    abort = false
 }
 
 export function Editor() {
@@ -184,8 +186,8 @@ export function Editor() {
                 setActive(undefined)
             })
         } else {
+            Brunsviga13rk.getInstance().abort()
             abort = true
-            pause = false
         }
     }
 
@@ -253,7 +255,9 @@ export function Editor() {
                                 disabled={!running}
                                 onClick={() => {
                                     setPaused(!paused)
-                                    pause = !paused
+                                    Brunsviga13rk.getInstance().setPausing(
+                                        !paused
+                                    )
                                 }}
                             >
                                 {paused ? <PlayArrowIcon /> : <PauseIcon />}
@@ -265,6 +269,9 @@ export function Editor() {
                                 disabled={!paused}
                                 onClick={() => {
                                     step = true
+                                    Brunsviga13rk.getInstance().setPausing(
+                                        false
+                                    )
                                 }}
                             >
                                 <RedoIcon />
