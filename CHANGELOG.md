@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.1](https://github.com/brunsviga13rk/emulator/compare/v1.7.0...v1.7.1) (2025-03-05)
+
+
+### Bug Fixes
+
+* make Brunsviga API handle pausing and abortion ([#129](https://github.com/brunsviga13rk/emulator/issues/129)) ([33c75d8](https://github.com/brunsviga13rk/emulator/commit/33c75d818678c8b65b547266d0a8378a5ac5f0d2))
+* remove tokens when expression is errornous ([#131](https://github.com/brunsviga13rk/emulator/issues/131)) ([47ebd4f](https://github.com/brunsviga13rk/emulator/commit/47ebd4fd14a0c321de9bde3b114bf26e16dc405d))
+
 ## [1.7.0](https://github.com/brunsviga13rk/emulator/compare/v1.6.0...v1.7.0) (2025-03-03)
 
 
