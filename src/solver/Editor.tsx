@@ -169,6 +169,7 @@ export function Editor() {
             setErrorMessage(undefined)
             setTokens(solve(input))
         } catch (e: unknown) {
+            setTokens([])
             setErrorMessage((e as Error).message)
         }
     }
