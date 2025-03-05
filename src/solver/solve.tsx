@@ -202,7 +202,7 @@ export class Instruction {
         this.value = value
     }
 
-    public async execute(): Promise<void> {
+    public async execute(): Promise<boolean> {
         const brunsviga = Brunsviga13rk.getInstance()
         let promise = undefined
 

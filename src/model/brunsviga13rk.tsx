@@ -408,7 +408,7 @@ export class Brunsviga13rk
      * @since 1.3.0
      * @param value
      */
-    public async setInput(value: number): Promise<void> {
+    public async setInput(value: number): Promise<boolean> {
         // Negative numbers are reprented by complementary.
         if (value < 0) value = MAX_INPUT_SPROCKET_VALUE - value
 
@@ -421,7 +421,7 @@ export class Brunsviga13rk
         // Set digits covered by value.
         for (; digit <= 10 && value >= 1; digit++) {
             if (await this.pollAbortAndProcessPause()) {
-                return
+                return true
             }
 
             const digitValue = value % 10
@@ -436,14 +436,16 @@ export class Brunsviga13rk
         // Reset left over slider to resting position.
         for (; digit <= 10; digit++) {
             if (await this.pollAbortAndProcessPause()) {
-                return
+                return true
             }
 
             this.selector_sprocket.setDigit(digit, 0)
             this.input_sprocket.setDigit(digit, 0)
         }
 
-        return this.sleep(500)
+        await this.sleep(500)
+
+        return false
     }
 
     public async add(): Promise<boolean> {
@@ -559,57 +561,62 @@ export class Brunsviga13rk
 
     public async repeatedAdd(
         amount: number | undefined = undefined
-    ): Promise<void> {
+    ): Promise<boolean> {
         if (amount == undefined) {
-            await this.add()
+            return await this.add()
         } else {
             for (let i = 0; i < amount; i++) {
                 if (await this.add()) {
-                    return
+                    return true
                 }
             }
         }
+        return false
     }
 
     public async repeatedSubtract(
         amount: number | undefined = undefined
-    ): Promise<void> {
+    ): Promise<boolean> {
         if (amount == undefined) {
-            await this.subtract()
+            return await this.subtract()
         } else {
             for (let i = 0; i < amount; i++) {
                 if (await this.subtract()) {
-                    return
+                    return true
                 }
             }
         }
+
+        return false
     }
 
     public async repeatedShiftLeft(
         amount: number | undefined = undefined
-    ): Promise<void> {
+    ): Promise<boolean> {
         if (amount == undefined) {
-            await this.shiftLeft()
+            return await this.shiftLeft()
         } else {
             for (let i = 0; i < amount; i++) {
                 if (await this.shiftLeft()) {
-                    return
+                    return true
                 }
             }
         }
+        return false
     }
 
     public async repeatedShiftRight(
         amount: number | undefined = undefined
-    ): Promise<void> {
+    ): Promise<boolean> {
         if (amount == undefined) {
-            await this.shiftRight()
+            return await this.shiftRight()
         } else {
             for (let i = 0; i < amount; i++) {
                 if (await this.shiftRight()) {
-                    return
+                    return true
                 }
             }
         }
+        return false
     }
 }
