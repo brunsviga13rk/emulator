@@ -26,6 +26,7 @@ export function Header() {
             position="static"
             color="inherit"
             variant="outlined"
+            elevation={0}
             sx={{ height: '4rem' }}
         >
             <Toolbar>
