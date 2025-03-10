@@ -107,17 +107,21 @@ function Content() {
                 spacing={1}
                 sx={{
                     height: 'calc(100% - 4rem)',
+                    overflow: 'hidden',
                 }}
             >
                 {/* Renderer on left hand side */}
-                <Grid2 size={{ sm: 12, md: 7 }} sx={{ padding: '1rem' }}>
+                <Grid2
+                    size={{ xs: 12, sm: 7 }}
+                    sx={{ padding: '1rem', height: '100%' }}
+                >
                     <Stack direction="column" sx={{ height: '100%' }}>
                         <Renderer />
                     </Stack>
                 </Grid2>
                 {/* Editors on right hand side */}
                 <Grid2
-                    size={{ sm: 12, md: 5 }}
+                    size={{ xs: 12, sm: 5 }}
                     sx={{ padding: '1rem', height: '100%' }}
                 >
                     <Dashboard />
