@@ -154,7 +154,6 @@ function Content() {
                                 height: '100%',
                                 padding: 2,
                             }}
-                            elevation={0}
                             variant="outlined"
                         >
                             <CustomTabPanel value={value} index={0}>

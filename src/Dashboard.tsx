@@ -112,7 +112,6 @@ export default function Dashboard() {
     return (
         <Paper
             sx={{ position: 'static', padding: 2, height: '14rem' }}
-            elevation={0}
             variant="outlined"
         >
             <Stack
