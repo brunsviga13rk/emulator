@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.7.1](https://github.com/brunsviga13rk/emulator/compare/v1.7.0...v1.7.1) (2025-03-10)
+
+
+### Bug Fixes
+
+* collapse grid at 900px ([a0f91de](https://github.com/brunsviga13rk/emulator/commit/a0f91de08d18bfb1b2617700d8137dc04b4142d7))
+* hide vertical overflow when screen is to narrow ([a0f91de](https://github.com/brunsviga13rk/emulator/commit/a0f91de08d18bfb1b2617700d8137dc04b4142d7))
+* make Brunsviga API handle pausing and abortion ([#129](https://github.com/brunsviga13rk/emulator/issues/129)) ([33c75d8](https://github.com/brunsviga13rk/emulator/commit/33c75d818678c8b65b547266d0a8378a5ac5f0d2))
+* optimize reponsive layout ([#135](https://github.com/brunsviga13rk/emulator/issues/135)) ([a0f91de](https://github.com/brunsviga13rk/emulator/commit/a0f91de08d18bfb1b2617700d8137dc04b4142d7))
+* remove div from typography element in loading indicator ([1bdf947](https://github.com/brunsviga13rk/emulator/commit/1bdf94700f55307c331da7246dd8af9844e2d54d))
+* remove MUI warnings ([#134](https://github.com/brunsviga13rk/emulator/issues/134)) ([1bdf947](https://github.com/brunsviga13rk/emulator/commit/1bdf94700f55307c331da7246dd8af9844e2d54d))
+* remove tokens when expression is errornous ([#131](https://github.com/brunsviga13rk/emulator/issues/131)) ([47ebd4f](https://github.com/brunsviga13rk/emulator/commit/47ebd4fd14a0c321de9bde3b114bf26e16dc405d))
+* set elevation to 0 when using outlined components ([1bdf947](https://github.com/brunsviga13rk/emulator/commit/1bdf94700f55307c331da7246dd8af9844e2d54d))
+* switch to drawer menu when header  is too narrow ([a0f91de](https://github.com/brunsviga13rk/emulator/commit/a0f91de08d18bfb1b2617700d8137dc04b4142d7))
+
 ## [1.7.0](https://github.com/brunsviga13rk/emulator/compare/v1.6.0...v1.7.0) (2025-03-03)
 
 
