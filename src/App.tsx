@@ -112,7 +112,7 @@ function Content() {
             >
                 {/* Renderer on left hand side */}
                 <Grid2
-                    size={{ xs: 12, sm: 7 }}
+                    size={{ xs: 12, md: 7 }}
                     sx={{ padding: '1rem', height: '100%' }}
                 >
                     <Stack direction="column" sx={{ height: '100%' }}>
@@ -121,7 +121,7 @@ function Content() {
                 </Grid2>
                 {/* Editors on right hand side */}
                 <Grid2
-                    size={{ xs: 12, sm: 5 }}
+                    size={{ xs: 12, md: 5 }}
                     sx={{ padding: '1rem', height: '100%' }}
                 >
                     <Dashboard />
