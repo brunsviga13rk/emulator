@@ -52,10 +52,10 @@ export function useManacoThemeFromScheme(mode: string | undefined) {
             theme = 'vs-light'
             break
         case 'dark':
-            theme = 'vs-dark'
+            theme = 'brunsviga13rk-dark'
             break
         default:
-            theme = prefersDarkMode ? 'vs-dark' : 'vs-light'
+            theme = prefersDarkMode ? 'brunsviga13rk-dark' : 'vs-light'
     }
 
     if (theme) monaco.editor.setTheme(theme)

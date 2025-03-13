@@ -18,6 +18,15 @@ export const Editor: VFC = () => {
         useState<monaco.editor.IStandaloneCodeEditor | null>(null)
     const monacoEl = useRef(null)
 
+    monaco.editor.defineTheme('brunsviga13rk-dark', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [],
+        colors: {
+            'editor.background': '#111111',
+        },
+    })
+
     useEffect(() => {
         if (monacoEl) {
             setEditor((editor) => {
