@@ -88,3 +88,15 @@ body {
     background-color: #7f7f7f;
     opacity: 0.5;
 }
+
+.breakpoint {
+    background-color: red;
+    border-radius: 50%;
+    transform: scale(0.5, 0.5);
+}
+
+.breakpoint-hover {
+    background-color: rgba(255, 0, 0, 35%);
+    border-radius: 50%;
+    transform: scale(0.5, 0.5);
+}

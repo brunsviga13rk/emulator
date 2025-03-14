@@ -281,6 +281,7 @@ function setup(luaEngine: LuaEngine) {
                 source: source,
                 currentLine: currentLine,
                 functionName: functionName,
+                running: true,
             })
         }
     }
@@ -296,6 +297,7 @@ function setup(luaEngine: LuaEngine) {
                         source: undefined,
                         currentLine: undefined,
                         functionName: undefined,
+                        running: undefined,
                     })
                 )
                 break

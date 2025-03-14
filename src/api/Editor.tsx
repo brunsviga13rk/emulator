@@ -8,11 +8,13 @@ import {
     useColorScheme,
 } from '@mui/material'
 import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined'
+import AdbIcon from '@mui/icons-material/Adb'
 import './userWorker'
 import template from './template.lua?raw'
 import { useManacoThemeFromScheme } from '../utils'
 import { Instruction } from '../instruction'
 import Worker from './luaWorker.tsx?worker'
+import RedoIcon from '@mui/icons-material/Redo'
 
 function highlightLine(
     previousLineNumber: number | undefined,
@@ -23,7 +25,8 @@ function highlightLine(
         if (previousLineNumber) {
             const ids = editor
                 .getLineDecorations(previousLineNumber)
-                ?.map((deco) => deco.id)
+                ?.filter((deco) => deco.options.className == 'highlightedLine')
+                .map((deco) => deco.id)
 
             if (ids) {
                 editor.removeDecorations(ids)
@@ -46,6 +49,79 @@ function highlightLine(
     }
 }
 
+/**
+ * Set a break point on a specific line. The breakpoint can either be turned
+ * on or off.
+ *
+ * Based on: https://microsoft.github.io/monaco-editor/playground.html?source=v0.52.2#example-interacting-with-the-editor-rendering-glyphs-in-the-margin
+ * From: https://github.com/Microsoft/monaco-editor/issues/558
+ *
+ * @param lineNumber
+ * @param enable
+ */
+function setBreakpoint(lineNumber: number, enable: boolean) {
+    const editor = monaco.editor.getEditors().at(0)
+    if (editor) {
+        if (enable) {
+            const range = new monaco.Range(lineNumber, 1, lineNumber, 1)
+            const highlightDecoration = {
+                glyphMarginClassName: 'breakpoint',
+            }
+            editor.createDecorationsCollection([
+                {
+                    range: range,
+                    options: highlightDecoration,
+                },
+            ])
+        } else {
+            const ids = editor
+                .getLineDecorations(lineNumber)
+                ?.filter((deco) => deco.options.glyphMarginClassName)
+                .map((deco) => deco.id)
+
+            if (ids) {
+                editor.removeDecorations(ids)
+            }
+        }
+    }
+}
+
+function hoverBreakpoint(lineNumber: number | undefined) {
+    const editor = monaco.editor.getEditors().at(0)
+    if (editor) {
+        const range = editor.getModel()?.getFullModelRange()
+
+        if (!range) throw Error('No range')
+
+        // Disable all hover decorations.
+        const ids = editor
+            .getDecorationsInRange(range)
+            ?.filter(
+                (deco) =>
+                    deco.options.glyphMarginClassName == 'breakpoint-hover'
+            )
+            .map((deco) => deco.id)
+
+        if (ids) {
+            editor.removeDecorations(ids)
+        }
+
+        // Enable hover decoration for this one line.
+        if (lineNumber) {
+            const range = new monaco.Range(lineNumber, 1, lineNumber, 1)
+            const highlightDecoration = {
+                glyphMarginClassName: 'breakpoint-hover',
+            }
+            editor.createDecorationsCollection([
+                {
+                    range: range,
+                    options: highlightDecoration,
+                },
+            ])
+        }
+    }
+}
+
 const worker = new Worker()
 let previousLineNumber: number | undefined = undefined
 
@@ -57,18 +133,49 @@ export const Editor: VFC = () => {
     const [currentLine, setCurrentLine] = useState<number | undefined>(
         undefined
     )
+    const [runInDebugMode, setRunInDebugMode] = useState<boolean | undefined>(
+        undefined
+    )
+    const [paused, setPaused] = useState<boolean>(false)
 
     useEffect(() => {
         if (monacoEl) {
             setEditor((editor) => {
                 if (editor) return editor
 
-                return monaco.editor.create(monacoEl.current!, {
+                const newEditor = monaco.editor.create(monacoEl.current!, {
                     value: template,
                     language: 'lua',
                     tabSize: 2,
                     automaticLayout: true,
+                    glyphMargin: true,
                 })
+
+                newEditor.onMouseDown((e: monaco.editor.IEditorMouseEvent) => {
+                    if (
+                        e.target.type ==
+                        monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN
+                    ) {
+                        if (e.target.position?.lineNumber) {
+                            setBreakpoint(e.target.position?.lineNumber, true)
+                        }
+                    }
+                })
+
+                newEditor.onMouseMove((e: monaco.editor.IEditorMouseEvent) => {
+                    if (
+                        e.target.type ==
+                        monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN
+                    ) {
+                        if (e.target.position?.lineNumber) {
+                            hoverBreakpoint(e.target.position?.lineNumber)
+                        }
+                    } else {
+                        hoverBreakpoint(undefined)
+                    }
+                })
+
+                return newEditor
             })
         }
 
@@ -87,6 +194,10 @@ export const Editor: VFC = () => {
                 case 'Debug Info':
                     // Recieved updated debug info.
                     setCurrentLine(e.data.currentLine)
+
+                    if (!e.data.running) {
+                        setRunInDebugMode(undefined)
+                    }
                     break
             }
         }
@@ -96,17 +207,30 @@ export const Editor: VFC = () => {
         }
     }, [editor])
 
-    highlightLine(previousLineNumber, currentLine)
-    previousLineNumber = currentLine
+    if (previousLineNumber != undefined || runInDebugMode) {
+        highlightLine(previousLineNumber, currentLine)
+        previousLineNumber = currentLine
+    }
 
     const { mode } = useColorScheme()
     useManacoThemeFromScheme(mode)
 
-    function runProgram() {
+    const runProgram = () => {
         const text = editor?.getModel()?.getValue()
         if (text) {
             worker.postMessage({ kind: 'Run Script', script: text })
         }
+
+        setRunInDebugMode(false)
+    }
+
+    const runProgramInDebugMode = () => {
+        const text = editor?.getModel()?.getValue()
+        if (text) {
+            worker.postMessage({ kind: 'Run Script', script: text })
+        }
+
+        setRunInDebugMode(true)
     }
 
     return (
@@ -116,8 +240,27 @@ export const Editor: VFC = () => {
         >
             <Stack direction="row" spacing={2}>
                 <ButtonGroup variant="contained" color="inherit" size="small">
-                    <Button onClick={runProgram}>
+                    <Button
+                        onClick={runProgram}
+                        disabled={runInDebugMode != undefined}
+                    >
                         <PlayArrowOutlinedIcon />
+                    </Button>
+                    <Button
+                        onClick={runProgramInDebugMode}
+                        disabled={runInDebugMode != undefined}
+                        color={
+                            runInDebugMode
+                                ? paused
+                                    ? 'error'
+                                    : 'success'
+                                : 'inherit'
+                        }
+                    >
+                        <AdbIcon />
+                    </Button>
+                    <Button disabled={!paused}>
+                        <RedoIcon />
                     </Button>
                 </ButtonGroup>
             </Stack>
