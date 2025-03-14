@@ -74,25 +74,37 @@ function setup(luaEngine: LuaEngine) {
         engangeWaitLockAPI = async () => await engangeWaitLock('apilock')
 
         public async load(value: number) {
-            postMessage({ instruction: { opcode: 3, value: value } })
+            postMessage({
+                kind: 'API Call',
+                instruction: { opcode: 3, value: value },
+            })
 
             await this.engangeWaitLockAPI()
         }
 
         public async add() {
-            postMessage({ instruction: { opcode: 1, value: undefined } })
+            postMessage({
+                kind: 'API Call',
+                instruction: { opcode: 1, value: undefined },
+            })
 
             await this.engangeWaitLockAPI()
         }
 
         public async subtract() {
-            postMessage({ instruction: { opcode: 2, value: undefined } })
+            postMessage({
+                kind: 'API Call',
+                instruction: { opcode: 2, value: undefined },
+            })
 
             await this.engangeWaitLockAPI()
         }
 
         public async reset() {
-            postMessage({ instruction: { opcode: 4, value: undefined } })
+            postMessage({
+                kind: 'API Call',
+                instruction: { opcode: 4, value: undefined },
+            })
 
             await this.engangeWaitLockAPI()
         }
@@ -102,19 +114,28 @@ function setup(luaEngine: LuaEngine) {
         public async zero_input_register() {}
 
         public async zero_result_register() {
-            postMessage({ instruction: { opcode: 0, value: undefined } })
+            postMessage({
+                kind: 'API Call',
+                instruction: { opcode: 0, value: undefined },
+            })
 
             await this.engangeWaitLockAPI()
         }
 
         public async shift_left() {
-            postMessage({ instruction: { opcode: 5, value: undefined } })
+            postMessage({
+                kind: 'API Call',
+                instruction: { opcode: 5, value: undefined },
+            })
 
             await this.engangeWaitLockAPI()
         }
 
         public async shift_right() {
-            postMessage({ instruction: { opcode: 6, value: undefined } })
+            postMessage({
+                kind: 'API Call',
+                instruction: { opcode: 6, value: undefined },
+            })
 
             await this.engangeWaitLockAPI()
         }
@@ -254,6 +275,13 @@ function setup(luaEngine: LuaEngine) {
             // luaEngine.global.lua.lua_callk(address, 0, 0, 0, null)
             // const startTime = new Date().getTime()
             // while (new Date().getTime() - startTime < 2000);
+
+            postMessage({
+                kind: 'Debug Info',
+                source: source,
+                currentLine: currentLine,
+                functionName: functionName,
+            })
         }
     }
 
@@ -262,7 +290,14 @@ function setup(luaEngine: LuaEngine) {
 
         switch (e.data.kind) {
             case 'Run Script':
-                luaEngine.doString(e.data.script)
+                luaEngine.doString(e.data.script).then(() =>
+                    postMessage({
+                        kind: 'Debug Info',
+                        source: undefined,
+                        currentLine: undefined,
+                        functionName: undefined,
+                    })
+                )
                 break
             case 'API Call Returned':
                 waitLockMap.set('apilock', false)
