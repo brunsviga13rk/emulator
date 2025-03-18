@@ -23,6 +23,8 @@ function setup(luaEngine: LuaEngine) {
             new Promise((resolve) => setTimeout(resolve, length))
     )
 
+    luaEngine.global.set('debug_lock', () => waitLockMap.get('steplock'))
+
     const debugHookFunction = luaEngine.global.lua.module.addFunction(
         debugHook,
         'vii'
@@ -63,6 +65,8 @@ function setup(luaEngine: LuaEngine) {
 
         while (waitLockMap.get(name)) await yieldAsync()
     }
+
+    let breakpoints: number[] = []
 
     /**
      * Wrapper API for static Brunsviga Typescript API tied in with animaiton.
@@ -271,10 +275,10 @@ function setup(luaEngine: LuaEngine) {
         // Only block in top most function.
         if (functionName == 'emsc' && source != '@./api.lua') {
             // Call debug block function through Lua.
-            // luaEngine.global.lua.lua_getglobal(address, 'PauseExecution')
-            // luaEngine.global.lua.lua_callk(address, 0, 0, 0, null)
             // const startTime = new Date().getTime()
             // while (new Date().getTime() - startTime < 2000);
+
+            const breakpoint = breakpoints.includes(currentLine)
 
             postMessage({
                 kind: 'Debug Info',
@@ -282,7 +286,35 @@ function setup(luaEngine: LuaEngine) {
                 currentLine: currentLine,
                 functionName: functionName,
                 running: true,
+                breakpoint: breakpoint,
             })
+
+            if (breakpoint) {
+                // Trigger breakpoint.
+                // NOTE: Lua cannot yield from inside a hook.
+                // See: https://www.love2d.org/forums/viewtopic.php?t=84000
+                // Problem: We cannot yield from Lua to TS but this is
+                // necessary since the TS scheduler needs to be talked to.
+                // function* syncLock() {
+                //     while (waitLockMap.get('steplock')) {
+                //         yield
+                //     }
+                // }
+                // waitLockMap.set('steplock', true)
+                // const generator = syncLock()
+                // function step() {
+                //     if (!generator.next().done) {
+                //         setTimeout(step, 0)
+                //     }
+                //     console.log('unroll')
+                // }
+                // step()
+
+                waitLockMap.set('steplock', true)
+
+                // luaEngine.global.lua.lua_getglobal(address, 'Pause')
+                // luaEngine.global.lua.lua_callk(address, 0, 0, 0, null)
+            }
         }
     }
 
@@ -291,6 +323,10 @@ function setup(luaEngine: LuaEngine) {
 
         switch (e.data.kind) {
             case 'Run Script':
+                if (e.data.breaks !== undefined) {
+                    breakpoints = e.data.breaks
+                }
+
                 luaEngine.doString(e.data.script).then(() =>
                     postMessage({
                         kind: 'Debug Info',
@@ -303,6 +339,9 @@ function setup(luaEngine: LuaEngine) {
                 break
             case 'API Call Returned':
                 waitLockMap.set('apilock', false)
+                break
+            case 'Step Over':
+                waitLockMap.set('steplock', false)
                 break
         }
     })

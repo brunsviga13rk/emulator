@@ -124,6 +124,7 @@ function hoverBreakpoint(lineNumber: number | undefined) {
 
 const worker = new Worker()
 let previousLineNumber: number | undefined = undefined
+const breakpoints = new Map<number, boolean>()
 
 export const Editor: VFC = () => {
     const [editor, setEditor] =
@@ -156,8 +157,15 @@ export const Editor: VFC = () => {
                         e.target.type ==
                         monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN
                     ) {
-                        if (e.target.position?.lineNumber) {
-                            setBreakpoint(e.target.position?.lineNumber, true)
+                        const lineNumber = e.target.position?.lineNumber
+                        if (lineNumber) {
+                            if (breakpoints.get(lineNumber)) {
+                                breakpoints.delete(lineNumber)
+                                setBreakpoint(lineNumber, false)
+                            } else {
+                                breakpoints.set(lineNumber, true)
+                                setBreakpoint(lineNumber, true)
+                            }
                         }
                     }
                 })
@@ -195,6 +203,8 @@ export const Editor: VFC = () => {
                     // Recieved updated debug info.
                     setCurrentLine(e.data.currentLine)
 
+                    setPaused(e.data.breakpoint)
+
                     if (!e.data.running) {
                         setRunInDebugMode(undefined)
                     }
@@ -227,7 +237,11 @@ export const Editor: VFC = () => {
     const runProgramInDebugMode = () => {
         const text = editor?.getModel()?.getValue()
         if (text) {
-            worker.postMessage({ kind: 'Run Script', script: text })
+            worker.postMessage({
+                kind: 'Run Script',
+                script: text,
+                breaks: [...breakpoints.keys()],
+            })
         }
 
         setRunInDebugMode(true)
@@ -259,7 +273,12 @@ export const Editor: VFC = () => {
                     >
                         <AdbIcon />
                     </Button>
-                    <Button disabled={!paused}>
+                    <Button
+                        onClick={() =>
+                            worker.postMessage({ kind: 'Step Over' })
+                        }
+                        disabled={!paused}
+                    >
                         <RedoIcon />
                     </Button>
                 </ButtonGroup>
