@@ -67,7 +67,7 @@ export class Knob
         this.extruded = undefined
         this.mesh = scene.getObjectByName('crank_handle')!
         this.animationState = new AnimationScalarState(
-            1.83969,
+            0.639462,
             CubicEaseInOutInterpolation,
             0.15
         )
@@ -106,7 +106,7 @@ export class Knob
     }
 
     public rotate(angle: number) {
-        this.mesh.rotation.y = angle
+        this.mesh.rotation.z = angle
     }
 
     /**
@@ -116,7 +116,7 @@ export class Knob
     public extrude() {
         this.extruded = KnobEventType.Extrude
         this.limitReached = false
-        this.animationState.targetState = 2.0
+        this.animationState.targetState = 0.669171
         this.emitter.emit(KnobEventType.Extrude, undefined)
     }
 
@@ -127,7 +127,7 @@ export class Knob
     public reset() {
         this.extruded = KnobEventType.Reset
         this.limitReached = false
-        this.animationState.targetState = 1.83969
+        this.animationState.targetState = 0.639462
         this.emitter.emit(KnobEventType.Reset, undefined)
     }
 }

@@ -82,7 +82,7 @@ export class Handle
         this.emitter = new EventEmitter()
         this._angleLimits = [minAngle, maxAngle]
         this.mesh = scene.getObjectByName(name)!
-        this.mesh.rotation.y += minAngle
+        this.mesh.rotation.z += minAngle
         this._animationState = new AnimationScalarState(
             minAngle,
             CubicEaseInOutInterpolation,
@@ -148,7 +148,7 @@ export class Handle
 
     perform(delta: number): void {
         this.animationState.advance(delta)
-        this.mesh.rotation.y = this.animationState.currentState
+        this.mesh.rotation.z = this.animationState.currentState
 
         const [minAngle, maxAngle] = this._angleLimits
         // Detect push up done state and emit event.
