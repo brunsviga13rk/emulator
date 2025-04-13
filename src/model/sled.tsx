@@ -74,7 +74,7 @@ export class Sled implements ActionHandler, Selectable {
 
             this.animationState.targetState =
                 this.animationState.getLatestTarget() +
-                0.057 * (direction as number)
+                0.0057 * (direction as number)
         }
     }
 

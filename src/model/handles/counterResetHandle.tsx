@@ -8,7 +8,7 @@ import { EventHandler } from '../events'
  */
 export class CounterResetHandle extends Handle {
     public constructor(scene: Group<Object3DEventMap>) {
-        super(scene, 'count_deletion_lever', -3.2, -1.2)
+        super(scene, 'count_deletion_lever', 0, 1.75)
     }
 
     public registerEventSubscribtions() {

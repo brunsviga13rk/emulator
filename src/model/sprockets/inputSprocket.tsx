@@ -16,7 +16,7 @@ export const MAX_INPUT_SPROCKET_VALUE = 9999999999
 
 export class InputSprocket extends SprocketWheel {
     public constructor(scene: Group<Object3DEventMap>) {
-        super(scene, 'input_sprocket_wheel', 10, 0, 5.125, 10)
+        super(scene, 'input_sprocket_wheel', 10, 0, 3.925, 10)
     }
 
     public registerActionEvents() {

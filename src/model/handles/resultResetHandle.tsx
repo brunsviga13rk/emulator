@@ -10,7 +10,7 @@ import { EventHandler } from '../events'
 
 export class ResultResetHandle extends Handle {
     public constructor(scene: Group<Object3DEventMap>) {
-        super(scene, 'result_deletionn_lever', -3.2, -1.2)
+        super(scene, 'result_deletionn_lever', 0, 1.4)
     }
 
     public registerEventSubscribtions() {
@@ -35,7 +35,7 @@ export class ResultResetHandle extends Handle {
                     }
                 },
                 new AnimationScalarStatePassedCondition(
-                    -2.7
+                    0.7
                 ) as AnimationScalarConditon
             )
         )

@@ -40,8 +40,8 @@ export class InputWheel
             scene,
             INPUT_WHEEL_MESH_NAME,
             INPUT_WHEEL_DIGITS,
-            Math.PI * 0.425,
-            Math.PI * 0.9,
+            -0.05,
+            1.55,
             10
         )
 
