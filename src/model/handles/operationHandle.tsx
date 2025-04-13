@@ -181,7 +181,7 @@ export class OperationHandle
 
     perform(delta: number): void {
         this.animationState.advance(delta)
-        this.mesh.rotation.y = this.animationState.currentState
+        this.mesh.rotation.z = this.animationState.currentState
 
         this.knob.perform(delta)
         this.knob.rotate(this.animationState.currentState)

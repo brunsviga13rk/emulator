@@ -10,7 +10,7 @@ import { EventHandler } from '../events'
 
 export class ResultResetHandle extends Handle {
     public constructor(scene: Group<Object3DEventMap>) {
-        super(scene, 'result_deletionn_lever', -1, 0.5)
+        super(scene, 'result_deletionn_lever', 0, 1.4)
     }
 
     public registerEventSubscribtions() {

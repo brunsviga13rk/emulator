@@ -65,7 +65,7 @@ export class Sled implements ActionHandler, Selectable {
     public shift(direction: Direction) {
         if (
             this.offset + direction > -1e-3 &&
-            this.offset + direction < 6.0 + 1e-3
+            this.offset + direction < 7.0 + 1e-3
         ) {
             this.offset += direction as number
 
@@ -74,7 +74,7 @@ export class Sled implements ActionHandler, Selectable {
 
             this.animationState.targetState =
                 this.animationState.getLatestTarget() +
-                0.1 * (direction as number)
+                0.0057 * (direction as number)
         }
     }
 

@@ -151,12 +151,12 @@ export class Brunsviga13rk
                 this.selector_sprocket = new InputWheel(this.scene)
                 this.result_reset_handle = new ResultResetHandle(this.scene)
                 this.counter_reset_handle = new CounterResetHandle(this.scene)
-                this.delete_handle = new Handle(this.scene, 'deletion', 0, 2)
+                this.delete_handle = new Handle(this.scene, 'deletion', 0, 2.1)
                 this.delete_input_handle = new Handle(
                     this.scene,
                     'total_deletion_lever',
                     0,
-                    2
+                    1.75
                 )
 
                 this.operation_crank = new OperationHandle(this.scene)
@@ -164,25 +164,25 @@ export class Brunsviga13rk
                     this.scene,
                     'input_commata_',
                     2,
-                    -0.69,
-                    0.57,
-                    12
+                    -0.072725,
+                    -0.020735,
+                    9
                 )
                 this.count_commata = new CommataBar(
                     this.scene,
                     'count_commata_',
                     2,
-                    -0.75,
-                    0.57,
-                    9
+                    -0.074594,
+                    -0.019437,
+                    6
                 )
                 this.result_commata = new CommataBar(
                     this.scene,
                     'result_commata_',
                     3,
-                    -0.835,
-                    0.52,
-                    13
+                    -0.087035,
+                    -0.016637,
+                    12
                 )
 
                 this.selectables = []

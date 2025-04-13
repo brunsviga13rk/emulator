@@ -12,7 +12,7 @@ import { environmentUniforms } from './render/environment'
 /**
  * Radius of the base plane.
  */
-const BASE_PLANE_RADIUS = 16
+const BASE_PLANE_RADIUS = 0.5
 
 /**
  * Create a base plane mesh with a white gradient decreasing in opaqueness
@@ -36,7 +36,7 @@ export function createBaseplane(): Object3D {
     // Rotate base plane so that its orientation matches that of a logical "ground".
     mesh.rotation.x = -Math.PI * 0.5
     // Move down one unit as the Brunsviga mesh will extend downwards by one.
-    mesh.position.y = -1
+    mesh.position.y = -0.080084
 
     return mesh
 }
