@@ -4,8 +4,10 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js'
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 import { ActionHandler } from '../actionHandler'
+import { FXAAShader } from 'three/addons/shaders/FXAAShader.js'
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
+import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass.js'
 
 /**
  * Manages the core componentes and state required for rendering the basic scene.
@@ -17,8 +19,9 @@ export class Engine {
     camera: PerspectiveCamera
     composer: EffectComposer
     passes: [
-        renderPass: RenderPass,
+        renderPass: TAARenderPass,
         outlinePass: OutlinePass,
+        fxaaPass: ShaderPass,
         outputPass: OutputPass,
     ]
     controls: OrbitControls
@@ -133,13 +136,14 @@ export class Engine {
      * the selection.
      */
     private createRenderPasses(): [
-        renderPass: RenderPass,
+        renderPass: TAARenderPass,
         outlinePass: OutlinePass,
+        fxaaPass: ShaderPass,
         outputPass: OutputPass,
     ] {
         // Create and configure passes.
-
-        const renderPass = new RenderPass(this.scene, this.camera)
+        const taaRenderPass = new TAARenderPass(this.scene, this.camera)
+        taaRenderPass.sampleLevel = 4
         const outputPass = new OutputPass()
         const outlinePass = new OutlinePass(
             new Vector2(
@@ -153,8 +157,16 @@ export class Engine {
         outlinePass.edgeStrength = 50.0
         outlinePass.hiddenEdgeColor.setHex(0xffffff)
         outlinePass.visibleEdgeColor.setHex(0xffffff)
+        outlinePass.clear = false
 
-        return [renderPass, outlinePass, outputPass]
+        const fxaaPass = new ShaderPass(FXAAShader)
+
+        fxaaPass.uniforms['resolution'].value.set(
+            1 / this.parent.clientWidth,
+            1 / this.parent.clientHeight
+        )
+
+        return [taaRenderPass, outlinePass, fxaaPass, outputPass]
     }
 
     /**
@@ -168,8 +180,8 @@ export class Engine {
             this.renderer.domElement
         )
         controls.maxPolarAngle = Math.PI * 0.5
-        controls.maxDistance = 12.0
-        controls.minDistance = 4.0
+        controls.maxDistance = 0.5
+        controls.minDistance = 0.3
         controls.maxTargetRadius = 2.0
         controls.enableDamping = true
         controls.rotateSpeed = 0.75
