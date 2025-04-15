@@ -69,7 +69,7 @@ export function Header() {
                 </ListItem>
                 <ListItem disablePadding>
                     <ListItemButton
-                        href={`https://github.com/brunsviga13rk/thesis/releases/download/v0.3.1/44124_emulation-of-the-brunsviga-13-rk.pdf`}
+                        href={`https://github.com/brunsviga13rk/thesis/releases/download/${__PAPER_VERSION__}/44124_emulation-of-the-brunsviga-13-rk.pdf`}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
@@ -174,7 +174,7 @@ export function Header() {
                         Docs
                     </Button>
                     <Button
-                        href={`https://github.com/brunsviga13rk/thesis/releases/download/v${__APP_VERSION__}/44124_emulation-of-the-brunsviga-13-rk.pdf`}
+                        href={`https://github.com/brunsviga13rk/thesis/releases/download/${__PAPER_VERSION__}/44124_emulation-of-the-brunsviga-13-rk.pdf`}
                         target="_blank"
                         rel="noopener noreferrer"
                         color="inherit"

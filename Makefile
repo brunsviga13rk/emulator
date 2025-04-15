@@ -1,5 +1,8 @@
 
 .PHONY: build live clean format check
+.EXPORT_ALL_VARIABLES: build live check
+
+include .env
 
 build:
 	npm run build

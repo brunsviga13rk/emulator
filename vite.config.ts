@@ -11,6 +11,7 @@ export default defineConfig({
         __APP_BASE_PATH__: JSON.stringify(
             process.env.REACT_APP_BASE_PATH || ''
         ),
+        __PAPER_VERSION__: JSON.stringify(process.env.VITE_PAPER_VERSION),
     },
     css: {
         postcss: {
