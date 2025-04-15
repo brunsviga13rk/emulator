@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.8.0](https://github.com/brunsviga13rk/emulator/compare/v1.7.1...v1.8.0) (2025-04-15)
+
+
+### Features
+
+* add baked textures ([d370ae0](https://github.com/brunsviga13rk/emulator/commit/d370ae025a01a5e9fac690f611660a1652e40669))
+* add high resolution model ([#157](https://github.com/brunsviga13rk/emulator/issues/157)) ([d370ae0](https://github.com/brunsviga13rk/emulator/commit/d370ae025a01a5e9fac690f611660a1652e40669))
+* add TAA render pass ([d370ae0](https://github.com/brunsviga13rk/emulator/commit/d370ae025a01a5e9fac690f611660a1652e40669))
+
+
+### Bug Fixes
+
+* set paper link to v0.3.1 ([#161](https://github.com/brunsviga13rk/emulator/issues/161)) ([77a33f8](https://github.com/brunsviga13rk/emulator/commit/77a33f872a9ff93e06fca8a1979df49073241e6b))
+* update brunsviga model ([#160](https://github.com/brunsviga13rk/emulator/issues/160)) ([abae93a](https://github.com/brunsviga13rk/emulator/commit/abae93ace8d0795da88c355e48e23ec404a77374))
+
 ## [1.7.1](https://github.com/brunsviga13rk/emulator/compare/v1.7.0...v1.7.1) (2025-03-10)
 
 
