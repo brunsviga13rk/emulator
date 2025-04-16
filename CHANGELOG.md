@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.0](https://github.com/brunsviga13rk/emulator/compare/v1.8.0...v1.9.0) (2025-04-16)
+
+
+### Features
+
+* add icons and blur animation for loading screen ([#165](https://github.com/brunsviga13rk/emulator/issues/165)) ([ce8807c](https://github.com/brunsviga13rk/emulator/commit/ce8807c014a88db340f93f8143388bb0253b9539))
+* embed link to paper dynamically ([#163](https://github.com/brunsviga13rk/emulator/issues/163)) ([6e205ad](https://github.com/brunsviga13rk/emulator/commit/6e205addadcda03b534c9a2d41b61e02107f26f7))
+
 ## [1.8.0](https://github.com/brunsviga13rk/emulator/compare/v1.7.1...v1.8.0) (2025-04-15)
 
 
