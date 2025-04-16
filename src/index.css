@@ -45,14 +45,17 @@ body {
 @keyframes fade-out {
     0% {
         opacity: 100%;
+        filter: blur(0px);
     }
 
     25% {
         opacity: 100%;
+        filter: blur(2px);
     }
 
     100% {
         opacity: 0%;
+        filter: blur(16px);
     }
 }
 
@@ -82,4 +85,37 @@ body {
     animation-name: jump;
     animation-delay: 2s;
     animation-timing-function: ease-out;
+}
+
+@media (prefers-color-scheme: dark) {
+    .loader-gradient {
+        background: radial-gradient(
+            circle,
+            rgba(0, 0, 0, 1) 10%,
+            rgba(0, 0, 0, 0.65) 30%,
+            rgba(0, 0, 0, 0.8) 35%,
+            rgba(0, 0, 0, 0.9) 50%,
+            rgba(0, 0, 0, 1) 80%
+        );
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .loader-gradient {
+        background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 1) 10%,
+            rgba(255, 255, 255, 0.65) 30%,
+            rgba(255, 255, 255, 0.8) 35%,
+            rgba(255, 255, 255, 0.9) 50%,
+            rgba(255, 255, 255, 1) 80%
+        );
+    }
+}
+
+.loading-image {
+}
+
+.svg-invert {
+    filter: invert(100%);
 }
