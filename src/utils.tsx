@@ -1,5 +1,6 @@
 import { useMediaQuery } from '@mui/material'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import { useEffect, useRef } from 'react'
 
 export function useLogoColorFromScheme(mode: string | undefined): string {
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
@@ -59,4 +60,21 @@ export function useManacoThemeFromScheme(mode: string | undefined) {
     }
 
     if (theme) monaco.editor.setTheme(theme)
+}
+
+export const useRunOnce = (fn: () => void, sessionKey: string) => {
+    const triggered = useRef(false)
+
+    useEffect(() => {
+        const hasBeenTriggered = sessionKey
+            ? sessionStorage.getItem(sessionKey)
+            : triggered.current
+        if (!hasBeenTriggered) {
+            fn()
+            triggered.current = true
+            if (sessionKey) {
+                sessionStorage.setItem(sessionKey, 'true')
+            }
+        }
+    }, [fn, sessionKey])
 }
