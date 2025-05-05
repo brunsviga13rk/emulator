@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react'
+import { memo } from 'react'
 import * as THREE from 'three'
 import WebGL from 'three/addons/capabilities/WebGL.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
@@ -12,7 +12,7 @@ import ActionRecommendations from './ActionRecommendations'
 import { createBackground } from './environment'
 import { useColorScheme } from '@mui/material'
 import { environmentUniforms } from './environment'
-import { isDarkMode } from '../utils'
+import { isDarkMode, useRunOnce } from '../utils'
 
 /**
  * Setup the environment by: creating an environment lighmap for PBR rendering,
@@ -109,13 +109,13 @@ function setupRenderer() {
 const Renderer = memo(() => {
     const { mode } = useColorScheme()
 
-    useEffect(() => {
+    useRunOnce(() => {
         // Initialize color for 3D environment.
         environmentUniforms.darkMode.value = isDarkMode(mode)
 
         // call api or anything
         setupRenderer()
-    })
+    }, 'init-renderer')
 
     return (
         <Box
