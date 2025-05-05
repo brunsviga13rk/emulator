@@ -2,8 +2,10 @@ import { Group, Object3D, Object3DEventMap } from 'three'
 import { ActionHandler } from '../actionHandler'
 import { InputAction, Selectable, UserAction } from './selectable'
 import {
+    AnimationScalarConditon,
     AnimationScalarState,
     AnimationScalarStateEventType,
+    AnimationScalarStatePassedCondition,
     CubicEaseInOutInterpolation,
 } from './animation'
 import { EventHandler } from './events'
@@ -17,6 +19,7 @@ export enum Direction {
 export class Sled implements ActionHandler, Selectable {
     protected handle: Object3D<Object3DEventMap>
     protected appendages: Object3D<Object3DEventMap>[]
+    protected handleAnimationState: AnimationScalarState
     protected animationState: AnimationScalarState
     protected offset: number
 
@@ -27,12 +30,47 @@ export class Sled implements ActionHandler, Selectable {
             scene.getObjectByName('sled')!,
             scene.getObjectByName('deletion')!,
             scene.getObjectByName('result_deletionn_lever')!,
+            scene.getObjectByName('result_reset_indicator')!,
         ]
         this.appendages = this.appendages.concat(
             getCommataMeshes(scene, 'result_commata_', 3)
         )
         this.appendages = this.appendages.concat(
             getSprocketWheelMeshes(scene, 'result_sprocket_wheel', 13)
+        )
+
+        this.handleAnimationState = new AnimationScalarState(
+            0,
+            CubicEaseInOutInterpolation,
+            0.15
+        )
+        this.handleAnimationState.getEmitter().subscribe(
+            AnimationScalarStateEventType.StatePassed,
+            new EventHandler(
+                () => {
+                    this.handleAnimationState.targetState = 0
+                },
+                new AnimationScalarStatePassedCondition(
+                    0.2
+                ) as AnimationScalarConditon
+            )
+        )
+        this.handleAnimationState.getEmitter().subscribe(
+            AnimationScalarStateEventType.StatePassed,
+            new EventHandler(
+                () => {
+                    this.handleAnimationState.targetState = 0
+                },
+                new AnimationScalarStatePassedCondition(
+                    -0.2
+                ) as AnimationScalarConditon
+            )
+        )
+        this.handleAnimationState.getEmitter().subscribe(
+            AnimationScalarStateEventType.StateChanged,
+            new EventHandler((delta) => {
+                this.handle.rotation.y += delta as number
+            })
         )
 
         this.animationState = new AnimationScalarState(
@@ -72,6 +110,8 @@ export class Sled implements ActionHandler, Selectable {
             Brunsviga13rk.getInstance().result_sprocket.offset = this.offset
             Brunsviga13rk.getInstance().counter_sprocket.offset = this.offset
 
+            this.handleAnimationState.targetState = -0.21 * direction
+
             this.animationState.targetState =
                 this.animationState.getLatestTarget() +
                 0.0057 * (direction as number)
@@ -91,6 +131,7 @@ export class Sled implements ActionHandler, Selectable {
 
     perform(delta: number): void {
         this.animationState.advance(delta)
+        this.handleAnimationState.advance(delta)
     }
 }
 
