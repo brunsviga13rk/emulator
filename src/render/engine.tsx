@@ -143,7 +143,7 @@ export class Engine {
     ] {
         // Create and configure passes.
         const taaRenderPass = new TAARenderPass(this.scene, this.camera)
-        taaRenderPass.sampleLevel = 4
+        taaRenderPass.sampleLevel = 2
         const outputPass = new OutputPass()
         const outlinePass = new OutlinePass(
             new Vector2(
