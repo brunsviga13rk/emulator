@@ -27,6 +27,7 @@ export class Sled implements ActionHandler, Selectable {
             scene.getObjectByName('sled')!,
             scene.getObjectByName('deletion')!,
             scene.getObjectByName('result_deletionn_lever')!,
+            scene.getObjectByName('result_reset_indicator')!,
         ]
         this.appendages = this.appendages.concat(
             getCommataMeshes(scene, 'result_commata_', 3)
