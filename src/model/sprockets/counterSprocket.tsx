@@ -16,6 +16,10 @@ export class CounterSprocket extends SprocketWheel {
     private counterIndicatorAnimation: AnimationScalarState
     private counterOffset: number
 
+    private signPanel: Object3D<Object3DEventMap>
+    private signPanelAnimation: AnimationScalarState
+    private signSet: boolean
+
     private startIndicator: Object3D<Object3DEventMap>
     private startIndicatorAnimation: AnimationScalarState
     private stateReset: boolean
@@ -25,6 +29,20 @@ export class CounterSprocket extends SprocketWheel {
 
     public constructor(scene: Group<Object3DEventMap>) {
         super(scene, 'counter_sprocket_wheel', 8, 0, 2 * Math.PI, 10)
+
+        this.signSet = false
+        this.signPanel = scene.getObjectByName('counter_panel')!
+        this.signPanelAnimation = new AnimationScalarState(
+            0,
+            CubicEaseInOutInterpolation,
+            0.1
+        )
+        this.signPanelAnimation.getEmitter().subscribe(
+            AnimationScalarStateEventType.StateChanged,
+            new EventHandler((delta) => {
+                this.signPanel.position.z += delta as number
+            })
+        )
 
         this.stateReset = false
         this.startIndicator = scene.getObjectByName('counter_start_indicator')!
@@ -76,6 +94,10 @@ export class CounterSprocket extends SprocketWheel {
         )
         this.startIndicatorAnimation.targetState = 0
 
+        this.signPanelAnimation.targetState = 0
+
+        this.signSet = false
+
         this.stateReset = true
         super.reset()
         this.stateReset = false
@@ -85,6 +107,7 @@ export class CounterSprocket extends SprocketWheel {
         this.resetIndicatorAnimation.advance(delta)
         this.counterIndicatorAnimation.advance(delta)
         this.startIndicatorAnimation.advance(delta)
+        this.signPanelAnimation.advance(delta)
         super.perform(delta)
     }
 
@@ -93,10 +116,20 @@ export class CounterSprocket extends SprocketWheel {
         this.registerIndicatorEvents()
 
         this.getEmitter().subscribe(
+            SprocketWheelEventType.Decrement,
+            new EventHandler(() => {
+                if (!this.signSet && !this.stateReset) {
+                    this.signPanelAnimation.targetState = -0.0027
+                }
+            })
+        )
+
+        this.getEmitter().subscribe(
             SprocketWheelEventType.Change,
             new EventHandler(() => {
                 if (!this.stateReset) {
                     this.startIndicatorAnimation.targetState = Math.PI
+                    this.signSet = true
                 }
             })
         )
