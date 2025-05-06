@@ -1,6 +1,6 @@
 import { Group, Object3D, Object3DEventMap } from 'three'
 import { EventHandler } from '../events'
-import { SprocketWheel } from './sprocketWheel'
+import { SprocketWheel, SprocketWheelEventType } from './sprocketWheel'
 import { Brunsviga13rk } from '../brunsviga13rk'
 import { OperationHandleEventType } from '../handles/operationHandle'
 import { HandleEventType } from '../handles/handle'
@@ -16,11 +16,30 @@ export class CounterSprocket extends SprocketWheel {
     private counterIndicatorAnimation: AnimationScalarState
     private counterOffset: number
 
+    private startIndicator: Object3D<Object3DEventMap>
+    private startIndicatorAnimation: AnimationScalarState
+    private stateReset: boolean
+
     private resetIndicator: Object3D<Object3DEventMap>
     private resetIndicatorAnimation: AnimationScalarState
 
     public constructor(scene: Group<Object3DEventMap>) {
         super(scene, 'counter_sprocket_wheel', 8, 0, 2 * Math.PI, 10)
+
+        this.stateReset = false
+        this.startIndicator = scene.getObjectByName('counter_start_indicator')!
+        this.startIndicatorAnimation = new AnimationScalarState(
+            0,
+            CubicEaseInOutInterpolation,
+            0.1
+        )
+        this.startIndicatorAnimation.getEmitter().subscribe(
+            AnimationScalarStateEventType.StateChanged,
+            new EventHandler((delta) => {
+                this.startIndicator.rotation.y += delta as number
+            })
+        )
+
         this.counterOffset = 0
         this.counterIndicator = scene.getObjectByName(
             'counter_shift_indicator'
@@ -55,19 +74,32 @@ export class CounterSprocket extends SprocketWheel {
         this.resetIndicatorAnimation.targetState = -Math.abs(
             Math.PI * 2.0 - this.resetIndicatorAnimation.currentState
         )
+        this.startIndicatorAnimation.targetState = 0
 
+        this.stateReset = true
         super.reset()
+        this.stateReset = false
     }
 
     public perform(delta: number): void {
         this.resetIndicatorAnimation.advance(delta)
         this.counterIndicatorAnimation.advance(delta)
+        this.startIndicatorAnimation.advance(delta)
         super.perform(delta)
     }
 
     public registerActionEvents() {
         this.registerDeleteHandleEvents()
         this.registerIndicatorEvents()
+
+        this.getEmitter().subscribe(
+            SprocketWheelEventType.Change,
+            new EventHandler(() => {
+                if (!this.stateReset) {
+                    this.startIndicatorAnimation.targetState = Math.PI
+                }
+            })
+        )
     }
 
     private registerIndicatorEvents() {
