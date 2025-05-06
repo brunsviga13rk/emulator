@@ -8,7 +8,7 @@ import {
     AnimationScalarStatePassedCondition,
     CubicEaseInOutInterpolation,
 } from './animation'
-import { EventHandler } from './events'
+import { EventBroker, EventEmitter, EventHandler, Tautology } from './events'
 import { Brunsviga13rk } from './brunsviga13rk'
 
 export enum Direction {
@@ -16,12 +16,28 @@ export enum Direction {
     Right = 1.0,
 }
 
-export class Sled implements ActionHandler, Selectable {
+export enum SledEventType {
+    ShiftLeft,
+    ShiftRight,
+}
+
+export type SledShiftLeftEvent = { digit: number }
+export type SledShiftRightEvent = { digit: number }
+
+export type InputWheelEvent = SledShiftLeftEvent | SledShiftRightEvent
+
+export class Sled
+    implements
+        ActionHandler,
+        Selectable,
+        EventBroker<SledEventType, InputWheelEvent, Sled>
+{
     protected handle: Object3D<Object3DEventMap>
     protected appendages: Object3D<Object3DEventMap>[]
     protected handleAnimationState: AnimationScalarState
     protected animationState: AnimationScalarState
     protected offset: number
+    protected emitter: EventEmitter<SledEventType, InputWheelEvent, Sled>
 
     public constructor(scene: Group<Object3DEventMap>) {
         this.handle = scene.getObjectByName('sledge_handle')!
@@ -87,6 +103,17 @@ export class Sled implements ActionHandler, Selectable {
             })
         )
         this.offset = 0
+        this.emitter = new EventEmitter()
+        this.emitter.setActor(this)
+    }
+
+    getEmitter(): EventEmitter<
+        SledEventType,
+        InputWheelEvent,
+        Sled,
+        Tautology
+    > {
+        return this.emitter
     }
 
     onClick(event: MouseEvent): void {
@@ -115,6 +142,12 @@ export class Sled implements ActionHandler, Selectable {
             this.animationState.targetState =
                 this.animationState.getLatestTarget() +
                 0.0057 * (direction as number)
+
+            if (direction > 0.0) {
+                this.emitter.emit(SledEventType.ShiftLeft, { digit: 1 })
+            } else {
+                this.emitter.emit(SledEventType.ShiftRight, { digit: 1 })
+            }
         }
     }
 
