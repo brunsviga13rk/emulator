@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.9.0](https://github.com/brunsviga13rk/emulator/compare/v1.8.0...v1.9.0) (2025-05-07)
+
+
+### Features
+
+* add gear animation ([#181](https://github.com/brunsviga13rk/emulator/issues/181)) ([d5ec9e8](https://github.com/brunsviga13rk/emulator/commit/d5ec9e8ff4df032feaa68f9cb50f6061929b3973))
+* add icons and blur animation for loading screen ([#165](https://github.com/brunsviga13rk/emulator/issues/165)) ([ce8807c](https://github.com/brunsviga13rk/emulator/commit/ce8807c014a88db340f93f8143388bb0253b9539))
+* add input register reset indicator ([f883a2b](https://github.com/brunsviga13rk/emulator/commit/f883a2b33cb64155c77af882bc5f014dd98493bd))
+* add missing animations ([#177](https://github.com/brunsviga13rk/emulator/issues/177)) ([f883a2b](https://github.com/brunsviga13rk/emulator/commit/f883a2b33cb64155c77af882bc5f014dd98493bd))
+* add reset indicator animation for result register ([fe18a1b](https://github.com/brunsviga13rk/emulator/commit/fe18a1b6ec6ed241f7a2fdb5c5a41f9fa9922317))
+* add sled animations ([#176](https://github.com/brunsviga13rk/emulator/issues/176)) ([fe18a1b](https://github.com/brunsviga13rk/emulator/commit/fe18a1b6ec6ed241f7a2fdb5c5a41f9fa9922317))
+* add sled knob animation ([fe18a1b](https://github.com/brunsviga13rk/emulator/commit/fe18a1b6ec6ed241f7a2fdb5c5a41f9fa9922317))
+* embed link to paper dynamically ([#163](https://github.com/brunsviga13rk/emulator/issues/163)) ([6e205ad](https://github.com/brunsviga13rk/emulator/commit/6e205addadcda03b534c9a2d41b61e02107f26f7))
+* implement reset switch ([#179](https://github.com/brunsviga13rk/emulator/issues/179)) ([84fb42b](https://github.com/brunsviga13rk/emulator/commit/84fb42b84c729ec2d13da69eb87c7d58e3cc3cbd))
+
+
+### Bug Fixes
+
+* action description of reset switch ([#180](https://github.com/brunsviga13rk/emulator/issues/180)) ([1768401](https://github.com/brunsviga13rk/emulator/commit/17684012e92993897a277712d3f5b0a4d8fb1671))
+* attach result reset indicator to sled ([fe18a1b](https://github.com/brunsviga13rk/emulator/commit/fe18a1b6ec6ed241f7a2fdb5c5a41f9fa9922317))
+* decrease size of env map ([#174](https://github.com/brunsviga13rk/emulator/issues/174)) ([31180ec](https://github.com/brunsviga13rk/emulator/commit/31180ec056375b45960cfabdd93b138cb7b69526))
+* half resolution of environment map ([31180ec](https://github.com/brunsviga13rk/emulator/commit/31180ec056375b45960cfabdd93b138cb7b69526))
+* prevent renderer from reloading ([#178](https://github.com/brunsviga13rk/emulator/issues/178)) ([1dcc34b](https://github.com/brunsviga13rk/emulator/commit/1dcc34b139aa01d00691c21a72bc3eb01d8c8dde))
+* reduce TAA samples to 2 ([#175](https://github.com/brunsviga13rk/emulator/issues/175)) ([b2e3a2b](https://github.com/brunsviga13rk/emulator/commit/b2e3a2b07ddd4de933176d84e52fca40768d7bd9))
+
 ## [1.8.0](https://github.com/brunsviga13rk/emulator/compare/v1.7.1...v1.8.0) (2025-04-15)
 
 
