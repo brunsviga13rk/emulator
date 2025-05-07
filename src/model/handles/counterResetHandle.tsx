@@ -20,4 +20,12 @@ export class CounterResetHandle extends Handle {
                 new EventHandler(() => this.pullDown())
             )
     }
+
+    public pullDown() {
+        if (Brunsviga13rk.getInstance().switch.isResetBoth()) {
+            Brunsviga13rk.getInstance().input_sprocket.reset()
+        }
+
+        super.pullDown()
+    }
 }
