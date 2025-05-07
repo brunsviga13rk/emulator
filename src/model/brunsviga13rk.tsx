@@ -27,6 +27,7 @@ import { EventBroker, EventEmitter, Tautology } from './events'
 import { Dispatch, SetStateAction } from 'react'
 import { AnimationScalarState } from './animation'
 import { Switch } from './switch'
+import { DeletionHandle } from './handles/deletionHandle'
 
 export enum BrunsvigaAnimationEventType {
     AnimationStarted,
@@ -90,7 +91,7 @@ export class Brunsviga13rk
     counter_sprocket!: CounterSprocket
     result_sprocket!: ResultSprocket
     selector_sprocket!: InputWheel
-    delete_handle!: Handle
+    delete_handle!: DeletionHandle
     delete_input_handle!: Handle
     operation_crank!: OperationHandle
     input_commata!: CommataBar
@@ -154,7 +155,7 @@ export class Brunsviga13rk
                 this.selector_sprocket = new InputWheel(this.scene)
                 this.result_reset_handle = new ResultResetHandle(this.scene)
                 this.counter_reset_handle = new CounterResetHandle(this.scene)
-                this.delete_handle = new Handle(this.scene, 'deletion', 0, 2.1)
+                this.delete_handle = new DeletionHandle(this.scene)
                 this.delete_input_handle = new Handle(
                     this.scene,
                     'total_deletion_lever',
@@ -208,6 +209,7 @@ export class Brunsviga13rk
                 this.operation_crank.registerEventSubscribtions()
                 this.result_reset_handle.registerEventSubscribtions()
                 this.counter_reset_handle.registerEventSubscribtions()
+                this.delete_handle.registerEventSubscribtions()
 
                 onModelLoaded()
 
