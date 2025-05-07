@@ -26,6 +26,7 @@ import { Direction, Sled } from './sled'
 import { EventBroker, EventEmitter, Tautology } from './events'
 import { Dispatch, SetStateAction } from 'react'
 import { AnimationScalarState } from './animation'
+import { Switch } from './switch'
 
 export enum BrunsvigaAnimationEventType {
     AnimationStarted,
@@ -97,6 +98,7 @@ export class Brunsviga13rk
     result_commata!: CommataBar
     counter_reset_handle!: CounterResetHandle
     result_reset_handle!: ResultResetHandle
+    switch!: Switch
     sled!: Sled
     _setRecommendations!: Dispatch<SetStateAction<UserAction[]>>
     animationOngoing = false
@@ -144,6 +146,7 @@ export class Brunsviga13rk
                 engine.scene.add(gltf.scene)
                 this.scene = gltf.scene
 
+                this.switch = new Switch(this.scene)
                 this.input_sprocket = new InputSprocket(this.scene)
                 this.counter_sprocket = new CounterSprocket(this.scene)
                 this.result_sprocket = new ResultSprocket(this.scene)
@@ -196,6 +199,7 @@ export class Brunsviga13rk
                 this.selectables.push(this.result_commata)
                 this.selectables.push(this.result_reset_handle)
                 this.selectables.push(this.sled)
+                this.selectables.push(this.switch)
 
                 this.input_sprocket.registerActionEvents()
                 this.selector_sprocket.registerActionEvents()
@@ -260,6 +264,7 @@ export class Brunsviga13rk
             this.counter_reset_handle.perform(delta)
             this.result_reset_handle.perform(delta)
             this.sled.perform(delta)
+            this.switch.perform(delta)
 
             // Get current frame animation state.
             const lastAnimationOngoing =
