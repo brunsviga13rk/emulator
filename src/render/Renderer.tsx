@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import * as THREE from 'three'
 import WebGL from 'three/addons/capabilities/WebGL.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
