@@ -51,10 +51,7 @@ export class Switch implements ActionHandler, Selectable {
     }
 
     getAvailableUserActions(): UserAction[] {
-        return [
-            [InputAction.LeftClick, 'Move sled to the right'],
-            [InputAction.RightClick, 'Move sled to the left'],
-        ]
+        return [[InputAction.LeftClick, 'Toggle ']]
     }
 
     getObjects(): Object3D<Object3DEventMap>[] {
