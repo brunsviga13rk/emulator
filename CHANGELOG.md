@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/brunsviga13rk/emulator/compare/v1.9.0...v1.9.1) (2025-05-08)
+
+
+### Bug Fixes
+
+* remove qoutes from paper version ([#182](https://github.com/brunsviga13rk/emulator/issues/182)) ([db4a10a](https://github.com/brunsviga13rk/emulator/commit/db4a10ac38386ebc615b1c79fccad13ef6521957))
+
 ## [1.9.0](https://github.com/brunsviga13rk/emulator/compare/v1.8.0...v1.9.0) (2025-05-07)
 
 
