@@ -1,4 +1,4 @@
-FROM docker.io/node:23 AS builder
+FROM docker.io/node:24 AS builder
 
 COPY . /brunsviga
 WORKDIR /brunsviga
