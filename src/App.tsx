@@ -18,6 +18,9 @@ import { useState } from 'react'
 import CalculateIcon from '@mui/icons-material/Calculate'
 import CodeIcon from '@mui/icons-material/Code'
 import { LoadingIndicator } from './LoadingIndicator.tsx'
+import { MantineProvider } from '@mantine/core'
+import { theme } from './theme.ts'
+import Shell from './Shell.tsx'
 
 interface TabPanelProps {
     children?: React.ReactNode
@@ -69,25 +72,10 @@ function inIframe() {
 }
 
 function App() {
-    const theme = createTheme({
-        colorSchemes: {
-            dark: true,
-        },
-    })
-
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            {inIframe() ? (
-                /* Embed 3d renderer only when in iFrame  */
-                <Box className="w-full h-full">
-                    <Renderer />
-                    <LoadingIndicator />
-                </Box>
-            ) : (
-                <Content />
-            )}
-        </ThemeProvider>
+        <MantineProvider theme={theme}>
+            <Shell />
+        </MantineProvider>
     )
 }
 

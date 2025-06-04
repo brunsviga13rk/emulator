@@ -30,7 +30,6 @@ function setupEnvironment(engine: Engine) {
         }
     )
 
-    engine.scene.add(createBackground())
     engine.scene.add(createBaseplane())
 }
 
@@ -119,27 +118,7 @@ const Renderer = memo(() => {
         setupRenderer()
     }, [name])
 
-    return (
-        <Box
-            sx={{
-                position: 'relative',
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                height: '100%',
-            }}
-        >
-            <Toolbox />
-            <ActionRecommendations />
-            <Box
-                id="renderer"
-                sx={{
-                    height: '100%',
-                }}
-            ></Box>
-        </Box>
-    )
+    return <div id="renderer" style={{ width: '100%', height: '100%' }}></div>
 })
 
 export default Renderer

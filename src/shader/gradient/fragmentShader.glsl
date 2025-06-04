@@ -6,7 +6,7 @@ uniform bool darkMode;
 
 void main() {
     // Linear gradient mapped into the range [0.5; 1.0].
-    float gradient = vUv.y * 0.5 + 0.5;
+    float gradient = vUv.y;
 
     if (darkMode) {
         gradient *= 0.025;

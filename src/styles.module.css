@@ -1,0 +1,10 @@
+
+.contentPane {
+background-color:hsla(0,0%,100%,1);
+background-image:
+radial-gradient(at 0% 100%, hsl(0,0%,90%,1) 0px, transparent 75%),
+radial-gradient(at 100% 0%, hsl(0,0%,90%,1) 0px, transparent 75%);
+    border-radius: 1rem;
+    border: 2pt, hsl(0,0%,85%,1);
+    border-style: solid;
+}

@@ -1,15 +1,3 @@
-import {
-    Box,
-    Button,
-    ButtonGroup,
-    Grow,
-    MenuItem,
-    MenuList,
-    Paper,
-    Popper,
-    Toolbar,
-    Tooltip,
-} from '@mui/material'
 import RotateLeftOutlinedIcon from '@mui/icons-material/RotateLeftOutlined'
 import RotateRightOutlinedIcon from '@mui/icons-material/RotateRightOutlined'
 import SwipeRightIcon from '@mui/icons-material/SwipeRightOutlined'
@@ -18,11 +6,13 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore'
 import { useRef, useState } from 'react'
+import classes from '../styles.module.css'
 import {
     Brunsviga13rk,
     BrunsvigaAnimationEventType,
 } from '../model/brunsviga13rk'
 import { EventHandler } from '../model/events'
+import { ActionIcon, Stack } from '@mantine/core'
 
 const options = ['Clear counter', 'Clear input', 'Clear result', 'Clear all']
 const tips = [
@@ -94,116 +84,8 @@ export default function Toolbox() {
     }
 
     return (
-        <Toolbar
-            sx={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-            }}
-        >
-            <ButtonGroup variant="contained" color="inherit" size="small">
-                <Tooltip title="Add">
-                    <Button
-                        disabled={!ready}
-                        onClick={() => Brunsviga13rk.getInstance().add()}
-                    >
-                        <RotateRightOutlinedIcon />
-                    </Button>
-                </Tooltip>
-                <Tooltip title="Subtract">
-                    <Button
-                        disabled={!ready}
-                        onClick={() => Brunsviga13rk.getInstance().subtract()}
-                    >
-                        <RotateLeftOutlinedIcon />
-                    </Button>
-                </Tooltip>
-                <Tooltip title="Shift sled right">
-                    <Button
-                        disabled={!ready}
-                        onClick={() => Brunsviga13rk.getInstance().shiftRight()}
-                    >
-                        <SwipeRightIcon />
-                    </Button>
-                </Tooltip>
-                <Tooltip title="Shift sled left">
-                    <Button
-                        disabled={!ready}
-                        onClick={() => Brunsviga13rk.getInstance().shiftLeft()}
-                    >
-                        <SwipeLeftIcon />
-                    </Button>
-                </Tooltip>
-            </ButtonGroup>
-            <Box marginRight={4} />
-            <ButtonGroup
-                variant="contained"
-                color="inherit"
-                ref={anchorRef}
-                aria-label="Button group with a nested menu"
-            >
-                <Tooltip title={tips[selectedIndex]}>
-                    <Button
-                        disabled={!ready}
-                        onClick={handleClick}
-                        startIcon={<SettingsBackupRestoreIcon />}
-                    >
-                        {options[selectedIndex]}
-                    </Button>
-                </Tooltip>
-                <Button
-                    size="small"
-                    aria-controls={open ? 'split-button-menu' : undefined}
-                    aria-expanded={open ? 'true' : undefined}
-                    aria-label="select merge strategy"
-                    aria-haspopup="menu"
-                    onClick={handleToggle}
-                    disabled={!ready}
-                >
-                    <ArrowDropDownIcon />
-                </Button>
-            </ButtonGroup>
-            <Popper
-                sx={{ zIndex: 1 }}
-                open={open}
-                anchorEl={anchorRef.current}
-                role={undefined}
-                transition
-                disablePortal
-            >
-                {({ TransitionProps, placement }) => (
-                    <Grow
-                        {...TransitionProps}
-                        style={{
-                            transformOrigin:
-                                placement === 'bottom'
-                                    ? 'center top'
-                                    : 'center bottom',
-                        }}
-                    >
-                        <Paper>
-                            <ClickAwayListener onClickAway={handleClose}>
-                                <MenuList id="split-button-menu" autoFocusItem>
-                                    {options.map((option, index) => (
-                                        <MenuItem
-                                            key={option}
-                                            selected={index === selectedIndex}
-                                            onClick={(event) =>
-                                                handleMenuItemClick(
-                                                    event,
-                                                    index
-                                                )
-                                            }
-                                        >
-                                            {option}
-                                        </MenuItem>
-                                    ))}
-                                </MenuList>
-                            </ClickAwayListener>
-                        </Paper>
-                    </Grow>
-                )}
-            </Popper>
-        </Toolbar>
+        <Stack p="sm" className={classes.contentPane} h="100%">
+            <ActionIcon></ActionIcon>
+        </Stack>
     )
 }

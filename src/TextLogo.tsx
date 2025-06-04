@@ -6,13 +6,12 @@ type TextLogoProps = {
 }
 
 export function TextLogo({ width = '8rem' }: TextLogoProps) {
-    const { mode } = useColorScheme()
 
     return (
         <svg
             width={width}
             viewBox="0 0 51.362592 9.0429802"
-            fill={useLogoColorFromScheme(mode)}
+            fill="#000"
         >
             <g transform="translate(-29.59497,-9.9965532)">
                 <path

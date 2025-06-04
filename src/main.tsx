@@ -1,5 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import '@mantine/core/styles.css'
+import '@gfazioli/mantine-split-pane/styles.css'
 import '@phosphor-icons/web/regular/style.css'
 import '@phosphor-icons/web/bold/style.css'
 import App from './App.tsx'
