@@ -1,10 +1,10 @@
 
 .contentPane {
-background-color:hsla(0,0%,100%,1);
+background-color: var(--mantine-color-body);
 background-image:
-radial-gradient(at 0% 100%, hsl(0,0%,90%,1) 0px, transparent 75%),
-radial-gradient(at 100% 0%, hsl(0,0%,90%,1) 0px, transparent 75%);
+radial-gradient(at 0% 100%, color-mix(in srgb, var(--mantine-color-text), transparent 90%) 0px, transparent 50%),
+radial-gradient(at 100% 0%, color-mix(in srgb, var(--mantine-color-text), transparent 90%) 0px, transparent 50%);
     border-radius: 1rem;
-    border: 2pt, hsl(0,0%,85%,1);
+    border: 2pt, color-mix(in srgb, var(--mantine-color-text), var(--mantine-color-body) 70%);
     border-style: solid;
 }

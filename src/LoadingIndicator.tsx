@@ -1,11 +1,9 @@
 import CircularProgress from '@mui/material/CircularProgress'
 import { TextLogo } from './TextLogo'
-import { Box, Typography, useColorScheme, useMediaQuery } from '@mui/material'
-import { useBackgroundColorFromScheme } from './utils'
+import { useMediaQuery } from '@mantine/hooks'
+import { Box, Center, Loader, Overlay, Text } from '@mantine/core'
 
 export function LoadingIndicator() {
-    const { mode } = useColorScheme()
-
     const range = (start: number, end: number, step = 1) =>
         Array.from(
             { length: Math.ceil((end - start + 1) / step) },
@@ -31,13 +29,12 @@ export function LoadingIndicator() {
     const svgFilter = 'loading-image ' + (prefersDarkMode ? '' : 'svg-invert')
 
     return (
-        <Box
+        <Overlay
             id="div-loading-indicator"
-            sx={{
-                backgroundColor: useBackgroundColorFromScheme(mode),
-                overflow: 'hidden',
-            }}
-            className="flex h-full w-full absolute bg-opacity-100 z-100"
+            color="#000"
+            backgroundOpacity={1.0}
+            style={{ overflow: 'hidden' }}
+            className="flex h-full w-full absolute"
         >
             {range(0, 5).map((j) =>
                 range(0, 4).map((i) => (
@@ -66,18 +63,13 @@ export function LoadingIndicator() {
                     transform: 'translate(-50%, -50%)',
                 }}
             ></Box>
-            <Box className="m-auto flex-col text-center z-10">
-                <CircularProgress color="inherit" size={60} />
-                <Typography
-                    id="text-logo-loading-indicator"
-                    style={{ marginTop: '2.5rem' }}
-                >
+            <Center className="m-auto flex-col text-center z-10">
+                <Loader size="lg" color="gray" type="dots" />
+                <Text id="text-logo-loading-indicator">
                     <TextLogo width="12rem" />
-                </Typography>
-                <Typography style={{ marginTop: '1rem' }}>
-                    Loading assets...
-                </Typography>
-            </Box>
-        </Box>
+                </Text>
+                <Text>Loading assets...</Text>
+            </Center>
+        </Overlay>
     )
 }

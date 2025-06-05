@@ -8,6 +8,7 @@ import { ActionHandler } from '../actionHandler'
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js'
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass.js'
+import { ACESFilmicToneMapping } from 'three'
 
 /**
  * Manages the core componentes and state required for rendering the basic scene.
@@ -31,7 +32,11 @@ export class Engine {
     constructor(parent: HTMLElement) {
         this.parent = parent
         this.handler = []
-        this.renderer = new WebGLRenderer({ antialias: true })
+        this.renderer = new WebGLRenderer({
+            antialias: true,
+        })
+        this.renderer.toneMapping = ACESFilmicToneMapping
+        this.renderer.toneMappingExposure = 1.3
         this.renderer.setSize(parent.clientWidth, parent.clientHeight)
         // Create core components.
         this.scene = new Scene()

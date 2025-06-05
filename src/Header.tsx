@@ -1,17 +1,15 @@
-import GitHubIcon from '@mui/icons-material/GitHub'
 import { TextLogo } from './TextLogo'
-import LightModeIcon from '@mui/icons-material/LightMode'
-import DarkModeIcon from '@mui/icons-material/DarkMode'
-import ContrastIcon from '@mui/icons-material/Contrast'
 import { BrunsvigaLogo } from './BrunsvigaLogo'
-import { environmentUniforms } from './render/environment'
-import { isDarkMode } from './utils'
-import MenuIcon from '@mui/icons-material/Menu'
 import { useState } from 'react'
-import DescriptionIcon from '@mui/icons-material/Description'
-import InfoIcon from '@mui/icons-material/Info'
-import NewspaperIcon from '@mui/icons-material/Newspaper'
-import { Group, Stack, Text, Button, ActionIcon } from '@mantine/core'
+import {
+    Group,
+    Stack,
+    Text,
+    Button,
+    ActionIcon,
+    useMantineColorScheme,
+    MantineColorScheme,
+} from '@mantine/core'
 import { Icon } from '@iconify/react'
 
 const links = [
@@ -30,8 +28,12 @@ const links = [
 ]
 
 export function Header() {
+    const { setColorScheme } = useMantineColorScheme()
+
+    const [mode, setMode] = useState('auto')
+
     const logo = (
-        <Group gap={8} h="100%">
+        <Group gap={16} h="100%">
             <BrunsvigaLogo />
             <Stack gap={0} justify="center">
                 <TextLogo width="8rem" />
@@ -40,18 +42,46 @@ export function Header() {
         </Group>
     )
 
+    const themeIcon = () => {
+        if (mode == 'auto') {
+            return <Icon fontSize={24} icon="fluent:dark-theme-24-filled" />
+        }
+        if (mode == 'dark') {
+            return <Icon fontSize={24} icon="material-symbols:dark-mode" />
+        }
+        return <Icon fontSize={24} icon="material-symbols:light-mode-outline" />
+    }
+
+    const toggleTheme = () => {
+        const order = ['auto', 'light', 'dark']
+        const theme = order[(order.indexOf(mode) + 1) % 3]
+
+        setMode(theme)
+        setColorScheme(theme as MantineColorScheme)
+    }
+
     const left = (
         <Group gap={4}>
             {links.map((link) => (
                 <Button
+                    fz="md"
                     variant="transparent"
                     color="default"
                     component="a"
+                    key={link.name}
                     href={link.href}
                 >
                     {link.name}
                 </Button>
             ))}
+            <ActionIcon
+                onClick={toggleTheme}
+                variant="transparent"
+                color="default"
+                size="xl"
+            >
+                {themeIcon()}
+            </ActionIcon>
             <ActionIcon
                 variant="transparent"
                 color="default"
@@ -65,7 +95,7 @@ export function Header() {
     )
 
     return (
-        <Group px={16} h="100%" justify="space-between">
+        <Group m="sm" px="sm" h="100%" justify="space-between">
             {logo}
             {left}
         </Group>

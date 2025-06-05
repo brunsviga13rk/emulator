@@ -4,6 +4,7 @@ import {
     Center,
     Flex,
     Group,
+    Overlay,
     SegmentedControl,
     Stack,
 } from '@mantine/core'
@@ -14,12 +15,16 @@ import { Split } from '@gfazioli/mantine-split-pane'
 import Toolbox from './render/Toolbox'
 import { useState } from 'react'
 import { Icon } from '@iconify/react'
+import App from './App'
+import { Editor } from './solver/Editor'
+import Editors from './Editors'
+import ActionRecommendations from './render/ActionRecommendations'
+import { LoadingIndicator } from './LoadingIndicator'
 
 function Shell() {
-    const [value, setValue] = useState('ng')
     return (
-        <AppShell header={{ height: 60 }} padding="md" h="100%">
-            <AppShell.Header>
+        <AppShell header={{ height: 64 }} padding="md" h="100%">
+            <AppShell.Header withBorder={false}>
                 <Header />
             </AppShell.Header>
 
@@ -39,64 +44,13 @@ function Shell() {
                             <Renderer />
                         </Flex>
                     </Split.Pane>
-                    <Split.Resizer />
+                    <Split.Resizer m="lg" />
                     <Split.Pane w="100%" h="100%">
-                        <Stack w="100%" h="100%">
-                            <Group
-                                w="100%"
-                                className={classes.contentPane}
-                                grow
-                                p="sm"
-                            >
-                                <SegmentedControl
-                                    value={value}
-                                    onChange={setValue}
-                                    data={[
-                                        {
-                                            label: (
-                                                <Center>
-                                                    <Icon
-                                                        icon="codicon:settings"
-                                                        fontSize={24}
-                                                    />
-                                                </Center>
-                                            ),
-                                            value: 'ng',
-                                        },
-                                        {
-                                            label: (
-                                                <Center>
-                                                    <Icon
-                                                        icon="mdi:calculator-variant-outline"
-                                                        fontSize={24}
-                                                    />
-                                                </Center>
-                                            ),
-                                            value: 'vue',
-                                        },
-                                        {
-                                            label: (
-                                                <Center>
-                                                    <Icon
-                                                        icon="ps:code"
-                                                        fontSize={24}
-                                                    />
-                                                </Center>
-                                            ),
-                                            value: 'svelte',
-                                        },
-                                    ]}
-                                />
-                            </Group>
-                            <Group
-                                w="100%"
-                                h="100%"
-                                className={classes.contentPane}
-                            ></Group>
-                        </Stack>
+                        <Editors />
                     </Split.Pane>
                 </Split>
             </AppShell.Main>
+            <LoadingIndicator />
         </AppShell>
     )
 }

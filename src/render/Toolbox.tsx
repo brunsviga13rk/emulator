@@ -12,7 +12,19 @@ import {
     BrunsvigaAnimationEventType,
 } from '../model/brunsviga13rk'
 import { EventHandler } from '../model/events'
-import { ActionIcon, Stack } from '@mantine/core'
+import {
+    ActionIcon,
+    Text,
+    Stack,
+    Tooltip,
+    Divider,
+    HoverCard,
+    Group,
+    Image,
+    SimpleGrid,
+    Grid,
+} from '@mantine/core'
+import { Icon } from '@iconify/react/dist/iconify.js'
 
 const options = ['Clear counter', 'Clear input', 'Clear result', 'Clear all']
 const tips = [
@@ -83,9 +95,95 @@ export default function Toolbox() {
         setOpen(false)
     }
 
+    const tools = [
+        {
+            name: 'Free view',
+            icon: 'iconamoon:cursor',
+            description:
+                'Drag the orbital view around with the mouse. Click on element to interact.',
+        },
+        {
+            name: 'Kinetic interaction',
+            icon: 'proicons:cursor-drag',
+            description:
+                'Drag elements for interaction. Camera cannot be moved around.',
+        },
+        'divider',
+        {
+            name: 'Decimal shift right',
+            icon: 'streamline:move-right',
+            description:
+                'Shift result and counter register by one decimal place to the right.',
+        },
+        {
+            name: 'Decimal shift left',
+            icon: 'streamline:move-left',
+            description:
+                'Shift result and counter register by one decimal place to the left.',
+        },
+        {
+            name: 'Perform addition',
+            icon: 'charm:rotate-clockwise',
+            description:
+                'Add selection register to result and increment counter.',
+        },
+        {
+            name: 'Perform subtraction',
+            icon: 'charm:rotate-anti-clockwise',
+            description:
+                'Subtract selection register from result and increment counter.',
+        },
+        'divider',
+        {
+            name: 'Reset machine',
+            icon: 'iconamoon:trash',
+            description:
+                'Reset all regsiters to zero and remove decimal shifts.',
+        },
+        {
+            name: 'Reset camera view',
+            icon: 'material-symbols:view-in-ar-outline',
+            description: 'Reset orbital camera.',
+        },
+    ]
+
     return (
         <Stack p="sm" className={classes.contentPane} h="100%">
-            <ActionIcon></ActionIcon>
+            {tools.map((tool) => {
+                if (tool == 'divider') {
+                    return <Divider />
+                } else {
+                    return (
+                        <HoverCard shadow="md">
+                            <HoverCard.Target>
+                                <ActionIcon
+                                    variant="transparent"
+                                    color="default"
+                                    size="md"
+                                    key={`action-${tool.icon}`}
+                                >
+                                    <Icon icon={tool.icon} fontSize={24} />
+                                </ActionIcon>
+                            </HoverCard.Target>
+                            <HoverCard.Dropdown w={300}>
+                                <Grid>
+                                    <Grid.Col span={4}>
+                                        <Image src="/icons/brunsviga.svg"></Image>
+                                    </Grid.Col>
+                                    <Grid.Col span={8}>
+                                        <Text size="md" fw="bold">
+                                            {tool.name}
+                                        </Text>
+                                        <Text size="sm">
+                                            {tool.description}
+                                        </Text>
+                                    </Grid.Col>
+                                </Grid>
+                            </HoverCard.Dropdown>
+                        </HoverCard>
+                    )
+                }
+            })}
         </Stack>
     )
 }

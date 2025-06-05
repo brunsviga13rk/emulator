@@ -15,8 +15,6 @@ body {
 
 #renderer {
     border-radius: 1rem;
-    border-radius: 1rem;
-    border: 2pt, rgb(207, 207, 207);
     border-style: solid;
     /*
        Required for border-radius to take effect.
