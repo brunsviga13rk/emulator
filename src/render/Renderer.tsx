@@ -6,14 +6,12 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import { createBaseplane } from '../baseplane'
 import { Engine } from './engine'
 import { Brunsviga13rk } from '../model/brunsviga13rk'
-import Toolbox from './Toolbox'
 import ActionRecommendations from './ActionRecommendations'
-import { createBackground } from './environment'
 import { useColorScheme } from '@mui/material'
 import { environmentUniforms } from './environment'
 import { isDarkMode } from '../utils'
 import classes from '../styles.module.css'
-import { Box, Stack } from '@mantine/core'
+import { Stack } from '@mantine/core'
 
 /**
  * Setup the environment by: creating an environment lighmap for PBR rendering,
