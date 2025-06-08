@@ -38,7 +38,7 @@ function Shell() {
                     variant="filled"
                     spacing="md"
                 >
-                    <Split.Pane w="100%" h="100%">
+                    <Split.Pane w="100%" h="100%" initialWidth="70%">
                         <Flex w="100%" h="100%" gap="md">
                             <Toolbox />
                             <Renderer />
