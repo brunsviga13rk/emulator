@@ -19,6 +19,8 @@ import {
     Divider,
 } from '@mantine/core'
 import { Icon } from '@iconify/react/dist/iconify.js'
+import Renderer from './Renderer'
+import { Engine } from './engine'
 
 export default function Toolbox() {
     const [ready, setReady] = useState(true)
@@ -113,7 +115,9 @@ export default function Toolbox() {
             name: 'Reset camera view',
             icon: 'material-symbols:view-in-ar-outline',
             description: 'Reset orbital camera.',
-            action: () => {}
+            action: () => {
+                Engine.getInstance()?.resetCamera()
+            }
         },
     ]
 

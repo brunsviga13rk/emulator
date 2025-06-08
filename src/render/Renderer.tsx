@@ -73,7 +73,7 @@ function onLoadingError(error: unknown) {
  * @param parent The parent DOM element the canvas is a child of.
  */
 function initThree(parent: HTMLElement) {
-    const engine = new Engine(parent)
+    const engine = Engine.new(parent)
 
     // Setup the environment lightmap, background and ground plate.
     setupEnvironment(engine)

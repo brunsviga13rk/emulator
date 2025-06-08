@@ -1,4 +1,11 @@
-import { Clock, PerspectiveCamera, Scene, Vector2, WebGLRenderer } from 'three'
+import {
+    Clock,
+    PerspectiveCamera,
+    Scene,
+    Vector2,
+    Vector3,
+    WebGLRenderer,
+} from 'three'
 import { ViewportGizmo } from 'three-viewport-gizmo'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
@@ -9,6 +16,15 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js'
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass.js'
 import { ACESFilmicToneMapping } from 'three'
+import {
+    AnimationScalarState,
+    AnimationScalarStateEventType,
+    CubicEaseInOutInterpolation,
+} from '../model/animation'
+import { EventHandler } from '../model/events'
+
+const CameraStartPosition: Vector3 = new Vector3(-6, 3, 3)
+const CameraZoomStart: number = 1.0
 
 /**
  * Manages the core componentes and state required for rendering the basic scene.
@@ -28,10 +44,43 @@ export class Engine {
     controls: OrbitControls
     gizmo!: ViewportGizmo
     handler: ActionHandler[]
+    cameraResetAction: AnimationScalarState
+
+    static instance: Engine | undefined = undefined
+
+    public static getInstance(): Engine | undefined {
+        return Engine.instance
+    }
+
+    public static new(parent: HTMLElement): Engine {
+        Engine.instance = new Engine(parent)
+        return Engine.instance
+    }
 
     constructor(parent: HTMLElement) {
         this.parent = parent
         this.handler = []
+        this.cameraResetAction = new AnimationScalarState(
+            0.0,
+            CubicEaseInOutInterpolation,
+            1.0
+        )
+        this.cameraResetAction.getEmitter().subscribe(
+            AnimationScalarStateEventType.StateChanged,
+            new EventHandler((delta) => {
+                this.camera.position.x += ((CameraStartPosition.x -
+                    this.camera.position.x) *
+                    delta) as number
+                this.camera.position.y += ((CameraStartPosition.y -
+                    this.camera.position.y) *
+                    delta) as number
+                this.camera.position.z += ((CameraStartPosition.z -
+                    this.camera.position.z) *
+                    delta) as number
+                this.camera.zoom += ((CameraZoomStart - this.camera.zoom) *
+                    delta) as number
+            })
+        )
         this.renderer = new WebGLRenderer({
             antialias: true,
         })
@@ -91,6 +140,7 @@ export class Engine {
         const composer = this.composer
         const gizmo = this.gizmo
         const handler = this.handler
+        const cameraResetAction = this.cameraResetAction
 
         const clock = new Clock()
 
@@ -99,6 +149,8 @@ export class Engine {
             const delta = clock.getDelta() * 1e3
 
             this.resizeCanvas()
+
+            cameraResetAction.advance(delta)
 
             handler.forEach((handler) => handler.perform(delta))
 
@@ -133,7 +185,14 @@ export class Engine {
         camera.position.y = 3
         camera.position.z = 3
 
+        camera.zoom = 1.0
+
         return camera
+    }
+
+    public resetCamera() {
+        this.cameraResetAction.targetState =
+            this.cameraResetAction.currentState + 1.0
     }
 
     /**
@@ -190,6 +249,8 @@ export class Engine {
         controls.maxTargetRadius = 2.0
         controls.enableDamping = true
         controls.rotateSpeed = 0.75
+
+        controls.enablePan = false
 
         return controls
     }
