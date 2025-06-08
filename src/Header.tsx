@@ -9,6 +9,8 @@ import {
     ActionIcon,
     useMantineColorScheme,
     MantineColorScheme,
+    Badge,
+    Space,
 } from '@mantine/core'
 import { Icon } from '@iconify/react'
 
@@ -39,6 +41,16 @@ export function Header() {
                 <TextLogo width="8rem" />
                 <Text>BRAINS OF STEEL</Text>
             </Stack>
+            <Space />
+            <Badge
+                component="a"
+                href={`https://github.com/brunsviga13rk/emulator/releases/tag/v${__APP_VERSION__}`}
+                variant="outline"
+                color="gray"
+                size="lg"
+            >
+                {__APP_VERSION__}
+            </Badge>
         </Group>
     )
 
