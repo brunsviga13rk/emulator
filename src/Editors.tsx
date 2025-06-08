@@ -2,9 +2,10 @@ import { Center, Group, SegmentedControl, Stack } from '@mantine/core'
 import classes from './styles.module.css'
 import { useState } from 'react'
 import { Icon } from '@iconify/react'
+import Dashboard from './Dashboard'
 
 function Editors() {
-    const [value, setValue] = useState('ng')
+    const [value, setValue] = useState('settings')
 
     return (
         <Stack w="100%" h="100%">
@@ -22,7 +23,7 @@ function Editors() {
                                     />
                                 </Center>
                             ),
-                            value: 'ng',
+                            value: 'settings',
                         },
                         {
                             label: (
@@ -33,7 +34,7 @@ function Editors() {
                                     />
                                 </Center>
                             ),
-                            value: 'vue',
+                            value: 'calc',
                         },
                         {
                             label: (
@@ -41,12 +42,14 @@ function Editors() {
                                     <Icon icon="ps:code" fontSize={24} />
                                 </Center>
                             ),
-                            value: 'svelte',
+                            value: 'code',
                         },
                     ]}
                 />
             </Group>
-            <Group w="100%" h="100%" className={classes.contentPane}></Group>
+            <Group w="100%" h="100%" className={classes.contentPane}>
+                {value == 'settings' && <Dashboard />}
+            </Group>
         </Stack>
     )
 }

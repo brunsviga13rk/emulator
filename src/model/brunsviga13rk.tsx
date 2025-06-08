@@ -555,6 +555,10 @@ export class Brunsviga13rk
         return this.counter_sprocket.getDisplayValue()
     }
 
+    public getDecimalShift(): number {
+        return this.sled.getOffset()
+    }
+
     public getInputRegisterValue(): number {
         return this.input_sprocket.getDisplayValue()
     }

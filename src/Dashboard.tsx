@@ -1,12 +1,3 @@
-import {
-    Divider,
-    IconButton,
-    Input,
-    Paper,
-    Stack,
-    Tooltip,
-    Typography,
-} from '@mui/material'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { useState } from 'react'
 import { Brunsviga13rk, onInitHook } from './model/brunsviga13rk'
@@ -15,7 +6,18 @@ import {
     SprocketWheelEventType,
 } from './model/sprockets/sprocketWheel'
 import { EventHandler } from './model/events'
-import { MAX_INPUT_SPROCKET_VALUE } from './model/sprockets/inputSprocket'
+import {
+    ActionIcon,
+    Divider,
+    Group,
+    PinInput,
+    Slider,
+    Stack,
+    Text,
+    Tooltip,
+} from '@mantine/core'
+import { EventEmitter } from 'stream'
+import { SledEventType } from './model/sled'
 
 enum Sprocket {
     Counter,
@@ -25,12 +27,11 @@ enum Sprocket {
 
 type RegisterStateProps = {
     title: string
-    min: number
-    max: number
+    digits: number
     sprocket: Sprocket
 }
 
-function RegisterState({ title, min, max, sprocket }: RegisterStateProps) {
+function RegisterState({ title, digits, sprocket }: RegisterStateProps) {
     let hook: onInitHook = () => {}
 
     switch (sprocket) {
@@ -82,61 +83,113 @@ function RegisterState({ title, min, max, sprocket }: RegisterStateProps) {
 
     const [value, setValue] = useState(0)
     return (
-        <Stack direction="row" spacing={1} alignItems="center">
-            <Typography sx={{ width: '100%' }}>{title}</Typography>
-            {sprocket == Sprocket.Input ? (
-                <Input
-                    type="number"
-                    inputProps={{ min: min, max: max }}
-                    value={value}
-                    sx={{ width: '12rem' }}
+        <Stack w="100%" key={`register-${title}`}>
+            <Text>{title}</Text>
+            <Group w="100%" justify="space-between">
+                <PinInput
+                    gap={4}
+                    disabled={sprocket != Sprocket.Input}
+                    key={`input-${title}`}
+                    aria-label="Register Input"
+                    length={digits}
+                    inputMode="numeric"
+                    size="sm"
+                    oneTimeCode={false}
+                    value={String(value).padStart(digits, '0')}
                     onChange={(e) => {
-                        Brunsviga13rk.getInstance().setInput(
-                            Number.parseInt(e.target.value)
-                        )
+                        Brunsviga13rk.getInstance().setInput(Number.parseInt(e))
                     }}
                 />
-            ) : (
-                <Typography>{value}</Typography>
-            )}
-            <Tooltip title="Clear register">
-                <IconButton onClick={onClear}>
-                    <DeleteOutlineIcon />
-                </IconButton>
-            </Tooltip>
+                <Tooltip label="Clear register">
+                    <ActionIcon
+                        variant="transparent"
+                        color="default"
+                        onClick={onClear}
+                    >
+                        <DeleteOutlineIcon />
+                    </ActionIcon>
+                </Tooltip>
+            </Group>
+        </Stack>
+    )
+}
+
+function DecimalShift() {
+    const [value, setValue] = useState<number>(0)
+    const labels = [
+        { value: 0, label: '0' },
+        { value: 1, label: '1' },
+        { value: 2, label: '2' },
+        { value: 3, label: '3' },
+        { value: 4, label: '4' },
+        { value: 5, label: '5' },
+        { value: 6, label: '6' },
+    ]
+
+    Brunsviga13rk.getInstance().whenReady((instance) => {
+        instance.sled.getEmitter().subscribe(
+            SledEventType.ShiftLeft,
+            new EventHandler(() => {
+                setValue(instance.getDecimalShift())
+            })
+        )
+        instance.sled.getEmitter().subscribe(
+            SledEventType.ShiftRight,
+            new EventHandler(() => {
+                setValue(instance.getDecimalShift())
+            })
+        )
+    })
+
+    return (
+        <Stack>
+            <Text fz="xl" fw="bold">
+                Decimal shift
+            </Text>
+            <Slider
+                value={value}
+                min={0}
+                max={6}
+                marks={labels}
+                onChange={(value) => {
+                    setValue(value)
+
+                    const shifts =
+                        value - Brunsviga13rk.getInstance().getDecimalShift()
+
+                    if (shifts > 0) {
+                        Brunsviga13rk.getInstance().repeatedShiftRight(shifts)
+                    } else {
+                        Brunsviga13rk.getInstance().repeatedShiftLeft(-shifts)
+                    }
+                }}
+            ></Slider>
         </Stack>
     )
 }
 
 export default function Dashboard() {
     return (
-        <Paper
-            sx={{ position: 'static', padding: 2, height: '14rem' }}
-            variant="outlined"
-        >
-            <Stack
-                spacing={2}
-                divider={<Divider orientation="horizontal" flexItem />}
-            >
-                <RegisterState
-                    title="Counter register"
-                    min={0}
-                    max={99}
-                    sprocket={Sprocket.Counter}
-                />
-                <RegisterState
-                    title="Input register"
-                    min={0}
-                    max={MAX_INPUT_SPROCKET_VALUE}
-                    sprocket={Sprocket.Input}
-                />
-                <RegisterState
-                    title="Result register"
-                    min={0}
-                    max={99}
-                    sprocket={Sprocket.Result}
-                />
-            </Stack>
-        </Paper>
+        <Stack gap={8} w="100%" p="md">
+            <Text fz="xl" fw="bold">
+                Registers
+            </Text>
+            <RegisterState
+                title="Counter"
+                digits={8}
+                sprocket={Sprocket.Counter}
+            />
+            <RegisterState
+                title="Selector"
+                digits={10}
+                sprocket={Sprocket.Input}
+            />
+            <RegisterState
+                title="Result"
+                digits={13}
+                sprocket={Sprocket.Result}
+            />
+            <DecimalShift />
+        </Stack>
     )
 }
