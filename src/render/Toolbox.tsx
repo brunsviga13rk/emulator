@@ -95,7 +95,13 @@ export default function Toolbox() {
         setOpen(false)
     }
 
-    const tools = [
+    type ToolDescriptor = {
+        name: string,
+        icon: string,
+        description: string
+    }
+
+    const tools: Array<ToolDescriptor | string> = [
         {
             name: 'Free view',
             icon: 'iconamoon:cursor',
@@ -153,34 +159,17 @@ export default function Toolbox() {
                 if (tool == 'divider') {
                     return <Divider />
                 } else {
+                    const descriptor = tool as ToolDescriptor
                     return (
-                        <HoverCard shadow="md">
-                            <HoverCard.Target>
-                                <ActionIcon
-                                    variant="transparent"
-                                    color="default"
-                                    size="md"
-                                    key={`action-${tool.icon}`}
-                                >
-                                    <Icon icon={tool.icon} fontSize={24} />
-                                </ActionIcon>
-                            </HoverCard.Target>
-                            <HoverCard.Dropdown w={300}>
-                                <Grid>
-                                    <Grid.Col span={4}>
-                                        <Image src="/icons/brunsviga.svg"></Image>
-                                    </Grid.Col>
-                                    <Grid.Col span={8}>
-                                        <Text size="md" fw="bold">
-                                            {tool.name}
-                                        </Text>
-                                        <Text size="sm">
-                                            {tool.description}
-                                        </Text>
-                                    </Grid.Col>
-                                </Grid>
-                            </HoverCard.Dropdown>
-                        </HoverCard>
+                        <Tooltip label={descriptor.description}>
+                            <ActionIcon
+                                variant="transparent"
+                                color="default"
+                                size="md"
+                                key={`action-${descriptor.icon}`}
+                            >
+                                <Icon icon={descriptor.icon} fontSize={24} />
+                            </ActionIcon></Tooltip>
                     )
                 }
             })}
