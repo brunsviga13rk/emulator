@@ -1,10 +1,19 @@
 import {
+    BufferGeometry,
+    FrontSide,
     Group,
     Intersection,
+    Material,
+    Mesh,
+    MeshPhysicalMaterial,
+    MeshStandardMaterial,
+    NormalBufferAttributes,
     Object3D,
     Object3DEventMap,
     Raycaster,
+    Texture,
     Vector2,
+    WebGLRenderer,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { Engine } from '../render/engine'
@@ -24,10 +33,11 @@ import { ResultResetHandle } from './handles/resultResetHandle'
 import { CounterResetHandle } from './handles/counterResetHandle'
 import { Direction, Sled } from './sled'
 import { EventBroker, EventEmitter, Tautology } from './events'
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useContext } from 'react'
 import { AnimationScalarState } from './animation'
 import { Switch } from './switch'
 import { DeletionHandle } from './handles/deletionHandle'
+import { setLoadingEvent } from '../LoadingIndicator'
 
 export enum BrunsvigaAnimationEventType {
     AnimationStarted,
@@ -159,6 +169,11 @@ export class Brunsviga13rk
                 engine.scene.add(gltf.scene)
                 this.scene = gltf.scene
 
+                setLoadingEvent({
+                    title: 'Setup model',
+                    progress: 0.0,
+                })
+
                 this.switch = new Switch(this.scene)
                 this.input_sprocket = new InputSprocket(this.scene)
                 this.counter_sprocket = new CounterSprocket(this.scene)
@@ -201,6 +216,11 @@ export class Brunsviga13rk
                     12
                 )
 
+                setLoadingEvent({
+                    title: 'Setup model',
+                    progress: 0.5,
+                })
+
                 this.selectables = []
                 this.selectables.push(this.selector_sprocket)
                 this.selectables.push(this.delete_handle)
@@ -214,6 +234,11 @@ export class Brunsviga13rk
                 this.selectables.push(this.sled)
                 this.selectables.push(this.switch)
 
+                setLoadingEvent({
+                    title: 'Setup model',
+                    progress: 0.75,
+                })
+
                 this.input_sprocket.registerActionEvents()
                 this.selector_sprocket.registerActionEvents()
                 this.result_sprocket.registerActionEvents()
@@ -223,6 +248,11 @@ export class Brunsviga13rk
                 this.counter_reset_handle.registerEventSubscribtions()
                 this.delete_handle.registerEventSubscribtions()
 
+                setLoadingEvent({
+                    title: 'Setup model',
+                    progress: 1.0,
+                })
+
                 onModelLoaded()
 
                 // Handle events.
@@ -231,7 +261,12 @@ export class Brunsviga13rk
                 // Run post init hooks.
                 this.onInitHooks.forEach((hook) => hook(this))
             },
-            undefined,
+            function (xhr) {
+                setLoadingEvent({
+                    title: 'Loading Mesh',
+                    progress: xhr.loaded / xhr.total,
+                })
+            },
             onLoadingError
         )
 

@@ -12,6 +12,7 @@ import { environmentUniforms } from './environment'
 import { isDarkMode } from '../utils'
 import classes from '../styles.module.css'
 import { Stack } from '@mantine/core'
+import { LoadingIndicator, setLoadingEvent } from '../LoadingIndicator'
 
 /**
  * Setup the environment by: creating an environment lighmap for PBR rendering,
@@ -26,6 +27,12 @@ function setupEnvironment(engine: Engine) {
         (texture) => {
             texture.mapping = THREE.EquirectangularReflectionMapping
             engine.scene.environment = texture
+        },
+        function (xhr) {
+            setLoadingEvent({
+                title: 'Loading environment',
+                progress: xhr.loaded / xhr.total,
+            })
         }
     )
 
@@ -38,6 +45,20 @@ function setupEnvironment(engine: Engine) {
  * @param engine
  */
 function postLoadSetup(engine: Engine) {
+    let progress = 0.0
+
+    const intervalId = setInterval(() => {
+        progress += 0.25
+        setLoadingEvent({
+            title: 'Lubricating machine...',
+            progress: progress,
+        })
+    }, 500)
+
+    setTimeout(() => {
+        clearInterval(intervalId) // Stops the interval after 2 seconds
+    }, 2000)
+
     // Loading of models successfull, finish setting up renderer.
     engine.attachCanvas()
     engine.startAnimationLoop()
