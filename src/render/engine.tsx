@@ -12,8 +12,6 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js'
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
 import { ActionHandler } from '../actionHandler'
-import { FXAAShader } from 'three/addons/shaders/FXAAShader.js'
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass.js'
 import { ACESFilmicToneMapping } from 'three'
 import {
@@ -38,7 +36,6 @@ export class Engine {
     passes: [
         renderPass: TAARenderPass,
         outlinePass: OutlinePass,
-        fxaaPass: ShaderPass,
         outputPass: OutputPass,
     ]
     controls: OrbitControls
@@ -84,6 +81,7 @@ export class Engine {
         this.renderer = new WebGLRenderer({
             antialias: true,
         })
+        this.renderer.setPixelRatio(window.devicePixelRatio)
         this.renderer.toneMapping = ACESFilmicToneMapping
         this.renderer.toneMappingExposure = 1.3
         this.renderer.setSize(parent.clientWidth, parent.clientHeight)
@@ -126,6 +124,8 @@ export class Engine {
 
             this.camera.aspect = parentWidth / parentHeight
             this.camera.updateProjectionMatrix()
+
+            this.passes[1].setSize(parentWidth, parentHeight)
 
             // Save current control state and reset.
             // This prevents the rendered image from flickering.
@@ -202,35 +202,28 @@ export class Engine {
     private createRenderPasses(): [
         renderPass: TAARenderPass,
         outlinePass: OutlinePass,
-        fxaaPass: ShaderPass,
         outputPass: OutputPass,
     ] {
         // Create and configure passes.
         const taaRenderPass = new TAARenderPass(this.scene, this.camera)
         taaRenderPass.sampleLevel = 2
+        taaRenderPass.setSize(this.parent.clientWidth, this.parent.clientHeight)
+
         const outputPass = new OutputPass()
         const outlinePass = new OutlinePass(
-            new Vector2(
-                this.parent.clientWidth / 4,
-                this.parent.clientHeight / 4
-            ),
+            new Vector2(this.parent.clientWidth, this.parent.clientHeight),
             this.scene,
             this.camera,
             []
         )
-        outlinePass.edgeStrength = 50.0
+        outlinePass.edgeGlow = 0.0
+        outlinePass.edgeThickness = 1.0
+        outlinePass.edgeStrength = 2.0
         outlinePass.hiddenEdgeColor.setHex(0xffffff)
         outlinePass.visibleEdgeColor.setHex(0xffffff)
         outlinePass.clear = false
 
-        const fxaaPass = new ShaderPass(FXAAShader)
-
-        fxaaPass.uniforms['resolution'].value.set(
-            1 / this.parent.clientWidth,
-            1 / this.parent.clientHeight
-        )
-
-        return [taaRenderPass, outlinePass, fxaaPass, outputPass]
+        return [taaRenderPass, outlinePass, outputPass]
     }
 
     /**
