@@ -91,7 +91,7 @@ export function LoadingIndicator() {
     return (
         <Overlay
             id="div-loading-indicator"
-            color="#000"
+            color={prefersDarkMode ? 'black' : 'white'}
             backgroundOpacity={1.0}
             style={{ overflow: 'hidden' }}
             className="flex h-full w-full absolute"
