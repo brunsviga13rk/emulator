@@ -15,6 +15,10 @@ import Shell from './Shell.tsx'
 import { Icon } from '@iconify/react/dist/iconify.js'
 import classes from './styles.module.css'
 import { LoadingIndicator } from './LoadingIndicator.tsx'
+import {
+    CodeHighlightAdapterProvider,
+    createShikiAdapter,
+} from '@mantine/code-highlight'
 
 /**
  * Detect when running in iFrame component.
@@ -30,10 +34,24 @@ function inIframe() {
     }
 }
 
+async function loadShiki() {
+    const { createHighlighter } = await import('shiki')
+    const shiki = await createHighlighter({
+        langs: ['lua'],
+        themes: [],
+    })
+
+    return shiki
+}
+
+const shikiAdapter = createShikiAdapter(loadShiki)
+
 function App() {
     return (
         <MantineProvider theme={theme}>
-            <Shell />
+            <CodeHighlightAdapterProvider adapter={shikiAdapter}>
+                <Shell />
+            </CodeHighlightAdapterProvider>
         </MantineProvider>
     )
 }
