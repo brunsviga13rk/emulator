@@ -1,10 +1,19 @@
 import {
+    BufferGeometry,
+    FrontSide,
     Group,
     Intersection,
+    Material,
+    Mesh,
+    MeshPhysicalMaterial,
+    MeshStandardMaterial,
+    NormalBufferAttributes,
     Object3D,
     Object3DEventMap,
     Raycaster,
+    Texture,
     Vector2,
+    WebGLRenderer,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { Engine } from '../render/engine'
@@ -24,10 +33,11 @@ import { ResultResetHandle } from './handles/resultResetHandle'
 import { CounterResetHandle } from './handles/counterResetHandle'
 import { Direction, Sled } from './sled'
 import { EventBroker, EventEmitter, Tautology } from './events'
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useContext } from 'react'
 import { AnimationScalarState } from './animation'
 import { Switch } from './switch'
 import { DeletionHandle } from './handles/deletionHandle'
+import { setLoadingEvent } from '../LoadingIndicator'
 
 export enum BrunsvigaAnimationEventType {
     AnimationStarted,
@@ -143,9 +153,26 @@ export class Brunsviga13rk
         loader.load(
             `${__APP_BASE_PATH__}/brunsviga.glb`,
             (gltf) => {
+                let count = 0
+                gltf.scene.traverse(function (child) {
+                    if ((child as Mesh).isMesh) {
+                        optimizeMesh(engine.renderer, child as Mesh)
+                        count++
+                    }
+                    setLoadingEvent({
+                        title: 'Optimizing Mesh',
+                        progress: count / gltf.scene.children.length,
+                    })
+                })
+
                 // Store scene in object and assign to engine for rendering.
                 engine.scene.add(gltf.scene)
                 this.scene = gltf.scene
+
+                setLoadingEvent({
+                    title: 'Setup model',
+                    progress: 0.0,
+                })
 
                 this.switch = new Switch(this.scene)
                 this.input_sprocket = new InputSprocket(this.scene)
@@ -189,6 +216,11 @@ export class Brunsviga13rk
                     12
                 )
 
+                setLoadingEvent({
+                    title: 'Setup model',
+                    progress: 0.5,
+                })
+
                 this.selectables = []
                 this.selectables.push(this.selector_sprocket)
                 this.selectables.push(this.delete_handle)
@@ -202,6 +234,11 @@ export class Brunsviga13rk
                 this.selectables.push(this.sled)
                 this.selectables.push(this.switch)
 
+                setLoadingEvent({
+                    title: 'Setup model',
+                    progress: 0.75,
+                })
+
                 this.input_sprocket.registerActionEvents()
                 this.selector_sprocket.registerActionEvents()
                 this.result_sprocket.registerActionEvents()
@@ -211,6 +248,11 @@ export class Brunsviga13rk
                 this.counter_reset_handle.registerEventSubscribtions()
                 this.delete_handle.registerEventSubscribtions()
 
+                setLoadingEvent({
+                    title: 'Setup model',
+                    progress: 1.0,
+                })
+
                 onModelLoaded()
 
                 // Handle events.
@@ -219,7 +261,12 @@ export class Brunsviga13rk
                 // Run post init hooks.
                 this.onInitHooks.forEach((hook) => hook(this))
             },
-            undefined,
+            function (xhr) {
+                setLoadingEvent({
+                    title: 'Loading Mesh',
+                    progress: xhr.loaded / xhr.total,
+                })
+            },
             onLoadingError
         )
 
@@ -629,5 +676,49 @@ export class Brunsviga13rk
             }
         }
         return false
+    }
+}
+
+/**
+ * Perform various optimization configurations for both aestethis and peformance. These include:
+ *
+ *  - perf: Backface culling
+ *  - perf: Disable transparency
+ *  - looks: Anisotropic filtering
+ *
+ * @param mesh
+ */
+function optimizeMesh(
+    renderer: WebGLRenderer,
+    mesh: Mesh<
+        BufferGeometry<NormalBufferAttributes>,
+        Material | Material[],
+        Object3DEventMap
+    >
+) {
+    mesh.receiveShadow = true
+    mesh.castShadow = true
+
+    const optimizeTexture = (texture: Texture | null) => {
+        if (!texture) return
+
+        texture.generateMipmaps = true
+        // Use anisotropic filtering for mipmaps
+        // See: https://sbcode.net/threejs/anisotropic/
+        texture.anisotropy = renderer.capabilities.getMaxAnisotropy()
+    }
+
+    const material = mesh.material as MeshStandardMaterial
+
+    if (material.isMaterial) {
+        // Enable backface-culling.
+        material.side = FrontSide
+        // Disable transparency
+        material.transparent = false
+
+        optimizeTexture(material.map)
+        optimizeTexture(material.normalMap)
+        optimizeTexture(material.roughnessMap)
+        optimizeTexture(material.metalnessMap)
     }
 }

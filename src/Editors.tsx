@@ -10,6 +10,7 @@ import classes from './styles.module.css'
 import { useState } from 'react'
 import { Icon } from '@iconify/react'
 import Dashboard from './Dashboard'
+import { Editor as ApiEditor } from './api/Editor'
 
 function Editors() {
     const [value, setValue] = useState('settings')
@@ -60,12 +61,9 @@ function Editors() {
                     ]}
                 />
             </Group>
-            <Group w="100%" h="calc(90%)" className={classes.contentPane}>
-                <ScrollArea h="100%" offsetScrollbars>
-                    <Container>
-                        {value == 'settings' && <Dashboard />}
-                    </Container>
-                </ScrollArea>
+            <Group w="100%" h="100%" className={classes.contentPane}>
+                {value == 'settings' && <Dashboard />}
+                {value == 'code' && <ApiEditor />}
             </Group>
         </Stack>
     )

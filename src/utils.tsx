@@ -11,7 +11,7 @@ export function useLogoColorFromScheme(mode: string | undefined): string {
         case 'dark':
             return 'white'
         default:
-            return prefersDarkMode ? 'white' : 'black'
+            return prefersDarkMode ? 'black' : 'white'
     }
 }
 
