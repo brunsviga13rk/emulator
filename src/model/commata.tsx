@@ -6,7 +6,7 @@ import {
 } from './animation'
 import { ActionHandler } from '../actionHandler'
 import { InputAction, Selectable, UserAction } from './selectable'
-import { EventHandler } from './events'
+import { EventBroker, EventEmitter, EventHandler, Tautology } from './events'
 
 class Commata implements ActionHandler {
     protected animationState: AnimationScalarState
@@ -58,10 +58,28 @@ class Commata implements ActionHandler {
     }
 }
 
-export class CommataBar implements ActionHandler, Selectable {
+export enum CommataBarEventType {
+    Shifted,
+}
+
+export type CommataBarShiftedLeftEvent = { commata: number[] }
+
+export type CommataBarEvent = CommataBarShiftedLeftEvent
+
+export class CommataBar
+    implements
+        ActionHandler,
+        Selectable,
+        EventBroker<CommataBarEventType, CommataBarEvent, CommataBar>
+{
     protected commata: Commata[]
     protected bounds: [maxTranslation: number, minTranslation: number]
     protected resolution: number
+    protected emitter: EventEmitter<
+        CommataBarEventType,
+        CommataBarEvent,
+        CommataBar
+    >
 
     public constructor(
         scene: Group<Object3DEventMap>,
@@ -83,6 +101,18 @@ export class CommataBar implements ActionHandler, Selectable {
                 new Commata(scene, name + i.toString(), startPosition, i)
             )
         }
+
+        this.emitter = new EventEmitter()
+        this.emitter.setActor(this)
+    }
+
+    getEmitter(): EventEmitter<
+        CommataBarEventType,
+        CommataBarShiftedLeftEvent,
+        CommataBar,
+        Tautology
+    > {
+        return this.emitter
     }
 
     getAvailableUserActions(): UserAction[] {
@@ -107,19 +137,35 @@ export class CommataBar implements ActionHandler, Selectable {
 
         for (let i = 0; i < this.commata.length; i++) {
             if (this.commata[i].getMesh().id == object.id) {
-                const [minTranslation, maxTranslation] = this.bounds
-                const position = this.commata[i].getTranslation()
-                const translation =
-                    ((maxTranslation - minTranslation) / this.resolution) * sign
-                const offset = position + translation
-
-                if (this.isDigitObstructed(this.commata[i].digit + sign)) break
-
-                if (offset <= maxTranslation && offset >= minTranslation) {
-                    this.commata[i].move(translation)
-                }
+                this.moveDigit(i, sign)
             }
         }
+    }
+
+    public moveDigit(digit: number, sign: number) {
+        const [minTranslation, maxTranslation] = this.bounds
+        const position = this.commata[digit].getTranslation()
+        const translation =
+            ((maxTranslation - minTranslation) / this.resolution) * sign
+        const offset = position + translation
+
+        if (this.isDigitObstructed(this.commata[digit].digit + sign)) return
+
+        if (offset <= maxTranslation && offset >= minTranslation) {
+            this.commata[digit].move(translation)
+
+            this.emitter.emit(CommataBarEventType.Shifted, {
+                commata: this.getAllDigitShifts(),
+            })
+        }
+    }
+
+    public getAllDigitShifts(): number[] {
+        return this.commata.map((commata) => commata.digit)
+    }
+
+    public getDigitShift(digit: number): number {
+        return this.commata[digit].digit
     }
 
     private isDigitObstructed(digit: number) {

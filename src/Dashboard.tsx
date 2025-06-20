@@ -1,5 +1,4 @@
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { Brunsviga13rk, onInitHook } from './model/brunsviga13rk'
 import {
     SprocketWheelChangeEvent,
@@ -8,16 +7,19 @@ import {
 import { EventHandler } from './model/events'
 import {
     ActionIcon,
-    Divider,
-    Group,
+    Grid,
     PinInput,
+    RangeSlider,
     Slider,
+    Space,
     Stack,
     Text,
     Tooltip,
 } from '@mantine/core'
-import { EventEmitter } from 'stream'
 import { SledEventType } from './model/sled'
+import { Icon } from '@iconify/react/dist/iconify.js'
+import { CommataBar, CommataBarEventType } from './model/commata'
+import './Dashboard.css'
 
 enum Sprocket {
     Counter,
@@ -82,13 +84,11 @@ function RegisterState({ title, digits, sprocket }: RegisterStateProps) {
     }
 
     const [value, setValue] = useState(0)
-    return (
-        <Stack w="100%" key={`register-${title}`}>
-            <Text>{title}</Text>
-            <Group w="100%" justify="space-between">
+    const numberInputComponent = () => {
+        if (sprocket == Sprocket.Input) {
+            return (
                 <PinInput
                     gap={4}
-                    disabled={sprocket != Sprocket.Input}
                     key={`input-${title}`}
                     aria-label="Register Input"
                     length={digits}
@@ -100,17 +100,44 @@ function RegisterState({ title, digits, sprocket }: RegisterStateProps) {
                         Brunsviga13rk.getInstance().setInput(Number.parseInt(e))
                     }}
                 />
+            )
+        } else {
+            return (
+                <PinInput
+                    gap={4}
+                    key={`input-${title}`}
+                    aria-label="Register Input"
+                    length={digits}
+                    inputMode="numeric"
+                    size="sm"
+                    oneTimeCode={false}
+                    value={String(value).padStart(digits, '0')}
+                    onChange={(e) => {
+                        Brunsviga13rk.getInstance().setInput(Number.parseInt(e))
+                    }}
+                />
+            )
+        }
+    }
+
+    return (
+        <Grid align="center">
+            <Grid.Col span={1.5}>
+                <Text>{title}</Text>
+            </Grid.Col>
+            <Grid.Col span={9.5}>{numberInputComponent()}</Grid.Col>
+            <Grid.Col span={1}>
                 <Tooltip label="Clear register">
                     <ActionIcon
                         variant="transparent"
                         color="default"
                         onClick={onClear}
                     >
-                        <DeleteOutlineIcon />
+                        <Icon icon="iconamoon:trash" fontSize={24} />
                     </ActionIcon>
                 </Tooltip>
-            </Group>
-        </Stack>
+            </Grid.Col>
+        </Grid>
     )
 }
 
@@ -142,9 +169,17 @@ function DecimalShift() {
     })
 
     return (
-        <Stack>
-            <Text fz="xl" fw="bold">
-                Decimal shift
+        <Stack gap="md">
+            <Text>
+                <Text fz="xl" fw="bold">
+                    Decimal Shift
+                </Text>
+                <Text fz="sm" c="dimmed">
+                    Amount of decimal digits used to shift the sled and result
+                    register to the right. The selector sprockets value is
+                    multiplied by ten raised to the power of this amount before
+                    addition.
+                </Text>
             </Text>
             <Slider
                 value={value}
@@ -168,28 +203,151 @@ function DecimalShift() {
     )
 }
 
+function CommataBarComponent(props: {
+    label: string
+    steps: number
+    value: [number, number]
+    setValue: Dispatch<SetStateAction<[number, number]>>
+    bar: CommataBar | undefined
+}) {
+    const labels = [...Array(props.steps).keys()].map((i) => {
+        return { value: i + 1, label: `${props.steps - i}` }
+    })
+
+    return (
+        <>
+            <Text>{props.label}</Text>
+            <RangeSlider
+                value={props.value}
+                min={1}
+                minRange={1}
+                max={props.steps}
+                marks={labels}
+                label={null}
+                onChange={(value) => {
+                    if (props.bar == undefined) return
+
+                    props.setValue(value)
+
+                    const shifts = [
+                        value[0] - props.bar.getDigitShift(0),
+                        value[1] - props.bar.getDigitShift(1),
+                    ]
+
+                    props.bar.moveDigit(1, shifts[1])
+                    props.bar.moveDigit(0, shifts[0])
+                }}
+            />
+            <Space />
+        </>
+    )
+}
+
+function Commata() {
+    const [countValue, setCountValue] = useState<[number, number]>([1, 2])
+    const [countBar, setCountBar] = useState<CommataBar | undefined>(undefined)
+
+    const [inputValue, setInputValue] = useState<[number, number]>([1, 2])
+    const [inputBar, setInputBar] = useState<CommataBar | undefined>(undefined)
+
+    const [resultValue, setResultValue] = useState<[number, number]>([1, 2])
+    const [resultBar, setResultBar] = useState<CommataBar | undefined>(
+        undefined
+    )
+
+    const instance = Brunsviga13rk.getInstance()
+
+    instance.whenReady((instance) => {
+        setCountBar(instance.count_commata)
+        instance.count_commata.getEmitter().subscribe(
+            CommataBarEventType.Shifted,
+            new EventHandler((event) => {
+                setCountValue([event.commata[0], event.commata[1]])
+            })
+        )
+    })
+
+    instance.whenReady((instance) => {
+        setInputBar(instance.input_commata)
+        instance.input_commata.getEmitter().subscribe(
+            CommataBarEventType.Shifted,
+            new EventHandler((event) => {
+                setInputValue([event.commata[0], event.commata[1]])
+            })
+        )
+    })
+
+    instance.whenReady((instance) => {
+        setResultBar(instance.result_commata)
+        instance.result_commata.getEmitter().subscribe(
+            CommataBarEventType.Shifted,
+            new EventHandler((event) => {
+                setResultValue([event.commata[0], event.commata[1]])
+            })
+        )
+    })
+
+    return (
+        <Stack gap="md">
+            <Text>
+                <Text fz="xl" fw="bold">
+                    Commata Location
+                </Text>
+                <Text fz="sm" c="dimmed">
+                    Determine location of commata slider. These may represent
+                    the begin of the fraction or separate thousands.
+                </Text>
+            </Text>
+            <CommataBarComponent
+                label="Counter"
+                steps={7}
+                value={countValue}
+                setValue={setCountValue}
+                bar={countBar}
+            />
+            <CommataBarComponent
+                label="Selector"
+                steps={10}
+                value={inputValue}
+                setValue={setInputValue}
+                bar={inputBar}
+            />
+            <CommataBarComponent
+                label="Result"
+                steps={12}
+                value={resultValue}
+                setValue={setResultValue}
+                bar={resultBar}
+            />
+        </Stack>
+    )
+}
+
 export default function Dashboard() {
     return (
-        <Stack gap={8} w="100%" p="md">
-            <Text fz="xl" fw="bold">
-                Registers
-            </Text>
-            <RegisterState
-                title="Counter"
-                digits={8}
-                sprocket={Sprocket.Counter}
-            />
-            <RegisterState
-                title="Selector"
-                digits={10}
-                sprocket={Sprocket.Input}
-            />
-            <RegisterState
-                title="Result"
-                digits={13}
-                sprocket={Sprocket.Result}
-            />
+        <Stack gap="xl" w="100%" p="md">
+            <Stack gap="md">
+                <Text fz="xl" fw="bold">
+                    Registers
+                </Text>
+                <RegisterState
+                    title="Counter"
+                    digits={8}
+                    sprocket={Sprocket.Counter}
+                />
+                <RegisterState
+                    title="Selector"
+                    digits={10}
+                    sprocket={Sprocket.Input}
+                />
+                <RegisterState
+                    title="Result"
+                    digits={13}
+                    sprocket={Sprocket.Result}
+                />
+            </Stack>
             <DecimalShift />
+            <Commata />
         </Stack>
     )
 }
