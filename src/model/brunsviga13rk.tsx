@@ -1,10 +1,18 @@
 import {
+    BufferGeometry,
+    FrontSide,
     Group,
     Intersection,
+    Material,
+    Mesh,
+    MeshStandardMaterial,
+    NormalBufferAttributes,
     Object3D,
     Object3DEventMap,
     Raycaster,
+    Texture,
     Vector2,
+    WebGLRenderer,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { Engine } from '../render/engine'
@@ -143,6 +151,12 @@ export class Brunsviga13rk
         loader.load(
             `${__APP_BASE_PATH__}/brunsviga.glb`,
             (gltf) => {
+                gltf.scene.traverse(function (child) {
+                    if ((child as Mesh).isMesh) {
+                        optimizeMesh(engine.renderer, child as Mesh)
+                    }
+                })
+
                 // Store scene in object and assign to engine for rendering.
                 engine.scene.add(gltf.scene)
                 this.scene = gltf.scene
@@ -625,5 +639,49 @@ export class Brunsviga13rk
             }
         }
         return false
+    }
+}
+
+/**
+ * Perform various optimization configurations for both aestethis and peformance. These include:
+ *
+ *  - perf: Backface culling
+ *  - perf: Disable transparency
+ *  - looks: Anisotropic filtering
+ *
+ * @param mesh
+ */
+function optimizeMesh(
+    renderer: WebGLRenderer,
+    mesh: Mesh<
+        BufferGeometry<NormalBufferAttributes>,
+        Material | Material[],
+        Object3DEventMap
+    >
+) {
+    mesh.receiveShadow = true
+    mesh.castShadow = true
+
+    const optimizeTexture = (texture: Texture | null) => {
+        if (!texture) return
+
+        texture.generateMipmaps = true
+        // Use anisotropic filtering for mipmaps
+        // See: https://sbcode.net/threejs/anisotropic/
+        texture.anisotropy = renderer.capabilities.getMaxAnisotropy()
+    }
+
+    const material = mesh.material as MeshStandardMaterial
+
+    if (material.isMaterial) {
+        // Enable backface-culling.
+        material.side = FrontSide
+        // Disable transparency
+        material.transparent = false
+
+        optimizeTexture(material.map)
+        optimizeTexture(material.normalMap)
+        optimizeTexture(material.roughnessMap)
+        optimizeTexture(material.metalnessMap)
     }
 }
