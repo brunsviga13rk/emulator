@@ -5,7 +5,6 @@ import {
     Intersection,
     Material,
     Mesh,
-    MeshPhysicalMaterial,
     MeshStandardMaterial,
     NormalBufferAttributes,
     Object3D,
@@ -114,6 +113,7 @@ export class Brunsviga13rk
     _setRecommendations!: Dispatch<SetStateAction<UserAction[]>>
     animationOngoing = false
     animationStateChangeCounter = 0
+    ready: boolean
 
     private static instance: Brunsviga13rk = new Brunsviga13rk()
 
@@ -132,6 +132,7 @@ export class Brunsviga13rk
     }
 
     private constructor() {
+        this.ready = false
         this.onInitHooks = []
         this.animationStateActive = false
         this.animationStateFinishCounter = 0
@@ -260,6 +261,7 @@ export class Brunsviga13rk
 
                 // Run post init hooks.
                 this.onInitHooks.forEach((hook) => hook(this))
+                this.ready = true
             },
             function (xhr) {
                 setLoadingEvent({
@@ -277,6 +279,10 @@ export class Brunsviga13rk
         this.engine.renderer.domElement.onmouseup = (event) => {
             this.onClick(event)
         }
+    }
+
+    public isReady(): boolean {
+        return this.ready
     }
 
     public whenReady(hook: onInitHook) {
@@ -648,33 +654,48 @@ export class Brunsviga13rk
         return false
     }
 
+    /**
+     * Perform repeated shifts based on the provided amount. If the amount is undefined, shifts once. Returns a boolean indicating success.
+     *
+     * @param amount {number | undefined} The number of shifts to perform. If undefined, shifts once. The amount is bounded between 1 and 6 (inclusive) and is guaranteed to be valid.
+     * @returns boolean: true if the shifts are successful, false otherwise.
+     */
     public async repeatedShiftLeft(
         amount: number | undefined = undefined
     ): Promise<boolean> {
-        if (amount == undefined) {
+        if (amount === undefined) {
             return await this.shiftLeft()
-        } else {
-            for (let i = 0; i < amount; i++) {
-                if (await this.shiftLeft()) {
-                    return true
-                }
+        }
+
+        for (let i = 0; i < amount; i++) {
+            if (await this.shiftLeft()) {
+                return true
             }
         }
+
         return false
     }
 
+    /**
+     * Perform a series of shifts based on the given amount.
+     *
+     * @param amount
+     * @param {number | undefined} amount
+     * @returns boolean indicating success
+     */
     public async repeatedShiftRight(
         amount: number | undefined = undefined
     ): Promise<boolean> {
-        if (amount == undefined) {
+        if (amount === undefined) {
             return await this.shiftRight()
-        } else {
-            for (let i = 0; i < amount; i++) {
-                if (await this.shiftRight()) {
-                    return true
-                }
+        }
+
+        for (let i = 0; i < amount; i++) {
+            if (await this.shiftRight()) {
+                return true
             }
         }
+
         return false
     }
 }

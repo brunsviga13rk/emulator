@@ -276,6 +276,27 @@ export class Instruction {
 
         return 'unknown opcode'
     }
+
+    public getIcon(): string {
+        switch (this.opcode) {
+            case Opcode.Zero:
+                return 'tdesign:clear-formatting'
+            case Opcode.Add:
+                return 'fa7-solid:add'
+            case Opcode.Subtract:
+                return 'carbon:subtract'
+            case Opcode.Load:
+                return 'material-symbols:input'
+            case Opcode.Reset:
+                return 'tdesign:clear-formatting'
+            case Opcode.ShiftLeft:
+                return 'mdi:decimal-comma-decrease'
+            case Opcode.ShiftRight:
+                return 'mdi:decimal-comma-increase'
+        }
+
+        return 'unknown opcode'
+    }
 }
 
 /**

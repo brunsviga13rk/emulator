@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Brunsviga13rk, onInitHook } from './model/brunsviga13rk'
 import {
     SprocketWheelChangeEvent,
@@ -7,6 +7,8 @@ import {
 import { EventHandler } from './model/events'
 import {
     ActionIcon,
+    Box,
+    CopyButton,
     Grid,
     PinInput,
     RangeSlider,
@@ -34,39 +36,50 @@ type RegisterStateProps = {
 }
 
 function RegisterState({ title, digits, sprocket }: RegisterStateProps) {
-    let hook: onInitHook = () => {}
+    const [value, setValue] = useState(0)
 
-    switch (sprocket) {
-        case Sprocket.Counter:
-            hook = (instance) =>
-                instance.counter_sprocket.getEmitter().subscribe(
-                    SprocketWheelEventType.Change,
-                    new EventHandler((event) => {
-                        setValue((event as SprocketWheelChangeEvent).value)
-                    })
-                )
-            break
-        case Sprocket.Input:
-            hook = (instance) =>
-                instance.input_sprocket.getEmitter().subscribe(
-                    SprocketWheelEventType.Change,
-                    new EventHandler((event) => {
-                        setValue((event as SprocketWheelChangeEvent).value)
-                    })
-                )
-            break
-        case Sprocket.Result:
-            hook = (instance) =>
-                instance.result_sprocket.getEmitter().subscribe(
-                    SprocketWheelEventType.Change,
-                    new EventHandler((event) => {
-                        setValue((event as SprocketWheelChangeEvent).value)
-                    })
-                )
-            break
-    }
+    // Allow overriding the pin input's value when the Brunviga state is changed
+    // based on event handlers. This requires an init hook to be used to
+    // register event handlers on the machine once its loaded.
+    useEffect(() => {
+        const sprocket_event_handler = new EventHandler((event) => {
+            setValue((event as SprocketWheelChangeEvent).value)
+        })
 
-    Brunsviga13rk.getInstance().whenReady(hook)
+        let hook: onInitHook = () => {}
+
+        switch (sprocket) {
+            case Sprocket.Counter:
+                hook = (instance) =>
+                    instance.counter_sprocket
+                        .getEmitter()
+                        .subscribe(
+                            SprocketWheelEventType.Change,
+                            sprocket_event_handler
+                        )
+                break
+            case Sprocket.Input:
+                hook = (instance) =>
+                    instance.input_sprocket
+                        .getEmitter()
+                        .subscribe(
+                            SprocketWheelEventType.Change,
+                            sprocket_event_handler
+                        )
+                break
+            case Sprocket.Result:
+                hook = (instance) =>
+                    instance.result_sprocket
+                        .getEmitter()
+                        .subscribe(
+                            SprocketWheelEventType.Change,
+                            sprocket_event_handler
+                        )
+                break
+        }
+
+        Brunsviga13rk.getInstance().whenReady(hook)
+    })
 
     const onClear = () => {
         const bvg13rk = Brunsviga13rk.getInstance()
@@ -83,57 +96,48 @@ function RegisterState({ title, digits, sprocket }: RegisterStateProps) {
         }
     }
 
-    const [value, setValue] = useState(0)
-    const numberInputComponent = () => {
+    function onChangeHandler(e: string) {
         if (sprocket == Sprocket.Input) {
-            return (
-                <PinInput
-                    gap={4}
-                    key={`input-${title}`}
-                    aria-label="Register Input"
-                    length={digits}
-                    inputMode="numeric"
-                    size="sm"
-                    oneTimeCode={false}
-                    value={String(value).padStart(digits, '0')}
-                    onChange={(e) => {
-                        Brunsviga13rk.getInstance().setInput(Number.parseInt(e))
-                    }}
-                />
-            )
-        } else {
-            return (
-                <PinInput
-                    gap={4}
-                    key={`input-${title}`}
-                    aria-label="Register Input"
-                    length={digits}
-                    inputMode="numeric"
-                    size="sm"
-                    oneTimeCode={false}
-                    value={String(value).padStart(digits, '0')}
-                    onChange={(e) => {
-                        Brunsviga13rk.getInstance().setInput(Number.parseInt(e))
-                    }}
-                />
-            )
+            Brunsviga13rk.getInstance().setInput(Number.parseInt(e))
         }
     }
 
+    const numberInputComponent = () => (
+        <Box w={`${digits * 1.75}em`}>
+            <PinInput
+                disabled={sprocket != Sprocket.Input}
+                gap={4}
+                key={`input-${title}`}
+                aria-label="Register Input"
+                length={digits}
+                inputMode="numeric"
+                size="sm"
+                oneTimeCode={false}
+                value={String(value).padStart(digits, '0')}
+                onChange={onChangeHandler}
+            />
+        </Box>
+    )
+
     return (
-        <Grid align="center">
-            <Grid.Col span={1.5}>
+        <Grid align="center" justify="flex-end" gutter="xs">
+            <Grid.Col span="auto">
                 <Text>{title}</Text>
             </Grid.Col>
-            <Grid.Col span={9.5}>{numberInputComponent()}</Grid.Col>
-            <Grid.Col span={1}>
+            <Grid.Col span="content">{numberInputComponent()}</Grid.Col>
+            <Grid.Col span="content">
+                <CopyButton value={String(value)}>
+                    {({ copied, copy }) => (
+                        <ActionIcon onClick={copy} size="md" variant="default">
+                            <Icon icon="tabler:copy" />
+                        </ActionIcon>
+                    )}
+                </CopyButton>
+            </Grid.Col>
+            <Grid.Col span="content">
                 <Tooltip label="Clear register">
-                    <ActionIcon
-                        variant="transparent"
-                        color="default"
-                        onClick={onClear}
-                    >
-                        <Icon icon="iconamoon:trash" fontSize={24} />
+                    <ActionIcon size="md" variant="default" onClick={onClear}>
+                        <Icon icon="iconamoon:trash" fontSize={18} />
                     </ActionIcon>
                 </Tooltip>
             </Grid.Col>
@@ -142,16 +146,13 @@ function RegisterState({ title, digits, sprocket }: RegisterStateProps) {
 }
 
 function DecimalShift() {
+    const DECIMAL_SHIFTS = 6
+
     const [value, setValue] = useState<number>(0)
-    const labels = [
-        { value: 0, label: '0' },
-        { value: 1, label: '1' },
-        { value: 2, label: '2' },
-        { value: 3, label: '3' },
-        { value: 4, label: '4' },
-        { value: 5, label: '5' },
-        { value: 6, label: '6' },
-    ]
+
+    const labels = [...Array(DECIMAL_SHIFTS + 1).keys()].map((i) => {
+        return { value: i, label: `${i}` }
+    })
 
     Brunsviga13rk.getInstance().whenReady((instance) => {
         instance.sled.getEmitter().subscribe(
@@ -168,9 +169,21 @@ function DecimalShift() {
         )
     })
 
+    const moveDeciamlShift = (value: number) => {
+        setValue(value)
+
+        const shifts = value - Brunsviga13rk.getInstance().getDecimalShift()
+
+        if (shifts > 0) {
+            Brunsviga13rk.getInstance().repeatedShiftRight(shifts)
+        } else {
+            Brunsviga13rk.getInstance().repeatedShiftLeft(-shifts)
+        }
+    }
+
     return (
         <Stack gap="md">
-            <Text>
+            <Stack>
                 <Text fz="xl" fw="bold">
                     Decimal Shift
                 </Text>
@@ -180,25 +193,14 @@ function DecimalShift() {
                     multiplied by ten raised to the power of this amount before
                     addition.
                 </Text>
-            </Text>
+            </Stack>
             <Slider
                 value={value}
                 min={0}
-                max={6}
+                max={DECIMAL_SHIFTS}
                 marks={labels}
-                onChange={(value) => {
-                    setValue(value)
-
-                    const shifts =
-                        value - Brunsviga13rk.getInstance().getDecimalShift()
-
-                    if (shifts > 0) {
-                        Brunsviga13rk.getInstance().repeatedShiftRight(shifts)
-                    } else {
-                        Brunsviga13rk.getInstance().repeatedShiftLeft(-shifts)
-                    }
-                }}
-            ></Slider>
+                onChange={moveDeciamlShift}
+            />
         </Stack>
     )
 }
@@ -214,8 +216,20 @@ function CommataBarComponent(props: {
         return { value: i + 1, label: `${props.steps - i}` }
     })
 
+    const moveDigit = (value: [number, number]) => {
+        if (props.bar != undefined) {
+            props.setValue(value)
+
+            for (let i = 0; i < props.steps; i++) {
+                const delta = value[i] - props.bar.getDigitShift(i)
+
+                props.bar.moveDigit(i, Math.sign(delta))
+            }
+        }
+    }
+
     return (
-        <>
+        <Stack>
             <Text>{props.label}</Text>
             <RangeSlider
                 value={props.value}
@@ -224,22 +238,10 @@ function CommataBarComponent(props: {
                 max={props.steps}
                 marks={labels}
                 label={null}
-                onChange={(value) => {
-                    if (props.bar == undefined) return
-
-                    props.setValue(value)
-
-                    const shifts = [
-                        value[0] - props.bar.getDigitShift(0),
-                        value[1] - props.bar.getDigitShift(1),
-                    ]
-
-                    props.bar.moveDigit(1, shifts[1])
-                    props.bar.moveDigit(0, shifts[0])
-                }}
+                onChange={moveDigit}
             />
             <Space />
-        </>
+        </Stack>
     )
 }
 
@@ -255,41 +257,45 @@ function Commata() {
         undefined
     )
 
-    const instance = Brunsviga13rk.getInstance()
+    useEffect(() => {
+        const instance = Brunsviga13rk.getInstance()
 
-    instance.whenReady((instance) => {
-        setCountBar(instance.count_commata)
-        instance.count_commata.getEmitter().subscribe(
-            CommataBarEventType.Shifted,
-            new EventHandler((event) => {
-                setCountValue([event.commata[0], event.commata[1]])
-            })
-        )
-    })
+        instance.whenReady((instance) => {
+            setCountBar(instance.count_commata)
+            instance.count_commata.getEmitter().subscribe(
+                CommataBarEventType.Shifted,
+                new EventHandler((event) => {
+                    setCountValue([event.commata[0], event.commata[1]])
+                })
+            )
+        })
 
-    instance.whenReady((instance) => {
-        setInputBar(instance.input_commata)
-        instance.input_commata.getEmitter().subscribe(
-            CommataBarEventType.Shifted,
-            new EventHandler((event) => {
-                setInputValue([event.commata[0], event.commata[1]])
-            })
-        )
-    })
+        instance.whenReady((instance) => {
+            setInputBar(instance.input_commata)
+            instance.input_commata.getEmitter().subscribe(
+                CommataBarEventType.Shifted,
+                new EventHandler((event) => {
+                    setInputValue([event.commata[0], event.commata[1]])
+                })
+            )
+        })
 
-    instance.whenReady((instance) => {
-        setResultBar(instance.result_commata)
-        instance.result_commata.getEmitter().subscribe(
-            CommataBarEventType.Shifted,
-            new EventHandler((event) => {
-                setResultValue([event.commata[0], event.commata[1]])
-            })
-        )
+        instance.whenReady((instance) => {
+            setResultBar(instance.result_commata)
+            instance.result_commata.getEmitter().subscribe(
+                CommataBarEventType.Shifted,
+                new EventHandler((event) => {
+                    setResultValue([event.commata[0], event.commata[1]])
+                })
+            )
+        })
+
+        return () => {}
     })
 
     return (
         <Stack gap="md">
-            <Text>
+            <Stack>
                 <Text fz="xl" fw="bold">
                     Commata Location
                 </Text>
@@ -297,7 +303,7 @@ function Commata() {
                     Determine location of commata slider. These may represent
                     the begin of the fraction or separate thousands.
                 </Text>
-            </Text>
+            </Stack>
             <CommataBarComponent
                 label="Counter"
                 steps={7}
@@ -323,10 +329,20 @@ function Commata() {
     )
 }
 
-export default function Dashboard() {
+interface DashboardProps {
+    visible: boolean
+}
+
+export default function Dashboard(props: DashboardProps) {
     return (
-        <Stack gap="xl" w="100%" p="md">
-            <Stack gap="md">
+        <Stack
+            gap="xl"
+            w="100%"
+            h="100%"
+            p="md"
+            style={{ display: props.visible ? 'block' : 'none' }}
+        >
+            <Stack gap="md" w="100%">
                 <Text fz="xl" fw="bold">
                     Registers
                 </Text>

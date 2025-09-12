@@ -34,6 +34,8 @@ export default function Toolbox() {
         disabled: boolean
     }
 
+    const [rotation, setRotation] = useState(0.0)
+
     const tools: Array<ToolDescriptor | string> = [
         {
             name: 'Free view',
@@ -74,7 +76,7 @@ export default function Toolbox() {
         },
         {
             name: 'Perform addition',
-            icon: 'charm:rotate-clockwise',
+            icon: 'mdi:horizontal-rotate-clockwise',
             description:
                 'Add selection register to result and increment counter.',
             action: () => {
@@ -84,7 +86,7 @@ export default function Toolbox() {
         },
         {
             name: 'Perform subtraction',
-            icon: 'charm:rotate-anti-clockwise',
+            icon: 'mdi:horizontal-rotate-counterclockwise',
             description:
                 'Subtract selection register from result and increment counter.',
             action: () => {
@@ -92,7 +94,6 @@ export default function Toolbox() {
             },
             disabled: false,
         },
-        'divider',
         {
             name: 'Reset machine',
             icon: 'iconamoon:trash',
@@ -100,6 +101,23 @@ export default function Toolbox() {
                 'Reset all regsiters to zero and remove decimal shifts.',
             action: () => {
                 Brunsviga13rk.getInstance().clearRegisters()
+            },
+            disabled: false,
+        },
+        'divider',
+        {
+            name: 'Toggle automatic camera rotation',
+            icon:
+                rotation < 0.0
+                    ? 'ri:rotate-lock-fill'
+                    : rotation == 0.0
+                      ? 'mdi:axis-z-rotate-counterclockwise'
+                      : 'mdi:axis-z-rotate-clockwise',
+            description:
+                'Reset all regsiters to zero and remove decimal shifts.',
+            action: () => {
+                Engine.getInstance()?.toggleRotation()
+                setRotation(Engine.getInstance()!.getCameraRotation())
             },
             disabled: false,
         },
@@ -115,11 +133,12 @@ export default function Toolbox() {
     ]
 
     const actionComponent = (descriptor: ToolDescriptor) => (
-        <Tooltip label={descriptor.description}>
+        <Tooltip key={`tool-${descriptor.name}`} label={descriptor.description}>
             <ActionIcon
                 disabled={!ready || descriptor.disabled}
                 onClick={descriptor.action}
                 variant="transparent"
+                bg="transparent"
                 color="default"
                 size="md"
                 key={`action-${descriptor.icon}`}
@@ -129,13 +148,15 @@ export default function Toolbox() {
         </Tooltip>
     )
 
+    let divider_count = 0
+
     return (
         <Stack p="sm" className={classes.contentPane} h="100%">
             {tools.map((tool) => {
                 if (tool == 'divider') {
-                    return <Divider />
+                    return <Divider key={`tool-divider-${divider_count++}`} />
                 } else {
-                    return <>{actionComponent(tool as ToolDescriptor)}</>
+                    return actionComponent(tool as ToolDescriptor)
                 }
             })}
         </Stack>

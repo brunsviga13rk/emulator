@@ -1,32 +1,21 @@
-import {
-    Center,
-    Container,
-    Group,
-    ScrollArea,
-    SegmentedControl,
-    Stack,
-} from '@mantine/core'
+import { Center, Group, SegmentedControl, Stack } from '@mantine/core'
 import classes from './styles.module.css'
 import { useState } from 'react'
 import { Icon } from '@iconify/react'
 import Dashboard from './Dashboard'
 import { Editor as ApiEditor } from './api/Editor'
+import { Editor as SolverEditor } from './solver/Editor'
 
 function Editors() {
     const [value, setValue] = useState('settings')
 
     return (
         <Stack w="100%" h="100%" gap="md">
-            <Group
-                w="100%"
-                h="120pt"
-                className={classes.contentPane}
-                grow
-                p="sm"
-            >
+            <Group w="100%" className={classes.contentPane} grow p="sm">
                 <SegmentedControl
                     value={value}
                     onChange={setValue}
+                    bg="transparent"
                     data={[
                         {
                             label: (
@@ -62,8 +51,9 @@ function Editors() {
                 />
             </Group>
             <Group w="100%" h="100%" className={classes.contentPane}>
-                {value == 'settings' && <Dashboard />}
-                {value == 'code' && <ApiEditor />}
+                <Dashboard visible={value == 'settings'} />
+                <SolverEditor visible={value == 'calc'} />
+                <ApiEditor visible={value == 'code'} />
             </Group>
         </Stack>
     )

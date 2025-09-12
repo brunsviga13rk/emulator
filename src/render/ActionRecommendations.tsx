@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { UserAction } from '../model/selectable'
 import { Brunsviga13rk } from '../model/brunsviga13rk'
-import { Group, Kbd, Text } from '@mantine/core'
+import { Group, Kbd } from '@mantine/core'
+import { InlineIcon } from '@iconify/react/dist/iconify.js'
 
 export default function ActionRecommendations() {
     const [actions, setActions] = useState<UserAction[]>([])
@@ -12,9 +13,14 @@ export default function ActionRecommendations() {
         <Group m="sm" style={{ position: 'absolute' }}>
             {actions ? (
                 actions.map(([action, description]) => (
-                    <Kbd key={action as string}>
-                        <i className={`ph ${action as string}`} />
-                        {description}
+                    <Kbd size="md" key={action as string}>
+                        <Group gap="xs">
+                            <InlineIcon
+                                fontSize={18}
+                                icon={`${action as string}`}
+                            />
+                            {description}
+                        </Group>
                     </Kbd>
                 ))
             ) : (

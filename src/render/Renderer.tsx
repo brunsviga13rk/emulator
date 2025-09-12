@@ -7,12 +7,49 @@ import { createBaseplane } from '../baseplane'
 import { Engine } from './engine'
 import { Brunsviga13rk } from '../model/brunsviga13rk'
 import ActionRecommendations from './ActionRecommendations'
-import { useColorScheme } from '@mui/material'
-import { environmentUniforms } from './environment'
-import { isDarkMode } from '../utils'
 import classes from '../styles.module.css'
-import { Stack } from '@mantine/core'
-import { LoadingIndicator, setLoadingEvent } from '../LoadingIndicator'
+import { Box } from '@mantine/core'
+import { setLoadingEvent } from '../LoadingIndicator'
+
+/**
+ * Configures the shadow map in a Three.WebGLRenderer.
+ *
+ * This function sets the shadow map to enable shadows and defines the shadow
+ * map type to be PCFSoftShadowMap.
+ */
+function configureShadows(renderer: THREE.WebGLRenderer): void {
+    renderer.shadowMap.enabled = true
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+}
+
+/**
+ * Sets up a directional light in the scene.
+ *
+ * This function creates a directional light object and configures its
+ * properties.
+ *
+ */
+function setupKeyLights(engine: Engine) {
+    const light = new THREE.DirectionalLight()
+
+    light.castShadow = true
+    light.intensity = 3.0
+
+    light.position.z = 0.6
+    light.position.x = 0.8
+
+    light.shadow.mapSize.width = 512
+    light.shadow.mapSize.height = 512
+    light.shadow.camera.left = -0.25
+    light.shadow.camera.top = -0.25
+    light.shadow.camera.right = 0.25
+    light.shadow.camera.bottom = 0.25
+    light.shadow.camera.near = 0.01
+    light.shadow.camera.far = 10
+    light.shadow.bias = -0.0005
+
+    engine.scene.add(light)
+}
 
 /**
  * Setup the environment by: creating an environment lighmap for PBR rendering,
@@ -36,7 +73,11 @@ function setupEnvironment(engine: Engine) {
         }
     )
 
-    engine.scene.add(createBaseplane())
+    configureShadows(engine.renderer)
+
+    setupKeyLights(engine)
+
+    createBaseplane(engine.scene)
 }
 
 /**
@@ -126,26 +167,37 @@ function setupRenderer() {
 }
 
 const Renderer = memo(() => {
-    const { mode } = useColorScheme()
-
     const [name] = useState('renderer-init')
 
     useEffect(() => {
-        // Initialize color for 3D environment.
-        environmentUniforms.darkMode.value = isDarkMode(mode)
-
         // call api or anything
         setupRenderer()
     }, [name])
 
     return (
-        <Stack
-            style={{ width: '100%', height: '100%' }}
+        <Box
+            id="wrapper"
+            style={{
+                display: 'flex',
+                width: '100%',
+                flex: '1 1 0',
+                minWidth: 0,
+                height: '100%',
+            }}
             className={classes.contentPane}
         >
             <ActionRecommendations />
-            <div id="renderer" style={{ width: '100%', height: '100%' }}></div>
-        </Stack>
+            <div
+                id="renderer"
+                style={{
+                    overflow: 'auto',
+                    flex: '1 1 0',
+                    minWidth: 0,
+                    width: '100%',
+                    height: '100%',
+                }}
+            ></div>
+        </Box>
     )
 })
 

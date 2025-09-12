@@ -21,7 +21,7 @@ import {
 } from '../model/animation'
 import { EventHandler } from '../model/events'
 
-const CameraStartPosition: Vector3 = new Vector3(-6, 3, 3)
+const CameraStartPosition: Vector3 = new Vector3(-0.4, 0.2, 0.2)
 const CameraZoomStart: number = 1.0
 
 /**
@@ -181,11 +181,11 @@ export class Engine {
             1000
         )
         // Set position.
-        camera.position.x = -6
-        camera.position.y = 3
-        camera.position.z = 3
+        camera.position.x = CameraStartPosition.x
+        camera.position.y = CameraStartPosition.y
+        camera.position.z = CameraStartPosition.z
 
-        camera.zoom = 1.0
+        camera.zoom = CameraZoomStart
 
         return camera
     }
@@ -193,6 +193,22 @@ export class Engine {
     public resetCamera() {
         this.cameraResetAction.targetState =
             this.cameraResetAction.currentState + 1.0
+    }
+
+    public toggleRotation() {
+        if (this.controls.autoRotateSpeed > 0) {
+            this.controls.autoRotateSpeed = -this.controls.autoRotateSpeed
+        } else if (this.controls.autoRotate) {
+            this.controls.autoRotate = false
+            this.controls.autoRotateSpeed = 0.0
+        } else {
+            this.controls.autoRotate = true
+            this.controls.autoRotateSpeed = 2.0
+        }
+    }
+
+    public getCameraRotation(): number {
+        return this.controls.autoRotateSpeed
     }
 
     /**
@@ -236,14 +252,18 @@ export class Engine {
             this.camera,
             this.renderer.domElement
         )
+
         controls.maxPolarAngle = Math.PI * 0.5
-        controls.maxDistance = 0.5
+        controls.maxDistance = 3.0
         controls.minDistance = 0.3
         controls.maxTargetRadius = 2.0
         controls.enableDamping = true
         controls.rotateSpeed = 0.75
 
         controls.enablePan = false
+
+        controls.autoRotate = false
+        controls.autoRotateSpeed = 0.0
 
         return controls
     }

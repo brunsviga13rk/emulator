@@ -1,15 +1,7 @@
 import { TextLogo } from './TextLogo'
 import { useMediaQuery } from '@mantine/hooks'
-import {
-    Box,
-    Center,
-    Loader,
-    memoize,
-    Overlay,
-    Progress,
-    Text,
-} from '@mantine/core'
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
+import { Box, Center, Loader, Overlay, Progress, Text } from '@mantine/core'
+import { useSyncExternalStore } from 'react'
 
 export type LoadingEvent = {
     title: string
@@ -105,6 +97,7 @@ export function LoadingIndicator() {
                 range(0, 4).map((i) => (
                     <img
                         id={`${i}${j}`}
+                        key={`loading-image-${i}${j}`}
                         className={svgFilter}
                         style={{
                             position: 'absolute',
