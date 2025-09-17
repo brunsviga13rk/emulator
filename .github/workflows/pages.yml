@@ -27,11 +27,11 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Check out repository code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
               with:
                   submodules: recursive
             - name: Setup Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v5
               with:
                   node-version-file: '.nvmrc'
             - name: Clean Install
@@ -42,7 +42,7 @@ jobs:
                 sed -i "/base/cbase: '/emulator'," vite.config.ts
                 make build
             - name: Upload artifact
-              uses: actions/upload-pages-artifact@v3
+              uses: actions/upload-pages-artifact@v4
               with:
                   path: './dist'
             - name: Setup Pages
