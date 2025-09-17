@@ -299,6 +299,84 @@ export class Instruction {
     }
 }
 
+export class CalculationRecipe {
+    /**
+     * The final numerical result approximated with IEEE 754 floating point.
+     */
+    private _result: number
+    /**
+     * Instructions required to execute to get result with machine.
+     */
+    private _program: Instruction[]
+
+    constructor(result: number, program: Instruction[]) {
+        this._result = result
+        this._program = program
+    }
+
+    static empty(): CalculationRecipe {
+        return new CalculationRecipe(0, [])
+    }
+
+    private squashOperation = (opcode: Opcode) =>
+        (this._program = this._program.reduce(
+            (acc: Instruction[], curr: Instruction) => {
+                if (
+                    curr.opcode === opcode &&
+                    acc[acc.length - 1] &&
+                    acc[acc.length - 1].opcode === opcode
+                ) {
+                    acc[acc.length - 1] = new Instruction(
+                        opcode,
+                        (curr.value || 1) + (acc[acc.length - 1].value || 1)
+                    )
+                } else {
+                    acc.push(curr)
+                }
+                return acc
+            },
+            []
+        ))
+
+    private squashResets = () =>
+        (this._program = this._program.reduce(
+            (acc: Instruction[], curr: Instruction) => {
+                const squashable = (element: Opcode) =>
+                    [Opcode.Reset, Opcode.Zero].includes(element)
+                if (
+                    squashable(curr.opcode) &&
+                    acc[acc.length - 1] &&
+                    squashable(acc[acc.length - 1].opcode)
+                ) {
+                    acc[acc.length - 1] = new Instruction(Opcode.Reset)
+                } else {
+                    acc.push(curr)
+                }
+                return acc
+            },
+            []
+        ))
+
+    /**
+     * Squash redundant operations simplifying the program.
+     * Invocations after the first one won't affect the program.
+     */
+    public squash() {
+        // Squash all repeating operators into single instances.
+        this.squashOperation(Opcode.Add)
+        this.squashOperation(Opcode.Subtract)
+        this.squashResets()
+    }
+
+    public get program(): Instruction[] {
+        return this._program
+    }
+
+    public get result(): number {
+        return this._result
+    }
+}
+
 /**
  * Compile an array of Tokens in postfix notation to instructions for the 3
  * register machine.
@@ -307,7 +385,7 @@ export class Instruction {
  * @param tokens
  * @returns
  */
-function compile(tokens: Token[]): Instruction[] {
+function compile(tokens: Token[]): CalculationRecipe {
     const stack: number[] = []
     const prog: Instruction[] = []
 
@@ -398,6 +476,8 @@ function compile(tokens: Token[]): Instruction[] {
                 } else {
                     prog.push(new Instruction(Opcode.Add, m1))
                 }
+
+                resultRegisterValue = result
             } else {
                 if (token.value == '+') {
                     let m0 = op0 // value to load to result.
@@ -448,53 +528,13 @@ function compile(tokens: Token[]): Instruction[] {
         }
     }
 
-    return prog
+    return new CalculationRecipe(resultRegisterValue, prog)
 }
 
-const squashOperation = (program: Instruction[], opcode: Opcode) =>
-    program.reduce((acc: Instruction[], curr: Instruction) => {
-        if (
-            curr.opcode === opcode &&
-            acc[acc.length - 1] &&
-            acc[acc.length - 1].opcode === opcode
-        ) {
-            acc[acc.length - 1] = new Instruction(
-                opcode,
-                (curr.value || 1) + (acc[acc.length - 1].value || 1)
-            )
-        } else {
-            acc.push(curr)
-        }
-        return acc
-    }, [])
+export function solve(text: string): CalculationRecipe {
+    const recipe = compile(infix2postfix(tokenize(text)))
 
-const squashResets = (program: Instruction[]) =>
-    program.reduce((acc: Instruction[], curr: Instruction) => {
-        const squashable = (element: Opcode) =>
-            [Opcode.Reset, Opcode.Zero].includes(element)
-        if (
-            squashable(curr.opcode) &&
-            acc[acc.length - 1] &&
-            squashable(acc[acc.length - 1].opcode)
-        ) {
-            acc[acc.length - 1] = new Instruction(Opcode.Reset)
-        } else {
-            acc.push(curr)
-        }
-        return acc
-    }, [])
+    recipe.squash()
 
-function squash(program: Instruction[]): Instruction[] {
-    let squashed: Instruction[] = []
-
-    // Squash all repeating operators into single instances.
-    squashed = squashOperation(program, Opcode.Add)
-    squashed = squashOperation(squashed, Opcode.Subtract)
-    squashed = squashResets(squashed)
-
-    return squashed
-}
-
-export function solve(text: string): Instruction[] {
-    return squash(compile(infix2postfix(tokenize(text))))
+    return recipe
 }

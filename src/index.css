@@ -9,7 +9,7 @@
 
 :root[data-mantine-color-scheme="light"] {
   --mantine-color-body: #fff !important;
-  --color-body-contrast: #fff !important;
+  --color-body-contrast: #eee !important;
 }
 
 :root[data-mantine-color-scheme="dark"] {

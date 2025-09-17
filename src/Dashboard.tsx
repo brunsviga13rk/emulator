@@ -17,6 +17,7 @@ import {
     Stack,
     Text,
     Tooltip,
+    Typography,
 } from '@mantine/core'
 import { SledEventType } from './model/sled'
 import { Icon } from '@iconify/react/dist/iconify.js'
@@ -183,17 +184,16 @@ function DecimalShift() {
 
     return (
         <Stack gap="md">
-            <Stack>
-                <Text fz="xl" fw="bold">
-                    Decimal Shift
-                </Text>
-                <Text fz="sm" c="dimmed">
+            <Typography>
+                <h2>Decimal Shift</h2>
+                <p>
                     Amount of decimal digits used to shift the sled and result
                     register to the right. The selector sprockets value is
                     multiplied by ten raised to the power of this amount before
                     addition.
-                </Text>
-            </Stack>
+                </p>
+            </Typography>
+
             <Slider
                 value={value}
                 min={0}
@@ -295,15 +295,14 @@ function Commata() {
 
     return (
         <Stack gap="md">
-            <Stack>
-                <Text fz="xl" fw="bold">
-                    Commata Location
-                </Text>
-                <Text fz="sm" c="dimmed">
+            <Typography>
+                <h2>Commata Location</h2>
+                <p>
                     Determine location of commata slider. These may represent
                     the begin of the fraction or separate thousands.
-                </Text>
-            </Stack>
+                </p>
+            </Typography>
+
             <CommataBarComponent
                 label="Counter"
                 steps={7}
@@ -333,35 +332,42 @@ interface DashboardProps {
     visible: boolean
 }
 
+function Registers() {
+    return (
+        <Stack gap="sm" w="100%">
+            <Typography>
+                <h2>Registers</h2>
+            </Typography>
+
+            <RegisterState
+                title="Counter"
+                digits={8}
+                sprocket={Sprocket.Counter}
+            />
+            <RegisterState
+                title="Selector"
+                digits={10}
+                sprocket={Sprocket.Input}
+            />
+            <RegisterState
+                title="Result"
+                digits={13}
+                sprocket={Sprocket.Result}
+            />
+        </Stack>
+    )
+}
+
 export default function Dashboard(props: DashboardProps) {
     return (
         <Stack
-            gap="xl"
             w="100%"
             h="100%"
             p="md"
-            style={{ display: props.visible ? 'block' : 'none' }}
+            gap="xl"
+            style={{ display: props.visible ? 'flex' : 'none' }}
         >
-            <Stack gap="md" w="100%">
-                <Text fz="xl" fw="bold">
-                    Registers
-                </Text>
-                <RegisterState
-                    title="Counter"
-                    digits={8}
-                    sprocket={Sprocket.Counter}
-                />
-                <RegisterState
-                    title="Selector"
-                    digits={10}
-                    sprocket={Sprocket.Input}
-                />
-                <RegisterState
-                    title="Result"
-                    digits={13}
-                    sprocket={Sprocket.Result}
-                />
-            </Stack>
+            <Registers />
             <DecimalShift />
             <Commata />
         </Stack>

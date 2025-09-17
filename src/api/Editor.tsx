@@ -4,7 +4,7 @@ import { execute } from './lua'
 import './userWorker'
 import template from './template.lua?raw'
 import { useManacoThemeFromScheme } from '../utils'
-import { Button, Group, Stack } from '@mantine/core'
+import { Button, Group, Stack, useMantineColorScheme } from '@mantine/core'
 import classes from '../styles.module.css'
 import { Icon } from '@iconify/react/dist/iconify.js'
 
@@ -36,7 +36,8 @@ export const Editor = (props: EditorProps) => {
         }
     }, [editor])
 
-    useManacoThemeFromScheme('dark')
+    const { colorScheme } = useMantineColorScheme()
+    useManacoThemeFromScheme(colorScheme)
 
     function runProgram() {
         const text = editor?.getModel()?.getValue()
