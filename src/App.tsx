@@ -1,20 +1,7 @@
 import Renderer from './render/Renderer.tsx'
-import { Header } from './Header.tsx'
-import { Editor as Solver } from './solver/Editor.tsx'
-import { Editor as Coder } from './api/Editor.tsx'
-import { useState } from 'react'
-import {
-    Center,
-    Group,
-    MantineProvider,
-    SegmentedControl,
-    Stack,
-} from '@mantine/core'
+import { MantineProvider } from '@mantine/core'
 import { theme } from './theme.ts'
 import Shell from './Shell.tsx'
-import { Icon } from '@iconify/react/dist/iconify.js'
-import classes from './styles.module.css'
-import { LoadingIndicator } from './LoadingIndicator.tsx'
 import {
     CodeHighlightAdapterProvider,
     createShikiAdapter,
@@ -50,7 +37,7 @@ function App() {
     return (
         <MantineProvider theme={theme}>
             <CodeHighlightAdapterProvider adapter={shikiAdapter}>
-                <Shell />
+                {inIframe() ? <Renderer /> : <Shell />}
             </CodeHighlightAdapterProvider>
         </MantineProvider>
     )

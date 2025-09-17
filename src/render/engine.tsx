@@ -42,6 +42,7 @@ export class Engine {
     gizmo!: ViewportGizmo
     handler: ActionHandler[]
     cameraResetAction: AnimationScalarState
+    cameraResetOrigin: Vector3
 
     static instance: Engine | undefined = undefined
 
@@ -62,20 +63,22 @@ export class Engine {
             CubicEaseInOutInterpolation,
             1.0
         )
+        this.cameraResetOrigin = CameraStartPosition.clone()
         this.cameraResetAction.getEmitter().subscribe(
             AnimationScalarStateEventType.StateChanged,
             new EventHandler((delta) => {
                 this.camera.position.x += ((CameraStartPosition.x -
-                    this.camera.position.x) *
-                    delta) as number
+                    this.cameraResetOrigin.x) *
+                    (delta || 0)) as number
                 this.camera.position.y += ((CameraStartPosition.y -
-                    this.camera.position.y) *
-                    delta) as number
+                    this.cameraResetOrigin.y) *
+                    (delta || 0)) as number
                 this.camera.position.z += ((CameraStartPosition.z -
-                    this.camera.position.z) *
-                    delta) as number
+                    this.cameraResetOrigin.z) *
+                    (delta || 0)) as number
+
                 this.camera.zoom += ((CameraZoomStart - this.camera.zoom) *
-                    delta) as number
+                    (delta || 0)) as number
             })
         )
         this.renderer = new WebGLRenderer({
@@ -191,8 +194,13 @@ export class Engine {
     }
 
     public resetCamera() {
-        this.cameraResetAction.targetState =
-            this.cameraResetAction.currentState + 1.0
+        if (
+            this.camera.position.distanceToSquared(CameraStartPosition) > 1e-3
+        ) {
+            this.cameraResetOrigin = this.camera.position.clone()
+            this.cameraResetAction.targetState =
+                this.cameraResetAction.currentState + 1.0
+        }
     }
 
     public toggleRotation() {

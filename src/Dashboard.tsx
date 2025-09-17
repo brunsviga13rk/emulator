@@ -128,7 +128,7 @@ function RegisterState({ title, digits, sprocket }: RegisterStateProps) {
             <Grid.Col span="content">{numberInputComponent()}</Grid.Col>
             <Grid.Col span="content">
                 <CopyButton value={String(value)}>
-                    {({ copied, copy }) => (
+                    {({ copy }) => (
                         <ActionIcon onClick={copy} size="md" variant="default">
                             <Icon icon="tabler:copy" />
                         </ActionIcon>
