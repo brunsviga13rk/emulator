@@ -1,7 +1,15 @@
 import { TextLogo } from './TextLogo'
-import { useMediaQuery } from '@mantine/hooks'
-import { Box, Center, Loader, Overlay, Progress, Text } from '@mantine/core'
+import {
+    Box,
+    Center,
+    Loader,
+    Overlay,
+    Progress,
+    Text,
+    useMantineColorScheme,
+} from '@mantine/core'
 import { useSyncExternalStore } from 'react'
+import { isDarkMode } from './utils'
 
 export type LoadingEvent = {
     title: string
@@ -75,7 +83,8 @@ export function LoadingIndicator() {
         ][Math.floor(index % 9)] +
         '.svg'
 
-    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+    const { colorScheme } = useMantineColorScheme()
+    const prefersDarkMode = isDarkMode(colorScheme)
     const svgFilter = 'loading-image ' + (prefersDarkMode ? '' : 'svg-invert')
 
     const { lastEvent, progress } = useLoadingEvent()
