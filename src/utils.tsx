@@ -1,4 +1,4 @@
-import { useMediaQuery } from '@mui/material'
+import { useMediaQuery } from '@mantine/hooks'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { useEffect, useRef } from 'react'
 
