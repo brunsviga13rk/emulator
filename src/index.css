@@ -7,14 +7,14 @@
     margin: 0;
 }
 
-:root[data-mantine-color-scheme="light"] {
-  --mantine-color-body: #fff !important;
-  --color-body-contrast: #eee !important;
+:root[data-mantine-color-scheme='light'] {
+    --mantine-color-body: #fff !important;
+    --color-body-contrast: #eee !important;
 }
 
-:root[data-mantine-color-scheme="dark"] {
-  --mantine-color-body: #111 !important;
-  --color-body-contrast: #222 !important;
+:root[data-mantine-color-scheme='dark'] {
+    --mantine-color-body: #111 !important;
+    --color-body-contrast: #222 !important;
 }
 
 html,
