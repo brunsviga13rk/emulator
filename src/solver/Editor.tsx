@@ -1,140 +1,38 @@
 import { useState } from 'react'
-import {
-    Alert,
-    AlertTitle,
-    Button,
-    ButtonGroup,
-    Card,
-    CardActions,
-    CardContent,
-    Collapse,
-    Container,
-    IconButton,
-    IconButtonProps,
-    InputBase,
-    Paper,
-    Stack,
-    styled,
-    Tooltip,
-} from '@mui/material'
-import FunctionsIcon from '@mui/icons-material/Functions'
-import { Instruction, solve } from './solve'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import StopIcon from '@mui/icons-material/Stop'
-import RedoIcon from '@mui/icons-material/Redo'
-import PauseIcon from '@mui/icons-material/Pause'
-import { useTheme } from '@mui/material/styles'
+import { CalculationRecipe, Instruction, Opcode, solve } from './solve'
 import { Brunsviga13rk } from '../model/brunsviga13rk'
-
-interface ExpandMoreProps extends IconButtonProps {
-    expand: boolean
-}
-
-const ExpandMore = styled((props: ExpandMoreProps) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { expand, ...other } = props
-    return <IconButton {...other} />
-})(({ theme }) => ({
-    transition: theme.transitions.create('transform', {
-        duration: theme.transitions.duration.shortest,
-    }),
-    variants: [
-        {
-            props: ({ expand }) => !expand,
-            style: {
-                transform: 'rotate(0deg)',
-            },
-        },
-        {
-            props: ({ expand }) => !!expand,
-            style: {
-                transform: 'rotate(180deg)',
-            },
-        },
-    ],
-}))
-
-type InstructionCardProps = {
-    index: number
-    instruction: Instruction
-    ready: boolean
-    setReady: React.Dispatch<React.SetStateAction<boolean>>
-    active: number | undefined
-    setActive: React.Dispatch<React.SetStateAction<number | undefined>>
-}
-
-function InstructionCard({
-    index,
-    instruction,
-    ready,
-    setReady,
-    active,
-    setActive,
-}: InstructionCardProps) {
-    const [expanded, setExpanded] = useState(false)
-    const theme = useTheme()
-    const primaryColor = theme.palette.primary.main
-
-    const handleExpandClick = () => {
-        setExpanded(!expanded)
-    }
-
-    const handleExecuteClick = () => {
-        setReady(false)
-        setActive(index)
-        instruction.execute().then(() => setReady(true))
-    }
-
-    return (
-        <Card
-            variant="outlined"
-            className="m-2 flex-grow"
-            sx={{
-                borderColor: `${index == active ? primaryColor : ''}`,
-                borderWidth: `${index == active ? 'medium' : 'thin'}`,
-            }}
-        >
-            <CardActions disableSpacing>
-                {instruction.getTitle()}
-                <IconButton
-                    style={{ marginLeft: 'auto' }}
-                    aria-label="add to favorites"
-                    onClick={handleExecuteClick}
-                    disabled={!ready}
-                >
-                    <PlayArrowIcon />
-                </IconButton>
-                <ExpandMore
-                    expand={expanded}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}
-                    aria-label="show more"
-                >
-                    <ExpandMoreIcon />
-                </ExpandMore>
-            </CardActions>
-            <Collapse in={expanded} timeout="auto" unmountOnExit>
-                <CardContent>{instruction.getDescription()}</CardContent>
-            </Collapse>
-        </Card>
-    )
-}
+import {
+    ActionIcon,
+    Alert,
+    Button,
+    Group,
+    Stack,
+    TextInput,
+    Timeline,
+    Text,
+    Tooltip,
+    ScrollArea,
+    Space,
+    Typography,
+    Divider,
+} from '@mantine/core'
+import { Icon } from '@iconify/react/dist/iconify.js'
+import classes from '../styles.module.css'
 
 let abort: boolean = false
 let step: boolean = false
 
 async function execute(
-    program: Instruction[],
+    recipe: CalculationRecipe,
     setActive: React.Dispatch<React.SetStateAction<number | undefined>>
 ): Promise<void> {
     const delay = (ms: number) =>
         new Promise((resolve) => setTimeout(resolve, ms))
 
-    for (let i = 0; i < program.length; i++) {
+    for (let i = 0; i < recipe.program.length; i++) {
         setActive(i)
 
-        await program[i].execute().then(() => {
+        await recipe.program[i].execute().then(() => {
             // Pause before invoking next step.
             if (step) {
                 Brunsviga13rk.getInstance().setPausing(true)
@@ -153,9 +51,15 @@ async function execute(
     abort = false
 }
 
-export function Editor() {
+interface EditorProps {
+    visible: boolean
+}
+
+export function Editor(props: EditorProps) {
     const [input, setInput] = useState('')
-    const [tokens, setTokens] = useState<Instruction[]>([])
+    const [tokens, setTokens] = useState<CalculationRecipe>(
+        CalculationRecipe.empty()
+    )
     const [ready, setReady] = useState(true)
     const [running, setRunning] = useState(false)
     const [paused, setPaused] = useState(false)
@@ -169,7 +73,7 @@ export function Editor() {
             setErrorMessage(undefined)
             setTokens(solve(input))
         } catch (e: unknown) {
-            setTokens([])
+            setTokens(CalculationRecipe.empty())
             setErrorMessage((e as Error).message)
         }
     }
@@ -193,126 +97,154 @@ export function Editor() {
     }
 
     return (
-        <Stack sx={{ height: '100%' }}>
-            <Paper
-                component="form"
-                sx={{
-                    p: '2px 4px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    height: '3rem',
-                }}
-            >
-                <InputBase
-                    sx={{ ml: 1, flex: 1 }}
-                    placeholder="Enter equation"
-                    inputProps={{ 'aria-label': 'enter equation' }}
-                    content={input}
-                    onChange={(event) => {
-                        setInput(event.target.value)
-                    }}
-                />
-                <Tooltip title="Solve calculation">
-                    <IconButton
-                        type="button"
-                        sx={{ p: '10px' }}
-                        aria-label="solve"
-                        onClick={onSolve}
+        <Stack
+            style={{
+                display: props.visible ? 'flex' : 'none',
+            }}
+            className="w-full h-full flex flex-col"
+            gap="md"
+            p="md"
+        >
+            <Group className={classes.contentPane} p="sm">
+                <Tooltip label="Run all steps">
+                    <Button
+                        size="sm"
+                        variant="default"
+                        onClick={handleExecuteAll}
+                        color={running ? 'error' : 'primary'}
                     >
-                        <FunctionsIcon />
-                    </IconButton>
+                        {running ? (
+                            <Icon icon="mdi:stop" fontSize={24} />
+                        ) : (
+                            <Icon icon="mdi:play" fontSize={24} />
+                        )}
+                    </Button>
                 </Tooltip>
-            </Paper>
-            {tokens.length ? (
-                <Stack
-                    direction="row"
-                    className="pt-4 mb-4"
-                    sx={{
-                        paddingBottom: 1,
-                        paddingTop: 3,
-                        borderBottom: 1,
-                        borderColor: 'divider',
-                        height: '4rem',
-                    }}
-                    alignContent="center"
-                >
-                    <span className="mr-auto">{`Solution (${tokens.length} steps):`}</span>
-                    <ButtonGroup
-                        style={{ marginLeft: 'auto' }}
-                        size="small"
-                        variant="contained"
+                <Tooltip label="Pause run">
+                    <Button
+                        size="sm"
+                        variant="default"
+                        color="default"
+                        disabled={!running}
+                        onClick={() => {
+                            setPaused(!paused)
+                            Brunsviga13rk.getInstance().setPausing(!paused)
+                        }}
                     >
-                        <Tooltip title="Run all steps">
-                            <Button
-                                onClick={handleExecuteAll}
-                                color={running ? 'error' : 'primary'}
-                            >
-                                {running ? <StopIcon /> : <PlayArrowIcon />}
-                            </Button>
-                        </Tooltip>
-                        <Tooltip title="Pause run">
-                            <Button
-                                color="inherit"
-                                disabled={!running}
-                                onClick={() => {
-                                    setPaused(!paused)
-                                    Brunsviga13rk.getInstance().setPausing(
-                                        !paused
-                                    )
-                                }}
-                            >
-                                {paused ? <PlayArrowIcon /> : <PauseIcon />}
-                            </Button>
-                        </Tooltip>
-                        <Tooltip title="Run next steps">
-                            <Button
-                                color="inherit"
-                                disabled={!paused}
-                                onClick={() => {
-                                    step = true
-                                    Brunsviga13rk.getInstance().setPausing(
-                                        false
-                                    )
-                                }}
-                            >
-                                <RedoIcon />
-                            </Button>
-                        </Tooltip>
-                    </ButtonGroup>
-                </Stack>
+                        {paused ? (
+                            <Icon icon="mdi:play" fontSize={24} />
+                        ) : (
+                            <Icon icon="mdi:pause" fontSize={24} />
+                        )}
+                    </Button>
+                </Tooltip>
+                <Tooltip label="Run next steps">
+                    <Button
+                        size="sm"
+                        variant="default"
+                        color="default"
+                        disabled={!paused}
+                        onClick={() => {
+                            step = true
+                            Brunsviga13rk.getInstance().setPausing(false)
+                        }}
+                    >
+                        <Icon icon="mdi:redo" fontSize={24} />
+                    </Button>
+                </Tooltip>
+            </Group>
+            {tokens.program.length ? (
+                <ScrollArea className={'flex-1 ' + classes.contentPane} p="md">
+                    <Stack gap="lg">
+                        <Typography>
+                            Solving below calculation requires a total of{' '}
+                            {tokens.program.length} steps:
+                            <Space h="xs" />
+                            <Text ff="Monaco">
+                                {input} = {tokens.result}
+                            </Text>
+                        </Typography>
+                        <Divider />
+                        <Timeline active={active} bulletSize={28} lineWidth={2}>
+                            {tokens.program.map((token: Instruction, index) => (
+                                <Timeline.Item
+                                    lineVariant={
+                                        [Opcode.Reset, Opcode.Zero].includes(
+                                            token.opcode
+                                        )
+                                            ? 'dashed'
+                                            : [
+                                                    Opcode.Reset,
+                                                    Opcode.Zero,
+                                                ].includes(
+                                                    tokens.program.at(index + 1)
+                                                        ?.opcode || Opcode.Add
+                                                )
+                                              ? 'dashed'
+                                              : 'solid'
+                                    }
+                                    bullet={
+                                        <Icon
+                                            icon={token.getIcon()}
+                                            fontSize={18}
+                                        />
+                                    }
+                                    title={token.getTitle()}
+                                >
+                                    <Text c="dimmed" size="sm">
+                                        {token.getDescription()}
+                                    </Text>
+                                    <Text size="xs" mt={4}>
+                                        2 hours ago
+                                    </Text>
+                                </Timeline.Item>
+                            ))}
+                            {errorMessage ? (
+                                <Group style={{ marginTop: 2, width: '100%' }}>
+                                    <Alert
+                                        variant="error"
+                                        style={{ width: '100%' }}
+                                        title="Invalid calculation syntax"
+                                    >
+                                        {errorMessage}
+                                    </Alert>
+                                </Group>
+                            ) : (
+                                <></>
+                            )}
+                        </Timeline>
+                    </Stack>
+                </ScrollArea>
             ) : (
-                <></>
+                <Stack
+                    justify="center"
+                    align="center"
+                    className={'flex-1 w-full ' + classes.contentPane}
+                    p="md"
+                >
+                    <Icon icon="arcticons:lineage-calculator" fontSize={72} />
+                    <Text>Nothing calculated, yet...</Text>
+                </Stack>
             )}
-            <Container
-                sx={{
-                    height: 'calc(100% - 7rem)',
-                    overflow: 'scroll',
-                }}
-            >
-                {tokens.map((token, index) => (
-                    <Stack direction="row" key={index}>
-                        <span className="my-auto">{index + 1}</span>
-                        <InstructionCard
-                            index={index}
-                            instruction={token}
-                            ready={ready}
-                            setReady={setReady}
-                            active={active}
-                            setActive={setActive}
-                        />
-                    </Stack>
-                ))}
-                {errorMessage ? (
-                    <Stack direction="row" sx={{ marginTop: 2, width: '100%' }}>
-                        <Alert severity="error" sx={{ width: '100%' }}>
-                            <AlertTitle>Invalid calculation syntax</AlertTitle>
-                            {errorMessage}
-                        </Alert>
-                    </Stack>
-                ) : (
-                    <></>
-                )}
-            </Container>
+            <TextInput
+                size="md"
+                placeholder="Enter calculation"
+                rightSection={
+                    <Tooltip label="solve calculation">
+                        <ActionIcon
+                            variant="subtle"
+                            color="default"
+                            size="md"
+                            onClick={onSolve}
+                        >
+                            <Icon icon="bx:math" fontSize={20} />
+                        </ActionIcon>
+                    </Tooltip>
+                }
+                value={input}
+                error={errorMessage}
+                onChange={(event) => setInput(event.currentTarget.value)}
+            />
         </Stack>
     )
 }

@@ -255,7 +255,9 @@ export class AnimationScalarState
         const target = this._targetState[0]
 
         // Compute how close the target rotation is reached in range [0; 1].
-        this.advanceFactor += (delta * 1e-3) / this.timeScale
+        this.advanceFactor +=
+            ((delta * 1e-3) / this.timeScale) *
+            Math.max(this._targetState.length / 2.0, 1)
 
         const lastState = this._currentState
 

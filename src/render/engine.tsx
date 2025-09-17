@@ -1,9 +1,9 @@
 import {
-    ACESFilmicToneMapping,
     Clock,
     PerspectiveCamera,
     Scene,
     Vector2,
+    Vector3,
     WebGLRenderer,
 } from 'three'
 import { ViewportGizmo } from 'three-viewport-gizmo'
@@ -13,6 +13,16 @@ import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js'
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
 import { ActionHandler } from '../actionHandler'
 import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass.js'
+import { ACESFilmicToneMapping } from 'three'
+import {
+    AnimationScalarState,
+    AnimationScalarStateEventType,
+    CubicEaseInOutInterpolation,
+} from '../model/animation'
+import { EventHandler } from '../model/events'
+
+const CameraStartPosition: Vector3 = new Vector3(-0.4, 0.2, 0.2)
+const CameraZoomStart: number = 1.0
 
 /**
  * Manages the core componentes and state required for rendering the basic scene.
@@ -31,13 +41,50 @@ export class Engine {
     controls: OrbitControls
     gizmo!: ViewportGizmo
     handler: ActionHandler[]
+    cameraResetAction: AnimationScalarState
+    cameraResetOrigin: Vector3
+
+    static instance: Engine | undefined = undefined
+
+    public static getInstance(): Engine | undefined {
+        return Engine.instance
+    }
+
+    public static new(parent: HTMLElement): Engine {
+        Engine.instance = new Engine(parent)
+        return Engine.instance
+    }
 
     constructor(parent: HTMLElement) {
         this.parent = parent
         this.handler = []
+        this.cameraResetAction = new AnimationScalarState(
+            0.0,
+            CubicEaseInOutInterpolation,
+            1.0
+        )
+        this.cameraResetOrigin = CameraStartPosition.clone()
+        this.cameraResetAction.getEmitter().subscribe(
+            AnimationScalarStateEventType.StateChanged,
+            new EventHandler((delta) => {
+                this.camera.position.x += ((CameraStartPosition.x -
+                    this.cameraResetOrigin.x) *
+                    (delta || 0)) as number
+                this.camera.position.y += ((CameraStartPosition.y -
+                    this.cameraResetOrigin.y) *
+                    (delta || 0)) as number
+                this.camera.position.z += ((CameraStartPosition.z -
+                    this.cameraResetOrigin.z) *
+                    (delta || 0)) as number
+
+                this.camera.zoom += ((CameraZoomStart - this.camera.zoom) *
+                    (delta || 0)) as number
+            })
+        )
         this.renderer = new WebGLRenderer({
             antialias: true,
         })
+        this.renderer.setPixelRatio(window.devicePixelRatio)
         this.renderer.toneMapping = ACESFilmicToneMapping
         this.renderer.toneMappingExposure = 1.3
         this.renderer.setSize(parent.clientWidth, parent.clientHeight)
@@ -96,6 +143,7 @@ export class Engine {
         const composer = this.composer
         const gizmo = this.gizmo
         const handler = this.handler
+        const cameraResetAction = this.cameraResetAction
 
         const clock = new Clock()
 
@@ -104,6 +152,8 @@ export class Engine {
             const delta = clock.getDelta() * 1e3
 
             this.resizeCanvas()
+
+            cameraResetAction.advance(delta)
 
             handler.forEach((handler) => handler.perform(delta))
 
@@ -134,11 +184,39 @@ export class Engine {
             1000
         )
         // Set position.
-        camera.position.x = -6
-        camera.position.y = 3
-        camera.position.z = 3
+        camera.position.x = CameraStartPosition.x
+        camera.position.y = CameraStartPosition.y
+        camera.position.z = CameraStartPosition.z
+
+        camera.zoom = CameraZoomStart
 
         return camera
+    }
+
+    public resetCamera() {
+        if (
+            this.camera.position.distanceToSquared(CameraStartPosition) > 1e-3
+        ) {
+            this.cameraResetOrigin = this.camera.position.clone()
+            this.cameraResetAction.targetState =
+                this.cameraResetAction.currentState + 1.0
+        }
+    }
+
+    public toggleRotation() {
+        if (this.controls.autoRotateSpeed > 0) {
+            this.controls.autoRotateSpeed = -this.controls.autoRotateSpeed
+        } else if (this.controls.autoRotate) {
+            this.controls.autoRotate = false
+            this.controls.autoRotateSpeed = 0.0
+        } else {
+            this.controls.autoRotate = true
+            this.controls.autoRotateSpeed = 2.0
+        }
+    }
+
+    public getCameraRotation(): number {
+        return this.controls.autoRotateSpeed
     }
 
     /**
@@ -162,7 +240,9 @@ export class Engine {
             this.camera,
             []
         )
-        outlinePass.edgeStrength = 25.0
+        outlinePass.edgeGlow = 0.0
+        outlinePass.edgeThickness = 1.0
+        outlinePass.edgeStrength = 2.0
         outlinePass.hiddenEdgeColor.setHex(0xffffff)
         outlinePass.visibleEdgeColor.setHex(0xffffff)
         outlinePass.clear = false
@@ -180,12 +260,18 @@ export class Engine {
             this.camera,
             this.renderer.domElement
         )
+
         controls.maxPolarAngle = Math.PI * 0.5
-        controls.maxDistance = 0.5
+        controls.maxDistance = 3.0
         controls.minDistance = 0.3
         controls.maxTargetRadius = 2.0
         controls.enableDamping = true
         controls.rotateSpeed = 0.75
+
+        controls.enablePan = false
+
+        controls.autoRotate = false
+        controls.autoRotateSpeed = 0.0
 
         return controls
     }

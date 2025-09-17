@@ -26,3 +26,7 @@ dist-ssr
 *.blend1
 
 .zed
+
+*.png~
+*.jpg~
+*.jpeg~

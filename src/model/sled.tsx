@@ -151,6 +151,10 @@ export class Sled
         }
     }
 
+    public getOffset(): number {
+        return this.offset
+    }
+
     getAvailableUserActions(): UserAction[] {
         return [
             [InputAction.LeftClick, 'Move sled to the right'],

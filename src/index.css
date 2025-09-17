@@ -7,6 +7,16 @@
     margin: 0;
 }
 
+:root[data-mantine-color-scheme='light'] {
+    --mantine-color-body: #fff !important;
+    --color-body-contrast: #eee !important;
+}
+
+:root[data-mantine-color-scheme='dark'] {
+    --mantine-color-body: #111 !important;
+    --color-body-contrast: #222 !important;
+}
+
 html,
 body {
     height: 100vh;
@@ -15,6 +25,7 @@ body {
 
 #renderer {
     border-radius: 1rem;
+    border-style: solid;
     /*
        Required for border-radius to take effect.
        See: https://stackoverflow.com/a/15090794
@@ -64,6 +75,12 @@ body {
     animation-name: fade-out;
     animation-delay: 2s;
     animation-timing-function: ease-out;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 @keyframes jump {

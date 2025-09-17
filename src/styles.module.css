@@ -1,0 +1,46 @@
+/*
+The .contentPane class is used to style a container element that typically
+contains content within an app or website. It has the following properties:
+- The background property uses radial gradients to create two overlapping
+  circles of different transparency, with a gradient from transparent to
+  var(--color-body-contrast) at 70%. This creates a visually appealing and
+  complex background effect.
+- The background-blend-mode property sets the blending mode for the background
+  layers to normal, which means that each layer is blended independently of the
+  others.
+- The background-repeat property repeats the background pattern indefinitely to
+  ensure it covers the entire container element.
+- The border-radius property rounds the corners of the .contentPane class to
+  1rem (8px).
+- The border property sets a solid border around the .contentPane class with a
+  width of 2pt, color-mixed from var(--mantine-color-text) and
+  var(--mantine-color-body) at 70% opacity.
+- The border-style property specifies that the border should be solid.
+- The overflow property hides any content that exceeds the boundaries of the
+  .contentPane class.
+*/
+.contentPane {
+    background:
+        radial-gradient(
+            at 0% 0%,
+            var(--color-body-contrast) 0px,
+            transparent 70%
+        ),
+        radial-gradient(
+            at 100% 100%,
+            var(--color-body-contrast) 0px,
+            transparent 70%
+        ),
+        var(--mantine-color-body);
+    background-blend-mode: normal, normal;
+    background-repeat: repeat;
+    border-radius: 1rem;
+    border: 2pt
+        color-mix(
+            in srgb,
+            var(--mantine-color-text),
+            var(--mantine-color-body) 70%
+        );
+    border-style: solid;
+    overflow: hidden;
+}

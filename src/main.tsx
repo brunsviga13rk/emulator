@@ -1,11 +1,12 @@
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import '@phosphor-icons/web/regular/style.css'
-import '@phosphor-icons/web/bold/style.css'
+import '@mantine/core/styles.css'
+import '@gfazioli/mantine-split-pane/styles.css'
 import App from './App.tsx'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { LoadingIndicator } from './LoadingIndicator.tsx'
 import Renderer from './render/Renderer.tsx'
+import '@mantine/code-highlight/styles.css'
 
 createRoot(document.getElementById('root')!).render(
     <BrowserRouter basename={__APP_BASE_PATH__}>

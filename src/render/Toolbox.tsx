@@ -1,42 +1,16 @@
-import {
-    Box,
-    Button,
-    ButtonGroup,
-    Grow,
-    MenuItem,
-    MenuList,
-    Paper,
-    Popper,
-    Toolbar,
-    Tooltip,
-} from '@mui/material'
-import RotateLeftOutlinedIcon from '@mui/icons-material/RotateLeftOutlined'
-import RotateRightOutlinedIcon from '@mui/icons-material/RotateRightOutlined'
-import SwipeRightIcon from '@mui/icons-material/SwipeRightOutlined'
-import SwipeLeftIcon from '@mui/icons-material/SwipeLeftOutlined'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import ClickAwayListener from '@mui/material/ClickAwayListener'
-import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
+import classes from '../styles.module.css'
 import {
     Brunsviga13rk,
     BrunsvigaAnimationEventType,
 } from '../model/brunsviga13rk'
 import { EventHandler } from '../model/events'
-
-const options = ['Clear counter', 'Clear input', 'Clear result', 'Clear all']
-const tips = [
-    'Reset counter register',
-    'Reset input register',
-    'Reset result register',
-    'Reset all registers',
-]
+import { ActionIcon, Stack, Tooltip, Divider } from '@mantine/core'
+import { Icon } from '@iconify/react/dist/iconify.js'
+import { Engine } from './engine'
 
 export default function Toolbox() {
     const [ready, setReady] = useState(true)
-    const [open, setOpen] = useState(false)
-    const anchorRef = useRef<HTMLDivElement>(null)
-    const [selectedIndex, setSelectedIndex] = useState(1)
 
     Brunsviga13rk.getInstance()
         .getEmitter()
@@ -52,158 +26,139 @@ export default function Toolbox() {
             new EventHandler(() => setReady(true))
         )
 
-    const handleClick = () => {
-        const api = Brunsviga13rk.getInstance()
-        switch (selectedIndex) {
-            case 0:
-                api.clearCounterRegister()
-                break
-            case 1:
-                api.clearInputRegister()
-                break
-            case 2:
-                api.clearOutputRegister()
-                break
-            case 3:
-                api.clearRegisters()
-                break
-        }
+    type ToolDescriptor = {
+        name: string
+        icon: string
+        description: string
+        action: () => void
+        disabled: boolean
     }
 
-    const handleMenuItemClick = (
-        _event: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        index: number
-    ) => {
-        setSelectedIndex(index)
-        setOpen(false)
-    }
+    const [rotation, setRotation] = useState(0.0)
 
-    const handleToggle = () => {
-        setOpen((prevOpen) => !prevOpen)
-    }
+    const tools: Array<ToolDescriptor | string> = [
+        {
+            name: 'Free view',
+            icon: 'iconamoon:cursor',
+            description:
+                'Drag the orbital view around with the mouse. Click on element to interact.',
+            action: () => {},
+            disabled: true,
+        },
+        {
+            name: 'Kinetic interaction',
+            icon: 'proicons:cursor-drag',
+            description:
+                'Drag elements for interaction. Camera cannot be moved around.',
+            action: () => {},
+            disabled: true,
+        },
+        'divider',
+        {
+            name: 'Decimal shift right',
+            icon: 'streamline:move-right',
+            description:
+                'Shift result and counter register by one decimal place to the right.',
+            action: () => {
+                Brunsviga13rk.getInstance().shiftRight()
+            },
+            disabled: false,
+        },
+        {
+            name: 'Decimal shift left',
+            icon: 'streamline:move-left',
+            description:
+                'Shift result and counter register by one decimal place to the left.',
+            action: () => {
+                Brunsviga13rk.getInstance().shiftLeft()
+            },
+            disabled: false,
+        },
+        {
+            name: 'Perform addition',
+            icon: 'mdi:horizontal-rotate-clockwise',
+            description:
+                'Add selection register to result and increment counter.',
+            action: () => {
+                Brunsviga13rk.getInstance().add()
+            },
+            disabled: false,
+        },
+        {
+            name: 'Perform subtraction',
+            icon: 'mdi:horizontal-rotate-counterclockwise',
+            description:
+                'Subtract selection register from result and increment counter.',
+            action: () => {
+                Brunsviga13rk.getInstance().subtract()
+            },
+            disabled: false,
+        },
+        {
+            name: 'Reset machine',
+            icon: 'iconamoon:trash',
+            description:
+                'Reset all regsiters to zero and remove decimal shifts.',
+            action: () => {
+                Brunsviga13rk.getInstance().clearRegisters()
+            },
+            disabled: false,
+        },
+        'divider',
+        {
+            name: 'Toggle automatic camera rotation',
+            icon:
+                rotation < 0.0
+                    ? 'ri:rotate-lock-fill'
+                    : rotation == 0.0
+                      ? 'mdi:axis-z-rotate-counterclockwise'
+                      : 'mdi:axis-z-rotate-clockwise',
+            description:
+                'Reset all regsiters to zero and remove decimal shifts.',
+            action: () => {
+                Engine.getInstance()?.toggleRotation()
+                setRotation(Engine.getInstance()!.getCameraRotation())
+            },
+            disabled: false,
+        },
+        {
+            name: 'Reset camera view',
+            icon: 'material-symbols:view-in-ar-outline',
+            description: 'Reset orbital camera.',
+            action: () => {
+                Engine.getInstance()?.resetCamera()
+            },
+            disabled: false,
+        },
+    ]
 
-    const handleClose = (event: Event) => {
-        if (
-            anchorRef.current &&
-            anchorRef.current.contains(event.target as HTMLElement)
-        ) {
-            return
-        }
+    const actionComponent = (descriptor: ToolDescriptor) => (
+        <Tooltip key={`tool-${descriptor.name}`} label={descriptor.description}>
+            <ActionIcon
+                disabled={!ready || descriptor.disabled}
+                onClick={descriptor.action}
+                variant="transparent"
+                bg="transparent"
+                color="default"
+                size="md"
+                key={`action-${descriptor.icon}`}
+            >
+                <Icon icon={descriptor.icon} fontSize={24} />
+            </ActionIcon>
+        </Tooltip>
+    )
 
-        setOpen(false)
-    }
+    let divider_count = 0
 
     return (
-        <Toolbar
-            sx={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-            }}
-        >
-            <ButtonGroup variant="contained" color="inherit" size="small">
-                <Tooltip title="Add">
-                    <Button
-                        disabled={!ready}
-                        onClick={() => Brunsviga13rk.getInstance().add()}
-                    >
-                        <RotateRightOutlinedIcon />
-                    </Button>
-                </Tooltip>
-                <Tooltip title="Subtract">
-                    <Button
-                        disabled={!ready}
-                        onClick={() => Brunsviga13rk.getInstance().subtract()}
-                    >
-                        <RotateLeftOutlinedIcon />
-                    </Button>
-                </Tooltip>
-                <Tooltip title="Shift sled right">
-                    <Button
-                        disabled={!ready}
-                        onClick={() => Brunsviga13rk.getInstance().shiftRight()}
-                    >
-                        <SwipeRightIcon />
-                    </Button>
-                </Tooltip>
-                <Tooltip title="Shift sled left">
-                    <Button
-                        disabled={!ready}
-                        onClick={() => Brunsviga13rk.getInstance().shiftLeft()}
-                    >
-                        <SwipeLeftIcon />
-                    </Button>
-                </Tooltip>
-            </ButtonGroup>
-            <Box marginRight={4} />
-            <ButtonGroup
-                variant="contained"
-                color="inherit"
-                ref={anchorRef}
-                aria-label="Button group with a nested menu"
-            >
-                <Tooltip title={tips[selectedIndex]}>
-                    <Button
-                        disabled={!ready}
-                        onClick={handleClick}
-                        startIcon={<SettingsBackupRestoreIcon />}
-                    >
-                        {options[selectedIndex]}
-                    </Button>
-                </Tooltip>
-                <Button
-                    size="small"
-                    aria-controls={open ? 'split-button-menu' : undefined}
-                    aria-expanded={open ? 'true' : undefined}
-                    aria-label="select merge strategy"
-                    aria-haspopup="menu"
-                    onClick={handleToggle}
-                    disabled={!ready}
-                >
-                    <ArrowDropDownIcon />
-                </Button>
-            </ButtonGroup>
-            <Popper
-                sx={{ zIndex: 1 }}
-                open={open}
-                anchorEl={anchorRef.current}
-                role={undefined}
-                transition
-                disablePortal
-            >
-                {({ TransitionProps, placement }) => (
-                    <Grow
-                        {...TransitionProps}
-                        style={{
-                            transformOrigin:
-                                placement === 'bottom'
-                                    ? 'center top'
-                                    : 'center bottom',
-                        }}
-                    >
-                        <Paper>
-                            <ClickAwayListener onClickAway={handleClose}>
-                                <MenuList id="split-button-menu" autoFocusItem>
-                                    {options.map((option, index) => (
-                                        <MenuItem
-                                            key={option}
-                                            selected={index === selectedIndex}
-                                            onClick={(event) =>
-                                                handleMenuItemClick(
-                                                    event,
-                                                    index
-                                                )
-                                            }
-                                        >
-                                            {option}
-                                        </MenuItem>
-                                    ))}
-                                </MenuList>
-                            </ClickAwayListener>
-                        </Paper>
-                    </Grow>
-                )}
-            </Popper>
-        </Toolbar>
+        <Stack p="sm" className={classes.contentPane} h="100%">
+            {tools.map((tool) => {
+                if (tool == 'divider') {
+                    return <Divider key={`tool-divider-${divider_count++}`} />
+                } else {
+                    return actionComponent(tool as ToolDescriptor)
+                }
+            })}
+        </Stack>
     )
 }

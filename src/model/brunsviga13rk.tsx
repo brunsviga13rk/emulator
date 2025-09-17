@@ -36,6 +36,7 @@ import { Dispatch, SetStateAction } from 'react'
 import { AnimationScalarState } from './animation'
 import { Switch } from './switch'
 import { DeletionHandle } from './handles/deletionHandle'
+import { setLoadingEvent } from '../LoadingIndicator'
 
 export enum BrunsvigaAnimationEventType {
     AnimationStarted,
@@ -112,6 +113,7 @@ export class Brunsviga13rk
     _setRecommendations!: Dispatch<SetStateAction<UserAction[]>>
     animationOngoing = false
     animationStateChangeCounter = 0
+    ready: boolean
 
     private static instance: Brunsviga13rk = new Brunsviga13rk()
 
@@ -130,6 +132,7 @@ export class Brunsviga13rk
     }
 
     private constructor() {
+        this.ready = false
         this.onInitHooks = []
         this.animationStateActive = false
         this.animationStateFinishCounter = 0
@@ -151,15 +154,26 @@ export class Brunsviga13rk
         loader.load(
             `${__APP_BASE_PATH__}/brunsviga.glb`,
             (gltf) => {
+                let count = 0
                 gltf.scene.traverse(function (child) {
                     if ((child as Mesh).isMesh) {
                         optimizeMesh(engine.renderer, child as Mesh)
+                        count++
                     }
+                    setLoadingEvent({
+                        title: 'Optimizing Mesh',
+                        progress: count / gltf.scene.children.length,
+                    })
                 })
 
                 // Store scene in object and assign to engine for rendering.
                 engine.scene.add(gltf.scene)
                 this.scene = gltf.scene
+
+                setLoadingEvent({
+                    title: 'Setup model',
+                    progress: 0.0,
+                })
 
                 this.switch = new Switch(this.scene)
                 this.input_sprocket = new InputSprocket(this.scene)
@@ -203,6 +217,11 @@ export class Brunsviga13rk
                     12
                 )
 
+                setLoadingEvent({
+                    title: 'Setup model',
+                    progress: 0.5,
+                })
+
                 this.selectables = []
                 this.selectables.push(this.selector_sprocket)
                 this.selectables.push(this.delete_handle)
@@ -216,6 +235,11 @@ export class Brunsviga13rk
                 this.selectables.push(this.sled)
                 this.selectables.push(this.switch)
 
+                setLoadingEvent({
+                    title: 'Setup model',
+                    progress: 0.75,
+                })
+
                 this.input_sprocket.registerActionEvents()
                 this.selector_sprocket.registerActionEvents()
                 this.result_sprocket.registerActionEvents()
@@ -225,6 +249,11 @@ export class Brunsviga13rk
                 this.counter_reset_handle.registerEventSubscribtions()
                 this.delete_handle.registerEventSubscribtions()
 
+                setLoadingEvent({
+                    title: 'Setup model',
+                    progress: 1.0,
+                })
+
                 onModelLoaded()
 
                 // Handle events.
@@ -232,8 +261,14 @@ export class Brunsviga13rk
 
                 // Run post init hooks.
                 this.onInitHooks.forEach((hook) => hook(this))
+                this.ready = true
             },
-            undefined,
+            function (xhr) {
+                setLoadingEvent({
+                    title: 'Loading Mesh',
+                    progress: xhr.loaded / xhr.total,
+                })
+            },
             onLoadingError
         )
 
@@ -244,6 +279,10 @@ export class Brunsviga13rk
         this.engine.renderer.domElement.onmouseup = (event) => {
             this.onClick(event)
         }
+    }
+
+    public isReady(): boolean {
+        return this.ready
     }
 
     public whenReady(hook: onInitHook) {
@@ -569,6 +608,10 @@ export class Brunsviga13rk
         return this.counter_sprocket.getDisplayValue()
     }
 
+    public getDecimalShift(): number {
+        return this.sled.getOffset()
+    }
+
     public getInputRegisterValue(): number {
         return this.input_sprocket.getDisplayValue()
     }
@@ -611,33 +654,48 @@ export class Brunsviga13rk
         return false
     }
 
+    /**
+     * Perform repeated shifts based on the provided amount. If the amount is undefined, shifts once. Returns a boolean indicating success.
+     *
+     * @param amount {number | undefined} The number of shifts to perform. If undefined, shifts once. The amount is bounded between 1 and 6 (inclusive) and is guaranteed to be valid.
+     * @returns boolean: true if the shifts are successful, false otherwise.
+     */
     public async repeatedShiftLeft(
         amount: number | undefined = undefined
     ): Promise<boolean> {
-        if (amount == undefined) {
+        if (amount === undefined) {
             return await this.shiftLeft()
-        } else {
-            for (let i = 0; i < amount; i++) {
-                if (await this.shiftLeft()) {
-                    return true
-                }
+        }
+
+        for (let i = 0; i < amount; i++) {
+            if (await this.shiftLeft()) {
+                return true
             }
         }
+
         return false
     }
 
+    /**
+     * Perform a series of shifts based on the given amount.
+     *
+     * @param amount
+     * @param {number | undefined} amount
+     * @returns boolean indicating success
+     */
     public async repeatedShiftRight(
         amount: number | undefined = undefined
     ): Promise<boolean> {
-        if (amount == undefined) {
+        if (amount === undefined) {
             return await this.shiftRight()
-        } else {
-            for (let i = 0; i < amount; i++) {
-                if (await this.shiftRight()) {
-                    return true
-                }
+        }
+
+        for (let i = 0; i < amount; i++) {
+            if (await this.shiftRight()) {
+                return true
             }
         }
+
         return false
     }
 }

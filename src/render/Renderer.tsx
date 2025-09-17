@@ -6,13 +6,50 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import { createBaseplane } from '../baseplane'
 import { Engine } from './engine'
 import { Brunsviga13rk } from '../model/brunsviga13rk'
-import Toolbox from './Toolbox'
-import Box from '@mui/material/Box'
 import ActionRecommendations from './ActionRecommendations'
-import { createBackground } from './environment'
-import { useColorScheme } from '@mui/material'
-import { environmentUniforms } from './environment'
-import { isDarkMode } from '../utils'
+import classes from '../styles.module.css'
+import { Box } from '@mantine/core'
+import { setLoadingEvent } from '../LoadingIndicator'
+
+/**
+ * Configures the shadow map in a Three.WebGLRenderer.
+ *
+ * This function sets the shadow map to enable shadows and defines the shadow
+ * map type to be PCFSoftShadowMap.
+ */
+function configureShadows(renderer: THREE.WebGLRenderer): void {
+    renderer.shadowMap.enabled = true
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+}
+
+/**
+ * Sets up a directional light in the scene.
+ *
+ * This function creates a directional light object and configures its
+ * properties.
+ *
+ */
+function setupKeyLights(engine: Engine) {
+    const light = new THREE.DirectionalLight()
+
+    light.castShadow = true
+    light.intensity = 3.0
+
+    light.position.z = 0.6
+    light.position.x = 0.8
+
+    light.shadow.mapSize.width = 512
+    light.shadow.mapSize.height = 512
+    light.shadow.camera.left = -0.25
+    light.shadow.camera.top = -0.25
+    light.shadow.camera.right = 0.25
+    light.shadow.camera.bottom = 0.25
+    light.shadow.camera.near = 0.01
+    light.shadow.camera.far = 10
+    light.shadow.bias = -0.0005
+
+    engine.scene.add(light)
+}
 
 /**
  * Setup the environment by: creating an environment lighmap for PBR rendering,
@@ -27,11 +64,20 @@ function setupEnvironment(engine: Engine) {
         (texture) => {
             texture.mapping = THREE.EquirectangularReflectionMapping
             engine.scene.environment = texture
+        },
+        function (xhr) {
+            setLoadingEvent({
+                title: 'Loading environment',
+                progress: xhr.loaded / xhr.total,
+            })
         }
     )
 
-    engine.scene.add(createBackground())
-    engine.scene.add(createBaseplane())
+    configureShadows(engine.renderer)
+
+    setupKeyLights(engine)
+
+    createBaseplane(engine.scene)
 }
 
 /**
@@ -40,6 +86,20 @@ function setupEnvironment(engine: Engine) {
  * @param engine
  */
 function postLoadSetup(engine: Engine) {
+    let progress = 0.0
+
+    const intervalId = setInterval(() => {
+        progress += 0.25
+        setLoadingEvent({
+            title: 'Lubricating machine...',
+            progress: progress,
+        })
+    }, 500)
+
+    setTimeout(() => {
+        clearInterval(intervalId) // Stops the interval after 2 seconds
+    }, 2000)
+
     // Loading of models successfull, finish setting up renderer.
     engine.attachCanvas()
     engine.startAnimationLoop()
@@ -75,7 +135,7 @@ function onLoadingError(error: unknown) {
  * @param parent The parent DOM element the canvas is a child of.
  */
 function initThree(parent: HTMLElement) {
-    const engine = new Engine(parent)
+    const engine = Engine.new(parent)
 
     // Setup the environment lightmap, background and ground plate.
     setupEnvironment(engine)
@@ -107,37 +167,36 @@ function setupRenderer() {
 }
 
 const Renderer = memo(() => {
-    const { mode } = useColorScheme()
-
     const [name] = useState('renderer-init')
 
     useEffect(() => {
-        // Initialize color for 3D environment.
-        environmentUniforms.darkMode.value = isDarkMode(mode)
-
         // call api or anything
         setupRenderer()
     }, [name])
 
     return (
         <Box
-            sx={{
-                position: 'relative',
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
+            id="wrapper"
+            style={{
+                display: 'flex',
+                width: '100%',
+                flex: '1 1 0',
+                minWidth: 0,
                 height: '100%',
             }}
+            className={classes.contentPane}
         >
-            <Toolbox />
             <ActionRecommendations />
-            <Box
+            <div
                 id="renderer"
-                sx={{
+                style={{
+                    overflow: 'auto',
+                    flex: '1 1 0',
+                    minWidth: 0,
+                    width: '100%',
                     height: '100%',
                 }}
-            ></Box>
+            ></div>
         </Box>
     )
 })

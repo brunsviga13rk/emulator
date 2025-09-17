@@ -1,18 +1,18 @@
-import { useColorScheme } from '@mui/material'
 import { useLogoColorFromScheme } from './utils'
+import { useMantineColorScheme } from '@mantine/core'
 
 type TextLogoProps = {
     width: string
 }
 
 export function TextLogo({ width = '8rem' }: TextLogoProps) {
-    const { mode } = useColorScheme()
+    const { colorScheme } = useMantineColorScheme()
 
     return (
         <svg
             width={width}
             viewBox="0 0 51.362592 9.0429802"
-            fill={useLogoColorFromScheme(mode)}
+            fill={useLogoColorFromScheme(colorScheme)}
         >
             <g transform="translate(-29.59497,-9.9965532)">
                 <path

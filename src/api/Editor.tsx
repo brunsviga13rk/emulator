@@ -1,19 +1,18 @@
-import { VFC, useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { execute } from './lua'
-import {
-    Button,
-    ButtonGroup,
-    Divider,
-    Stack,
-    useColorScheme,
-} from '@mui/material'
-import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined'
 import './userWorker'
 import template from './template.lua?raw'
 import { useManacoThemeFromScheme } from '../utils'
+import { Button, Group, Stack, useMantineColorScheme } from '@mantine/core'
+import classes from '../styles.module.css'
+import { Icon } from '@iconify/react/dist/iconify.js'
 
-export const Editor: VFC = () => {
+interface EditorProps {
+    visible: boolean
+}
+
+export const Editor = (props: EditorProps) => {
     const [editor, setEditor] =
         useState<monaco.editor.IStandaloneCodeEditor | null>(null)
     const monacoEl = useRef(null)
@@ -37,8 +36,8 @@ export const Editor: VFC = () => {
         }
     }, [editor])
 
-    const { mode } = useColorScheme()
-    useManacoThemeFromScheme(mode)
+    const { colorScheme } = useMantineColorScheme()
+    useManacoThemeFromScheme(colorScheme)
 
     function runProgram() {
         const text = editor?.getModel()?.getValue()
@@ -48,19 +47,20 @@ export const Editor: VFC = () => {
     }
 
     return (
-        <div
-            id="div-editor-root"
+        <Stack
+            style={{ display: props.visible ? 'flex' : 'none' }}
             className="w-full h-full flex flex-grow flex-col"
+            p="md"
         >
-            <Stack direction="row" spacing={2}>
-                <ButtonGroup variant="contained" color="inherit" size="small">
-                    <Button onClick={runProgram}>
-                        <PlayArrowOutlinedIcon />
-                    </Button>
-                </ButtonGroup>
-            </Stack>
-            <Divider sx={{ marginY: 2 }} />
-            <div className="flex-grow resize-y" ref={monacoEl}></div>
-        </div>
+            <Group p="sm" className={classes.contentPane}>
+                <Button onClick={runProgram} size="sm" variant="default">
+                    <Icon icon="icon-park-outline:play" fontSize={24} />
+                </Button>
+            </Group>
+            <div
+                className={'flex-grow resize-y ' + classes.contentPane}
+                ref={monacoEl}
+            ></div>
+        </Stack>
     )
 }

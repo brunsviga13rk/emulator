@@ -6,8 +6,8 @@ import { Object3D, Object3DEventMap } from 'three'
  * For available options see: https://phosphoricons.com
  */
 export enum InputAction {
-    LeftClick = 'ph-mouse-left-click',
-    RightClick = 'ph-mouse-right-click',
+    LeftClick = 'ph:mouse-left-click-fill',
+    RightClick = 'ph:mouse-right-click-fill',
 }
 
 /**
