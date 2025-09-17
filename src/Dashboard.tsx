@@ -205,7 +205,14 @@ function DecimalShift() {
     )
 }
 
+/**
+ * TODO: Make tri state slider.
+ *
+ * @param props
+ * @returns
+ */
 function CommataBarComponent(props: {
+    offset: number
     label: string
     steps: number
     value: [number, number]
@@ -220,10 +227,11 @@ function CommataBarComponent(props: {
         if (props.bar != undefined) {
             props.setValue(value)
 
-            for (let i = 0; i < props.steps; i++) {
-                const delta = value[i] - props.bar.getDigitShift(i)
+            for (let i = 0; i < 2; i++) {
+                const delta =
+                    value[i] - props.bar.getDigitShift(i + props.offset)
 
-                props.bar.moveDigit(i, Math.sign(delta))
+                props.bar.moveDigit(i + props.offset, Math.sign(delta))
             }
         }
     }
@@ -252,7 +260,7 @@ function Commata() {
     const [inputValue, setInputValue] = useState<[number, number]>([1, 2])
     const [inputBar, setInputBar] = useState<CommataBar | undefined>(undefined)
 
-    const [resultValue, setResultValue] = useState<[number, number]>([1, 2])
+    const [resultValue, setResultValue] = useState<[number, number]>([2, 3])
     const [resultBar, setResultBar] = useState<CommataBar | undefined>(
         undefined
     )
@@ -285,7 +293,7 @@ function Commata() {
             instance.result_commata.getEmitter().subscribe(
                 CommataBarEventType.Shifted,
                 new EventHandler((event) => {
-                    setResultValue([event.commata[0], event.commata[1]])
+                    setResultValue([event.commata[1], event.commata[2]])
                 })
             )
         })
@@ -304,6 +312,7 @@ function Commata() {
             </Typography>
 
             <CommataBarComponent
+                offset={0}
                 label="Counter"
                 steps={7}
                 value={countValue}
@@ -311,6 +320,7 @@ function Commata() {
                 bar={countBar}
             />
             <CommataBarComponent
+                offset={0}
                 label="Selector"
                 steps={10}
                 value={inputValue}
@@ -318,6 +328,7 @@ function Commata() {
                 bar={inputBar}
             />
             <CommataBarComponent
+                offset={1}
                 label="Result"
                 steps={12}
                 value={resultValue}
