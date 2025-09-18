@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/github/package-json/v/brunsviga13rk/emulator?style=for-the-badge">
     <br>
     <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white">
-    <img src="https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white">
+    <img src="https://img.shields.io/badge/Mantine-ffffff?style=for-the-badge&logo=Mantine&logoColor=339af0)">
     <img src="https://img.shields.io/github/languages/top/brunsviga13rk/emulator?style=for-the-badge">
     <img src="https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white">
     <img src="https://img.shields.io/badge/lua-%232C2D72.svg?style=for-the-badge&logo=lua&logoColor=white">
@@ -45,9 +45,9 @@ following list of frameworks and build systems was chosen:
 - 🎁 Three.js (WebGL abstraction)
 - 🧻 Typescript (typesafe(r) Javascript)
 - 🌪️ Tailwind CSS (styling through classes)
-- 🌍 Material UI
+- 🌍 Mantine UI
 - 🌕 Lua scripting
-- 🔥 Phosphor Icons
+- 🔥 Iconify
 
 # Live demonstration
 
