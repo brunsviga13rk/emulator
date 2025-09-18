@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.10.0](https://github.com/brunsviga13rk/emulator/compare/v1.9.1...v1.10.0) (2025-09-18)
+
+
+### Features
+
+* add ACES filmic tonemapping ([#204](https://github.com/brunsviga13rk/emulator/issues/204)) ([742889e](https://github.com/brunsviga13rk/emulator/commit/742889eb115810c509e589f7ec6c5c12fa6724ec))
+* add baked ambient occlusion map to GLTF model ([870b1d6](https://github.com/brunsviga13rk/emulator/commit/870b1d6a2075f9d800b681f667427387c8b82264))
+* add baseplane with baked shadow ([870b1d6](https://github.com/brunsviga13rk/emulator/commit/870b1d6a2075f9d800b681f667427387c8b82264))
+* enable anisotropic mipmap filtering ([#202](https://github.com/brunsviga13rk/emulator/issues/202)) ([751f6d3](https://github.com/brunsviga13rk/emulator/commit/751f6d35633e7a407d2d601391b3d2739b3b4422))
+* redesign user interface ([#210](https://github.com/brunsviga13rk/emulator/issues/210)) ([870b1d6](https://github.com/brunsviga13rk/emulator/commit/870b1d6a2075f9d800b681f667427387c8b82264))
+* transition UI to Mantine ([870b1d6](https://github.com/brunsviga13rk/emulator/commit/870b1d6a2075f9d800b681f667427387c8b82264))
+
+
+### Bug Fixes
+
+* inverted text logo color when color scheme is automatic ([870b1d6](https://github.com/brunsviga13rk/emulator/commit/870b1d6a2075f9d800b681f667427387c8b82264))
+
+
+### Performance Improvements
+
+* remove FXAA render pass ([742889e](https://github.com/brunsviga13rk/emulator/commit/742889eb115810c509e589f7ec6c5c12fa6724ec))
+
 ## [1.9.1](https://github.com/brunsviga13rk/emulator/compare/v1.9.0...v1.9.1) (2025-05-08)
 
 
