@@ -76,7 +76,7 @@ export function LoadingIndicator() {
             'lua',
             'vite',
             'tailwind',
-            'mui',
+            'mantine',
             'react',
             'three',
             'webgl',
