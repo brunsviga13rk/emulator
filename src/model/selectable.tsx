@@ -1,4 +1,5 @@
 import { Object3D, Object3DEventMap } from 'three'
+import { DetailPanel } from '../render/Details'
 
 /**
  * Action the user can do, such as pressing buttons on a keyboard or mouse.
@@ -28,6 +29,11 @@ export interface Selectable {
      * @returns An array of all possible user actions.
      */
     getAvailableUserActions(): UserAction[]
+
+    /**
+     * Additonal details about the selected object.
+     */
+    getDetailPanel(): DetailPanel
 
     /**
      * @returns All 3D objects to select.

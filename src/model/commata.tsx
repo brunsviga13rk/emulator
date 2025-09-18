@@ -7,6 +7,7 @@ import {
 import { ActionHandler } from '../actionHandler'
 import { InputAction, Selectable, UserAction } from './selectable'
 import { EventBroker, EventEmitter, EventHandler, Tautology } from './events'
+import { DetailPanel } from '../render/Details'
 
 class Commata implements ActionHandler {
     protected animationState: AnimationScalarState
@@ -104,6 +105,13 @@ export class CommataBar
 
         this.emitter = new EventEmitter()
         this.emitter.setActor(this)
+    }
+
+    getDetailPanel(): DetailPanel {
+        return new DetailPanel(
+            'Commata',
+            'These may represent the begin of the fraction or separate thousands.'
+        )
     }
 
     getEmitter(): EventEmitter<

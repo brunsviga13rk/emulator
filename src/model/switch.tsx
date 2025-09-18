@@ -7,6 +7,7 @@ import {
 import { EventHandler } from './events'
 import { ActionHandler } from '../actionHandler'
 import { InputAction, Selectable, UserAction } from './selectable'
+import { DetailPanel } from '../render/Details'
 
 export class Switch implements ActionHandler, Selectable {
     protected handle: Object3D<Object3DEventMap>
@@ -27,6 +28,10 @@ export class Switch implements ActionHandler, Selectable {
                 this.handle.rotation.z += delta as number
             })
         )
+    }
+
+    getDetailPanel(): DetailPanel {
+        return new DetailPanel('Switch', 'Set all registers to zero.')
     }
 
     public isResetBoth(): boolean {

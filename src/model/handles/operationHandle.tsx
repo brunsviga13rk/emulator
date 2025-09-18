@@ -4,6 +4,7 @@ import { EventBroker, EventEmitter, EventHandler } from '../events'
 import { InputAction, Selectable, UserAction } from '../selectable'
 import { AnimationScalarState, CubicEaseInOutInterpolation } from '../animation'
 import { Knob, KnobEventType } from './knob'
+import { DetailPanel } from '../../render/Details'
 
 /**
  * Events emitted by the operation crank.
@@ -82,6 +83,13 @@ export class OperationHandle
         this.mesh = scene.getObjectByName('crank')!
         this.emitter = new EventEmitter()
         this.emitter.setActor(this)
+    }
+
+    getDetailPanel(): DetailPanel {
+        return new DetailPanel(
+            'Operation Crank',
+            'Can perform two arithmetic operations. Clockwise rotation completes additon. Counter clockwise rotation yields subtraction.'
+        )
     }
 
     getAvailableUserActions(): UserAction[] {

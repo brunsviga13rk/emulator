@@ -10,6 +10,7 @@ import {
 } from './animation'
 import { EventBroker, EventEmitter, EventHandler, Tautology } from './events'
 import { Brunsviga13rk } from './brunsviga13rk'
+import { DetailPanel } from '../render/Details'
 
 export enum Direction {
     Left = -1.0,
@@ -105,6 +106,10 @@ export class Sled
         this.offset = 0
         this.emitter = new EventEmitter()
         this.emitter.setActor(this)
+    }
+
+    getDetailPanel(): DetailPanel {
+        return new DetailPanel('Clear Input', 'Set input registers to zero.')
     }
 
     getEmitter(): EventEmitter<

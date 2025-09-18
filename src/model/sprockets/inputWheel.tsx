@@ -6,6 +6,7 @@ import { ActionHandler } from '../../actionHandler'
 import { Brunsviga13rk } from '../brunsviga13rk'
 import { HandleEventType } from '../handles/handle'
 import { AnimationScalarState } from '../animation'
+import { DetailPanel } from '../../render/Details'
 
 const INPUT_WHEEL_DIGITS = 10
 const INPUT_WHEEL_MESH_NAME = 'selctor_sprocket_wheel'
@@ -59,6 +60,13 @@ export class InputWheel
 
         this.emitter = new EventEmitter()
         this.emitter.setActor(this)
+    }
+
+    getDetailPanel(): DetailPanel {
+        return new DetailPanel(
+            'Input Regsiter',
+            'Rotate individual sprockets to change the value of the input register.'
+        )
     }
 
     getAvailableUserActions(): UserAction[] {

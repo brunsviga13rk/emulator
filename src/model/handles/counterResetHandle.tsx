@@ -2,6 +2,7 @@ import { Group, Object3DEventMap } from 'three'
 import { Handle, HandleEventType } from './handle'
 import { Brunsviga13rk } from '../brunsviga13rk'
 import { EventHandler } from '../events'
+import { DetailPanel } from '../../render/Details'
 
 /**
  * Lever used to reset the counter register.
@@ -19,6 +20,10 @@ export class CounterResetHandle extends Handle {
                 HandleEventType.PullDown,
                 new EventHandler(() => this.pullDown())
             )
+    }
+
+    getDetailPanel(): DetailPanel {
+        return new DetailPanel('Clear Counter', 'Set all registers to zero.')
     }
 
     public pullDown() {

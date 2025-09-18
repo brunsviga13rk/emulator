@@ -12,6 +12,7 @@ import {
     Raycaster,
     Texture,
     Vector2,
+    Vector3,
     WebGLRenderer,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
@@ -37,6 +38,8 @@ import { AnimationScalarState } from './animation'
 import { Switch } from './switch'
 import { DeletionHandle } from './handles/deletionHandle'
 import { setLoadingEvent } from '../LoadingIndicator'
+import { DetailPanel } from '../render/Details'
+import { InputResetHandle } from './handles/inputResetHandle'
 
 export enum BrunsvigaAnimationEventType {
     AnimationStarted,
@@ -111,6 +114,7 @@ export class Brunsviga13rk
     switch!: Switch
     sled!: Sled
     _setRecommendations!: Dispatch<SetStateAction<UserAction[]>>
+    _setDetails!: Dispatch<SetStateAction<DetailPanel | undefined>>
     animationOngoing = false
     animationStateChangeCounter = 0
     ready: boolean
@@ -184,12 +188,7 @@ export class Brunsviga13rk
                 this.result_reset_handle = new ResultResetHandle(this.scene)
                 this.counter_reset_handle = new CounterResetHandle(this.scene)
                 this.delete_handle = new DeletionHandle(this.scene)
-                this.delete_input_handle = new Handle(
-                    this.scene,
-                    'total_deletion_lever',
-                    0,
-                    1.75
-                )
+                this.delete_input_handle = new InputResetHandle(this.scene)
 
                 this.operation_crank = new OperationHandle(this.scene)
                 this.input_commata = new CommataBar(
@@ -382,6 +381,44 @@ export class Brunsviga13rk
             const selection = []
             if (this.selected) {
                 selection.push(this.selected[1].object)
+
+                const engine = Engine.getInstance()
+                if (engine) {
+                    const worldPosition = new Vector3()
+                    selection[0].getWorldPosition(worldPosition)
+                    worldPosition.project(engine.camera)
+
+                    const detail = this.selected[0].getDetailPanel()
+                    const origin = new Vector2(
+                        (worldPosition.x + 1.0) *
+                            0.5 *
+                            engine.renderer.domElement.width,
+                        -(worldPosition.y - 1.0) *
+                            0.5 *
+                            engine.renderer.domElement.height
+                    )
+
+                    const cursor = new Vector2(
+                        (this.pointer.x + 1.0) *
+                            0.5 *
+                            engine.renderer.domElement.width,
+                        -(this.pointer.y - 1.0) *
+                            0.5 *
+                            engine.renderer.domElement.height
+                    )
+
+                    const c2o = cursor.clone().sub(origin).normalize()
+                    const theta = Math.atan2(c2o.y, c2o.x)
+                    const phi = theta - (45.0 / 180.0) * Math.PI
+
+                    detail.origin = new Vector2(Math.sin(phi), Math.cos(phi))
+                        .multiplyScalar(200.0)
+                        .add(origin)
+
+                    this._setDetails(detail)
+                }
+            } else {
+                this._setDetails(undefined)
             }
 
             const [, outlinePass] = this.engine.passes
@@ -403,6 +440,12 @@ export class Brunsviga13rk
 
     public set recommendations(setter: Dispatch<SetStateAction<UserAction[]>>) {
         this._setRecommendations = setter
+    }
+
+    public set details(
+        setter: Dispatch<SetStateAction<DetailPanel | undefined>>
+    ) {
+        this._setDetails = setter
     }
 
     private async sleep(milliseconds: number): Promise<void> {

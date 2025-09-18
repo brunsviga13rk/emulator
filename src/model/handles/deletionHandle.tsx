@@ -6,6 +6,7 @@ import {
     CubicEaseInOutInterpolation,
 } from '../animation'
 import { Handle, HandleEventType } from './handle'
+import { DetailPanel } from '../../render/Details'
 
 export class DeletionHandle extends Handle {
     protected gearMesh: Object3D<Object3DEventMap>
@@ -26,6 +27,10 @@ export class DeletionHandle extends Handle {
                 this.gearMesh.rotation.y += delta as number
             })
         )
+    }
+
+    getDetailPanel(): DetailPanel {
+        return new DetailPanel('Clear All', 'Set all registers to zero.')
     }
 
     public registerEventSubscribtions() {

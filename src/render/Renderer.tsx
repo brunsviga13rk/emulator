@@ -10,6 +10,7 @@ import ActionRecommendations from './ActionRecommendations'
 import classes from '../styles.module.css'
 import { Box } from '@mantine/core'
 import { setLoadingEvent } from '../LoadingIndicator'
+import Details from './Details'
 
 /**
  * Configures the shadow map in a Three.WebGLRenderer.
@@ -187,6 +188,7 @@ const Renderer = memo(() => {
             className={classes.contentPane}
         >
             <ActionRecommendations />
+            <Details />
             <div
                 id="renderer"
                 style={{

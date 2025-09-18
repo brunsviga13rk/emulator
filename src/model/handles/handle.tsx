@@ -3,6 +3,7 @@ import { ActionHandler } from '../../actionHandler'
 import { InputAction, Selectable, UserAction } from '../selectable'
 import { EventBroker, EventEmitter, EventHandler } from '../events'
 import { AnimationScalarState, CubicEaseInOutInterpolation } from '../animation'
+import { DetailPanel } from '../../render/Details'
 
 /**
  * Types of events emitted by a handle.
@@ -98,6 +99,10 @@ export class Handle
                 this.pushUp()
             })
         )
+    }
+
+    getDetailPanel(): DetailPanel {
+        throw new Error('not Implemented')
     }
 
     getAvailableUserActions(): UserAction[] {

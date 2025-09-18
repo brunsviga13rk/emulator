@@ -7,10 +7,15 @@ import {
     AnimationScalarStatePassedCondition,
 } from '../animation'
 import { EventHandler } from '../events'
+import { DetailPanel } from '../../render/Details'
 
 export class ResultResetHandle extends Handle {
     public constructor(scene: Group<Object3DEventMap>) {
         super(scene, 'result_deletionn_lever', 0, 1.4)
+    }
+
+    getDetailPanel(): DetailPanel {
+        return new DetailPanel('Clear Result', 'Set result register to zero.')
     }
 
     public registerEventSubscribtions() {
