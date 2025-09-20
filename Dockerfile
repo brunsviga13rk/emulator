@@ -11,4 +11,4 @@ RUN npm run build
 FROM docker.io/nginx:1.29.1-alpine as runtime
 
 COPY --from=builder /brunsviga/dist /usr/share/nginx/html/
-RUN chown -R 1000:1000 /usr/share/nginx/html/
+RUN chown -R root:root /usr/share/nginx/html/
