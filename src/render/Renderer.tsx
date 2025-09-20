@@ -60,7 +60,7 @@ function setupKeyLights(engine: Engine) {
 function setupEnvironment(engine: Engine) {
     // Load environment texture.
     new RGBELoader().load(
-        `${__APP_BASE_PATH__}/studio_small_09_2k.hdr`,
+        `${window.location.origin}/${__APP_BASE_PATH__}/studio_small_09_2k.hdr`,
         (texture) => {
             texture.mapping = THREE.EquirectangularReflectionMapping
             engine.scene.environment = texture

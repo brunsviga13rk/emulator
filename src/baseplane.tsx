@@ -9,7 +9,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
  */
 export function createBaseplane(scene: Scene) {
     const loader = new GLTFLoader()
-    loader.load(`${__APP_BASE_PATH__}/baseplane.glb`, (gltf) => {
-        scene.add(gltf.scene)
-    })
+    loader.load(
+        `${window.location.origin}/${__APP_BASE_PATH__}/baseplane.glb`,
+        (gltf) => {
+            scene.add(gltf.scene)
+        }
+    )
 }
