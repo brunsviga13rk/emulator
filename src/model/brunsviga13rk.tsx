@@ -152,7 +152,7 @@ export class Brunsviga13rk
         // Load model.
         const loader = new GLTFLoader()
         loader.load(
-            `${__APP_BASE_PATH__}/brunsviga.glb`,
+            `${window.location.origin}/${__APP_BASE_PATH__}/brunsviga.glb`,
             (gltf) => {
                 let count = 0
                 gltf.scene.traverse(function (child) {
