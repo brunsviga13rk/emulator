@@ -27,6 +27,7 @@ export class Switch implements ActionHandler, Selectable {
                 this.handle.rotation.z += delta as number
             })
         )
+        this.handle.rotation.z = 2.7
     }
 
     public isResetBoth(): boolean {
