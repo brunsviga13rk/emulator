@@ -15,7 +15,11 @@ export class ResultResetHandle extends Handle {
     }
 
     getDetailPanel(): DetailPanel {
-        return new DetailPanel('Clear Result', 'Set result register to zero.')
+        return new DetailPanel(
+            'Clear Result',
+            'Set result register to zero.',
+            'brunsviga/reset_result.jpg'
+        )
     }
 
     public registerEventSubscribtions() {

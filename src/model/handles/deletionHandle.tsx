@@ -30,7 +30,11 @@ export class DeletionHandle extends Handle {
     }
 
     getDetailPanel(): DetailPanel {
-        return new DetailPanel('Clear All', 'Set all registers to zero.')
+        return new DetailPanel(
+            'Clear All',
+            'Set all registers to zero.',
+            'brunsviga/reset_all.jpg'
+        )
     }
 
     public registerEventSubscribtions() {

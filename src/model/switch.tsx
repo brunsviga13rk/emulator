@@ -31,7 +31,11 @@ export class Switch implements ActionHandler, Selectable {
     }
 
     getDetailPanel(): DetailPanel {
-        return new DetailPanel('Switch', 'Set all registers to zero.')
+        return new DetailPanel(
+            'Switch',
+            'Set all registers to zero.',
+            'brunsviga/switch.jpg'
+        )
     }
 
     public isResetBoth(): boolean {

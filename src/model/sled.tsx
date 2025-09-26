@@ -109,7 +109,11 @@ export class Sled
     }
 
     getDetailPanel(): DetailPanel {
-        return new DetailPanel('Clear Input', 'Set input registers to zero.')
+        return new DetailPanel(
+            'Move sled',
+            'Set input registers to zero.',
+            'brunsviga/sled.jpg'
+        )
     }
 
     getEmitter(): EventEmitter<

@@ -110,7 +110,8 @@ export class CommataBar
     getDetailPanel(): DetailPanel {
         return new DetailPanel(
             'Commata',
-            'These may represent the begin of the fraction or separate thousands.'
+            'These may represent the begin of the fraction or separate thousands.',
+            'brunsviga/commata.jpg'
         )
     }
 

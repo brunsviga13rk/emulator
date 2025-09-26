@@ -23,7 +23,11 @@ export class CounterResetHandle extends Handle {
     }
 
     getDetailPanel(): DetailPanel {
-        return new DetailPanel('Clear Counter', 'Set all registers to zero.')
+        return new DetailPanel(
+            'Clear Counter',
+            'Set all registers to zero.',
+            'brunsviga/reset_counter.jpg'
+        )
     }
 
     public pullDown() {

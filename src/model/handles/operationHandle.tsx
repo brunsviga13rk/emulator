@@ -88,7 +88,8 @@ export class OperationHandle
     getDetailPanel(): DetailPanel {
         return new DetailPanel(
             'Operation Crank',
-            'Can perform two arithmetic operations. Clockwise rotation completes additon. Counter clockwise rotation yields subtraction.'
+            'Can perform two arithmetic operations. Clockwise rotation completes additon. Counter clockwise rotation yields subtraction.',
+            'brunsviga/operation_crank.jpg'
         )
     }
 

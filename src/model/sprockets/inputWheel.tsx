@@ -65,7 +65,8 @@ export class InputWheel
     getDetailPanel(): DetailPanel {
         return new DetailPanel(
             'Input Regsiter',
-            'Rotate individual sprockets to change the value of the input register.'
+            'Rotate individual sprockets to change the value of the input register.',
+            'brunsviga/input_sprocket.jpg'
         )
     }
 
