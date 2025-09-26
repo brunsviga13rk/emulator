@@ -195,7 +195,7 @@ export class AnimationScalarState
     /**
      * Number of seconds the animations take to reach each target.
      */
-    private timeScale: number
+    private _timeScale: number
     /**
      * Event emitter used to cause actions on specific states of the animation.
      */
@@ -221,7 +221,7 @@ export class AnimationScalarState
         interpolation: InterpolationMethod = LinearInterpolation,
         timeScale = 1
     ) {
-        this.timeScale = timeScale
+        this._timeScale = timeScale
         this.halted = false
         this.zeroState = initialState
         this._currentState = initialState
@@ -256,7 +256,7 @@ export class AnimationScalarState
 
         // Compute how close the target rotation is reached in range [0; 1].
         this.advanceFactor +=
-            ((delta * 1e-3) / this.timeScale) *
+            ((delta * 1e-3) / this._timeScale) *
             Math.max(this._targetState.length / 2.0, 1)
 
         const lastState = this._currentState
@@ -328,6 +328,14 @@ export class AnimationScalarState
 
     public set interpolation(value: InterpolationMethod) {
         this._interpolation = value
+    }
+
+    public get timeScale(): number {
+        return this._timeScale
+    }
+
+    public set timeScale(value: number) {
+        this._timeScale = value
     }
 
     /**

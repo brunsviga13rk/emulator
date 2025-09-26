@@ -104,6 +104,12 @@ export class SprocketWheel
         return this.emitter
     }
 
+    public setAnimationDuration(duration: number) {
+        for (let i = 0; i < this.digits; i++) {
+            this.rotationAnimations[i].timeScale = duration
+        }
+    }
+
     public perform(delta: number): void {
         for (let i = 0; i < this.digits; i++) {
             this.rotationAnimations[i].advance(delta)
