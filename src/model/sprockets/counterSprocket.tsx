@@ -19,6 +19,7 @@ export class CounterSprocket extends SprocketWheel {
     private signPanel: Object3D<Object3DEventMap>
     private signPanelAnimation: AnimationScalarState
     private signSet: boolean
+    private sign: number
 
     private startIndicator: Object3D<Object3DEventMap>
     private startIndicatorAnimation: AnimationScalarState
@@ -30,6 +31,7 @@ export class CounterSprocket extends SprocketWheel {
     public constructor(scene: Group<Object3DEventMap>) {
         super(scene, 'counter_sprocket_wheel', 8, 0, 2 * Math.PI, 10)
 
+        this.sign = 0
         this.signSet = false
         this.signPanel = scene.getObjectByName('counter_panel')!
         this.signPanelAnimation = new AnimationScalarState(
@@ -116,15 +118,6 @@ export class CounterSprocket extends SprocketWheel {
         this.registerIndicatorEvents()
 
         this.getEmitter().subscribe(
-            SprocketWheelEventType.Decrement,
-            new EventHandler(() => {
-                if (!this.signSet && !this.stateReset) {
-                    this.signPanelAnimation.targetState = -0.0027
-                }
-            })
-        )
-
-        this.getEmitter().subscribe(
             SprocketWheelEventType.Change,
             new EventHandler(() => {
                 if (!this.stateReset) {
@@ -163,14 +156,38 @@ export class CounterSprocket extends SprocketWheel {
         emitter.subscribe(
             OperationHandleEventType.Add,
             new EventHandler(() => {
-                this.add([1])
+                if (!this.signSet) {
+                    this.add([1])
+
+                    this.signPanelAnimation.targetState = 0
+                    this.signSet = true
+                    this.sign = 1
+                } else {
+                    if (this.sign < 0) {
+                        this.subtract([1])
+                    } else {
+                        this.add([1])
+                    }
+                }
             })
         )
 
         emitter.subscribe(
             OperationHandleEventType.Subtract,
             new EventHandler(() => {
-                this.subtract([1])
+                if (!this.signSet) {
+                    this.add([1])
+
+                    this.signPanelAnimation.targetState = -0.0027
+                    this.signSet = true
+                    this.sign = -1
+                } else {
+                    if (this.sign > 0) {
+                        this.subtract([1])
+                    } else {
+                        this.add([1])
+                    }
+                }
             })
         )
 
