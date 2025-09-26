@@ -6,6 +6,7 @@ import { ActionHandler } from '../../actionHandler'
 import { Brunsviga13rk } from '../brunsviga13rk'
 import { HandleEventType } from '../handles/handle'
 import { AnimationScalarState } from '../animation'
+import { OperationHandleEventType } from '../handles/operationHandle'
 
 const INPUT_WHEEL_DIGITS = 10
 const INPUT_WHEEL_MESH_NAME = 'selctor_sprocket_wheel'
@@ -61,6 +62,13 @@ export class InputWheel
         this.emitter.setActor(this)
     }
 
+    public rotateAll(increment: number) {
+        this.wheel.setAnimationDuration(0.5)
+        for (let i = 1; i <= this.wheel.getWheels().length; i++) {
+            this.wheel.rotate(i, increment)
+        }
+    }
+
     getAvailableUserActions(): UserAction[] {
         return [
             [InputAction.LeftClick, 'Increment input sprocket wheel'],
@@ -70,6 +78,23 @@ export class InputWheel
 
     public registerActionEvents() {
         this.registerDeleteHandleEvents()
+
+        Brunsviga13rk.getInstance()
+            .operation_crank.getEmitter()
+            .subscribe(
+                OperationHandleEventType.AddEnded,
+                new EventHandler(() => {
+                    this.wheel.setAnimationDuration(0.25)
+                })
+            )
+        Brunsviga13rk.getInstance()
+            .operation_crank.getEmitter()
+            .subscribe(
+                OperationHandleEventType.SubtractEnded,
+                new EventHandler(() => {
+                    this.wheel.setAnimationDuration(0.25)
+                })
+            )
     }
 
     private registerDeleteHandleEvents() {

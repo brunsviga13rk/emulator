@@ -4,6 +4,7 @@ import { EventBroker, EventEmitter, EventHandler } from '../events'
 import { InputAction, Selectable, UserAction } from '../selectable'
 import { AnimationScalarState, CubicEaseInOutInterpolation } from '../animation'
 import { Knob, KnobEventType } from './knob'
+import { Brunsviga13rk } from '../brunsviga13rk'
 
 /**
  * Events emitted by the operation crank.
@@ -76,7 +77,7 @@ export class OperationHandle
         this.animationState = new AnimationScalarState(
             0,
             CubicEaseInOutInterpolation,
-            0.35
+            0.5
         )
         this.knob = new Knob(scene)
         this.mesh = scene.getObjectByName('crank')!
@@ -101,6 +102,10 @@ export class OperationHandle
                     this.currentOperation == OperationHandleEventType.Add
                         ? -1.0
                         : 1.0
+
+                Brunsviga13rk.getInstance().selector_sprocket.rotateAll(
+                    sign * -10
+                )
 
                 this.animationState.targetState =
                     this.animationState.getLatestTarget() + Math.PI * 2 * sign
