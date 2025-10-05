@@ -10,4 +10,4 @@ RUN npm run build
 
 FROM docker.io/nginxinc/nginx-unprivileged:1.28-alpine3.21-slim as runtime
 
-COPY --from=builder /brunsviga/dist /usr/share/nginx/html/
+COPY --from=builder --chown=nginx:nginx --chmod=755 /brunsviga/dist /usr/share/nginx/html/
